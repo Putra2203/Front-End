@@ -6,8 +6,6 @@
   <p align="center">
     Website Project Internship at Diskominfo Semarang
     <br />
-    <br />
-    <br />
   </p>
 </div>
 
@@ -18,7 +16,7 @@ Ikuti langkah-langkah dibawah untuk memulai instalasi dan pengembangan projek
 
 ### Git Clone
  ```sh
-  git clone https://github.com/Magang-Ceria/Front-End.git
+  https://github.com/SISAPPMA/Front-End.git
   ```
 ### Installing modules
 Ketikkan perintah dibawah ini melalui terminal dari direktori folder yang sudah di git clone
@@ -26,13 +24,8 @@ Ketikkan perintah dibawah ini melalui terminal dari direktori folder yang sudah 
   npm i
   ```
 
-### Running Projects
-Menggunakan perintah dibawah ini unutk menjalankan program
+### Running Projects Front End
+Menggunakan perintah dibawah ini unutk menjalankan program (Program harus dijalankan pada PORT 3001)
  ```sh
-  npm start
+  npm start -- --port 3001
   ```
-
-## Notes
-- Untuk dashboard menggunakan route "/"
-- Untuk halaman admin menggunakan route "/Monitoring"
-- Untuk halaman peserta magang menggunakan route "/Magang"
