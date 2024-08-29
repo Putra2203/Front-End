@@ -16,10 +16,10 @@ const Programs = () => {
             {programs.map(({ id, icon, title, info, path }) => {
               return (
                 <>
-                  <div className="icon_programs">
-                    <span>{icon}</span>
-                  </div>
                   <div className="programs__program">
+                    <div className="icon_programs">
+                      <span>{icon}</span>
+                    </div>
                     <h4>{title}</h4>
                     <small>{info}</small>
                     <Link to={path} className="btn sm">

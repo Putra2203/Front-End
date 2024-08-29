@@ -112,7 +112,7 @@
   height: calc(100vh - 3rem);
   display: grid;
   place-items: center;
-  margin-top: 5rem;
+  margin-top: 3rem;
 }
 .welcome-container {
   height: 100%;
@@ -182,32 +182,46 @@
 
 .programs__wrapper {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   margin: auto;
-  gap: 10px;
+  gap: 6rem;
 }
 
 .programs__program {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
   background-color: #d9a47e; /* Main card background color */
-  width: 300px;
+  width: 190px;
+  height: 400px;
   padding: 17px;
   border-radius: 25px;
   text-align: center;
-  small {
-    margin-top: 2rem;
-    display: block;
-    font-weight: 300;
-  }
+}
+.programs__program small {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  display: block;
+  font-weight: 300;
 }
 
 .icon_programs {
+  position: absolute;
+  top: 0;
   background-color: #8b572a; /* Icon background color */
   width: 80px;
   height: 80px;
   border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  transform: translateY(-30px);
 }
 
 .icon_programs span {
