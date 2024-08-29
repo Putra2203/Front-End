@@ -1,7 +1,7 @@
 nav {
   height: 5rem;
   width: 100vw;
-  background: #4c499c;
+  background: var(--color-secondary);
   display: grid;
   place-items: fixed;
   position: fixed;
@@ -89,9 +89,7 @@ nav {
     transition: var(--transition);
     font-weight: 500;
     letter-spacing: .5px;
-    &:hover {
-        color: var(--color-secondary);
-    }
+    color: var(--color-primary);
     @media(max-width: 1024.98px) {
         background: var(--color-primary);
         height: 100%;
@@ -110,20 +108,15 @@ nav {
 }
 .active-nav {
     position: relative;
-    color: var(--color-secondary);
+    color: black;
     &::after {
-        content: " ";
-        display: block;
-        width: 1.2rem;
-        height: 1.2rem;
-        background: var(--color-primary);
+        content: '';
+        height: 2px;
+        width: 100%;
+        background-color : var(--color-primary);
         position: absolute;
-        left: calc(50% - 0.6rem);
-        transform: rotate(45deg);
-        margin-top: 0.9rem;
-        @media(max-width: 1024.98px) {
-            display: none;
-        }
+        bottom: 0;
+        left: 0;
     }
 
     

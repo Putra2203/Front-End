@@ -141,6 +141,9 @@ export const Peserta = () => {
     tanggal_mulai: "",
     tanggal_selesai: "",
     no_telp: "",
+    nama_dosen: "",
+    nomer_dosen: "",
+    judul_project: "",
     status_aktif: true,
   });
 
@@ -379,6 +382,9 @@ export const Peserta = () => {
       asal_univ: "",
       asal_jurusan: "",
       no_telp: "",
+      nama_dosen: "",
+      nomer_dosen: "",
+      judul_project: "",
       tanggal_mulai: null,
       tanggal_selesai: null,
       username: "",
@@ -472,6 +478,10 @@ export const Peserta = () => {
           password: formData.password,
           asal_univ: formData.asal_univ,
           asal_jurusan: formData.asal_jurusan,
+          no_telp: formData.no_telp,
+          nama_dosen: formData.nama_dosen,
+          nomer_dosen: formData.nomer_dosen,
+          judul_project: formData.judul_project,
           tanggal_mulai: formData.tanggal_mulai,
           tanggal_selesai: formData.tanggal_selesai,
           status_aktif: true,
@@ -697,6 +707,9 @@ export const Peserta = () => {
                         <th>Universitas</th>
                         <th>Jurusan</th>
                         <th>No telp</th>
+                        <th>Nama Dosen</th>
+                        <th>Nomer Dosen</th>
+                        <th>Judul Project</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Selesai</th>
                         <th>Status Aktif</th>
@@ -723,6 +736,9 @@ export const Peserta = () => {
                             <td>{user.asal_univ}</td>
                             <td>{user.asal_jurusan}</td>
                             <td>{user.no_telp}</td>
+                            <td>{user.nama_dosen}</td>
+                            <td>{user.nomer_dosen}</td>
+                            <td>{user.judul_project}</td>
                             <td>{user.tanggal_mulai}</td>
                             <td>{user.tanggal_selesai}</td>
                             <td>{calculateUserStatus(user)}</td>
@@ -904,6 +920,66 @@ export const Peserta = () => {
               {validationErrors.no_telp && (
                 <p style={{ color: "red", fontSize: "14px" }}>
                   {validationErrors.no_telp}
+                </p>
+              )}
+            </Form.Group>
+            <Form.Group controlId="formTaskDeadline">
+              <Form.Label>Nama Dosen</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan nama Dosen"
+                value={formData.nama_dosen}
+                onChange={(e) => {
+                  setFormData({ ...formData, nama_dosen: e.target.value });
+                  setValidationErrors({
+                    ...validationErrors,
+                    nama_dosen: "",
+                  });
+                }}
+              />
+              {validationErrors.nama_dosen && (
+                <p style={{ color: "red", fontSize: "14px" }}>
+                  {validationErrors.nama_dosen}
+                </p>
+              )}
+            </Form.Group>
+            <Form.Group controlId="formTaskDeadline">
+              <Form.Label>Maukan Nomer Dosen</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan Nomer Dosen"
+                value={formData.nomer_dosen}
+                onChange={(e) => {
+                  setFormData({ ...formData, nomer_dosen: e.target.value });
+                  setValidationErrors({
+                    ...validationErrors,
+                    nomer_dosen: "",
+                  });
+                }}
+              />
+              {validationErrors.nomer_dosen && (
+                <p style={{ color: "red", fontSize: "14px" }}>
+                  {validationErrors.nomer_dosen}
+                </p>
+              )}
+            </Form.Group>
+            <Form.Group controlId="formTaskDeadline">
+              <Form.Label>Judul Project</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan Judul Project"
+                value={formData.judul_project}
+                onChange={(e) => {
+                  setFormData({ ...formData, judul_project: e.target.value });
+                  setValidationErrors({
+                    ...validationErrors,
+                    judul_project: "",
+                  });
+                }}
+              />
+              {validationErrors.judul_project && (
+                <p style={{ color: "red", fontSize: "14px" }}>
+                  {validationErrors.judul_project}
                 </p>
               )}
             </Form.Group>

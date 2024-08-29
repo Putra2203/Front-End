@@ -1,9 +1,8 @@
 import React from "react";
 
-const SectionHeader = ({ icon, title, className }) => {
+const SectionHeader = ({ title}) => {
   return (
-    <div className={`section__head ${className}`}>
-      <span>{icon}</span>
+    <div className= "section__head">
       <h2>{title}</h2>
     </div>
   );

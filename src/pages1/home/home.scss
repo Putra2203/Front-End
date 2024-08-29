@@ -1,3 +1,112 @@
+.poppins-thin {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.poppins-extralight {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.poppins-light {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.poppins-regular {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poppins-medium {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.poppins-semibold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.poppins-bold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.poppins-extrabold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.poppins-black {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.poppins-thin-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.poppins-extralight-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.poppins-light-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.poppins-regular-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.poppins-medium-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.poppins-semibold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.poppins-bold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.poppins-extrabold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: italic;
+}
+
+.poppins-black-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+// welcome
 .welcome {
   width: 100vw;
   height: calc(100vh - 3rem);
@@ -17,12 +126,19 @@
   margin-top: -3rem;
 }
 .welcome-left h4 {
-  margin-bottom: 1rem;
+  margin-bottom: 25px;
   color: var(--color-primary);
   font-weight: 400;
 }
+
+.welcome-left h2 {
+  font-size: 30px;
+  line-height: 40px;
+}
+
 .welcome-left p {
-  margin: 1rem 0 3.5rem;
+  margin-bottom: 15px;
+  margin-top: 10px;
   font-weight: 1.1rem;
 }
 .welcome-right {
@@ -30,45 +146,74 @@
   place-items: center;
   position: relative;
 }
-.welcome-circle {
-  width: 25rem;
-  height: 25rem;
-  background: linear-gradient(75deg, #000000, transparent);
-  border-radius: 50%;
-  position: absolute;
-  transition: var(--transition);
-  // filter: blur(15px);
-}
 
 .welcome-image {
   position: relative;
+  margin-top: -150px;
 }
-.welcome-right:hover .welcome-circle {
-  filter: blur(15px);
+
+.button-more {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+  width: 250px;
+  height: 60px;
+  border-radius: 50px;
+  margin-top: 10px;
+  p {
+    text-align: center;
+    font-size: 17px;
+    padding-top: 5px;
+  }
 }
+
+.button-more:hover {
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+//
 .programs {
   margin-top: 4rem;
 }
+
+.container_card {
+  margin-top: 6rem;
+}
+
 .programs__wrapper {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 3rem;
-  margin-top: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 10px;
 }
 
 .programs__program {
-  a {
-    margin-top: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  background-color: #d9a47e; /* Main card background color */
+  width: 300px;
+  padding: 17px;
+  border-radius: 25px;
+  text-align: center;
+  small {
+    margin-top: 2rem;
+    display: block;
+    font-weight: 300;
   }
-  &:hover {
-    a {
-      background: var(--color-secondary);
-      color: var(--color-gray-600);
-    }
-  }
+}
+
+.icon_programs {
+  background-color: #8b572a; /* Icon background color */
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.icon_programs span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .values__container {
@@ -314,7 +459,6 @@ footer {
     gap: 4rem;
   }
 }
- 
 
 @media (max-width: 600.98px) {
   .welcome {
@@ -322,8 +466,9 @@ footer {
     padding: 12rem 0 0;
     height: 100vh;
   }
-  .welcome-image, .welcome-circle {
-    display: none; 
+  .welcome-image,
+  .welcome-circle {
+    display: none;
   }
   .welcome-container {
     grid-template-columns: 1fr;
@@ -361,7 +506,7 @@ footer {
     width: 100%;
   }
 
-  // Footer 
+  // Footer
   footer {
     margin-top: 7rem;
   }
@@ -375,5 +520,4 @@ footer {
       text-align: center;
     }
   }
-
 }
