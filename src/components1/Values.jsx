@@ -1,4 +1,4 @@
-import Image from "../images/values.jpg";
+import Image from "../Assets/valueImage.png";
 import { SectionHeader } from "./index";
 import { GiCutDiamond } from "react-icons/gi";
 import { values } from "../data";

@@ -197,15 +197,15 @@
   align-items: center;
   position: relative;
   background-color: #d9a47e; /* Main card background color */
-  width: 190px;
-  height: 400px;
-  padding: 17px;
+  width: 220px;
+  height: 385px;
+  padding: 12px;
   border-radius: 25px;
   text-align: center;
 }
 .programs__program small {
-  margin-top: 50px;
   margin-bottom: 50px;
+  margin-top: 30px;
   display: block;
   font-weight: 300;
 }
@@ -225,22 +225,37 @@
 }
 
 .icon_programs span {
+  font-size: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: aliceblue;
 }
 
+.btn_program {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-primary);
+  font-size: 12px;
+  padding: 5px;
+  width: 90px;
+  border-radius: 45px;
+  :hover{
+    background-color: var(--color-accent);
+  }
+
+}
+
+
+//values
 .values__container {
   display: grid;
   grid-template-columns: 38% 50%;
   gap: 12%;
 }
 .values__image {
-  filter: saturate(0.25);
   transition: var(--transition);
-  &:hover {
-    filter: saturate(1);
-  }
 }
 .values__right {
   > p {

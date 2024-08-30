@@ -1,6 +1,9 @@
 import { SiOpenaigym } from "react-icons/si";
-import { BsInstagram, BsGlobe } from "react-icons/bs";
-import { FaLinkedinIn } from "react-icons/fa";
+import { BsInstagram, BsGlobe,BsDisplay,BsFileEarmarkText } from "react-icons/bs";
+import { LiaSwatchbookSolid } from "react-icons/lia";
+import { FaLinkedinIn,FaHistory } from "react-icons/fa";
+
+
 
 export const links = [
   {
@@ -32,28 +35,28 @@ export const links = [
 export const programs = [
   {
     id: 1,
-    icon: <SiOpenaigym />,
+    icon: <BsDisplay />,
     title: "Fitur Absensi Online",
     info: "Fitur Absensi pada SISAPPMA merupakan inovasi dari penerapan Absensi secara Offline ke Online.",
     path: "/programs/111",
   },
   {
     id: 2,
-    icon: <SiOpenaigym />,
+    icon: <BsFileEarmarkText />,
     title: "Fitur Persuratan",
     info: "Fitur Persuratan memudahkan perihal Surat Menyurat bagi Peserta Magang DISKOMINFO Kota Semarang.",
     path: "/programs/222",
   },
   {
     id: 3,
-    icon: <SiOpenaigym />,
+    icon: <LiaSwatchbookSolid />,
     title: "Fitur Penugasan",
-    info: "Fitur ini memudahkan untuk menerima informasi tugas dari Koordinator Magang DISKOMINFO secara online.",
+    info: "Fitur ini memudahkan untuk menerima informasi tugas dari Koordinator Magang DISKOMINFO kota Semarang secara online.",
     path: "/programs/333",
   },
   {
     id: 4,
-    icon: <SiOpenaigym />,
+    icon: <FaHistory />,
     title: "Fitur History Presensi",
     info: "Memudahkan Peserta Magang DISKOMINFO memantau presensi yang terinput secara sistem di SISAPPMA.",
     path: "/programs/444",

@@ -142,8 +142,7 @@ export const Peserta = () => {
     tanggal_selesai: "",
     no_telp: "",
     nama_dosen: "",
-    nomer_dosen: "",
-    judul_project: "",
+    no_telp_dosen: "",
     status_aktif: true,
   });
 
@@ -383,8 +382,7 @@ export const Peserta = () => {
       asal_jurusan: "",
       no_telp: "",
       nama_dosen: "",
-      nomer_dosen: "",
-      judul_project: "",
+      no_telp_dosen: "",
       tanggal_mulai: null,
       tanggal_selesai: null,
       username: "",
@@ -423,6 +421,18 @@ export const Peserta = () => {
       isValid = false;
     } else {
       errors.no_telp = "";
+    }
+    if (!formData.no_telp.trim()) {
+      errors.nama_dosen = "Nama Dosen harus diisi!";
+      isValid = false;
+    } else {
+      errors.nama_dosen = "";
+    }
+    if (!formData.no_telp.trim()) {
+      errors.no_telp_dosen = "Nomor telepon Dosen harus diisi!";
+      isValid = false;
+    } else {
+      errors.no_telp_dosen = "";
     }
 
     const currentDate = new Date();
@@ -480,8 +490,7 @@ export const Peserta = () => {
           asal_jurusan: formData.asal_jurusan,
           no_telp: formData.no_telp,
           nama_dosen: formData.nama_dosen,
-          nomer_dosen: formData.nomer_dosen,
-          judul_project: formData.judul_project,
+          no_telp_dosen: formData.no_telp_dosen,
           tanggal_mulai: formData.tanggal_mulai,
           tanggal_selesai: formData.tanggal_selesai,
           status_aktif: true,
@@ -708,8 +717,7 @@ export const Peserta = () => {
                         <th>Jurusan</th>
                         <th>No telp</th>
                         <th>Nama Dosen</th>
-                        <th>Nomer Dosen</th>
-                        <th>Judul Project</th>
+                        <th>No telp Dosen</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Selesai</th>
                         <th>Status Aktif</th>
@@ -737,8 +745,7 @@ export const Peserta = () => {
                             <td>{user.asal_jurusan}</td>
                             <td>{user.no_telp}</td>
                             <td>{user.nama_dosen}</td>
-                            <td>{user.nomer_dosen}</td>
-                            <td>{user.judul_project}</td>
+                            <td>{user.no_telp_dosen}</td>
                             <td>{user.tanggal_mulai}</td>
                             <td>{user.tanggal_selesai}</td>
                             <td>{calculateUserStatus(user)}</td>
@@ -923,18 +930,15 @@ export const Peserta = () => {
                 </p>
               )}
             </Form.Group>
-            <Form.Group controlId="formTaskDeadline">
+            <Form.Group controlId="formNamaDosen">
               <Form.Label>Nama Dosen</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Masukkan nama Dosen"
+                placeholder="Masukkan nama dosen"
                 value={formData.nama_dosen}
                 onChange={(e) => {
                   setFormData({ ...formData, nama_dosen: e.target.value });
-                  setValidationErrors({
-                    ...validationErrors,
-                    nama_dosen: "",
-                  });
+                  setValidationErrors({ ...validationErrors, nama_dosen: "" });
                 }}
               />
               {validationErrors.nama_dosen && (
@@ -943,43 +947,20 @@ export const Peserta = () => {
                 </p>
               )}
             </Form.Group>
-            <Form.Group controlId="formTaskDeadline">
-              <Form.Label>Maukan Nomer Dosen</Form.Label>
+            <Form.Group controlId="formNoTelpDosen">
+              <Form.Label>Nomor Telepon Dosen</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Masukkan Nomer Dosen"
-                value={formData.nomer_dosen}
+                placeholder="Masukkan nomor telepon dosen"
+                value={formData.no_telp_dosen}
                 onChange={(e) => {
-                  setFormData({ ...formData, nomer_dosen: e.target.value });
-                  setValidationErrors({
-                    ...validationErrors,
-                    nomer_dosen: "",
-                  });
+                  setFormData({ ...formData, no_telp_dosen: e.target.value });
+                  setValidationErrors({ ...validationErrors, no_telp_dosen: "" });
                 }}
               />
-              {validationErrors.nomer_dosen && (
+              {validationErrors.no_telp_dosen && (
                 <p style={{ color: "red", fontSize: "14px" }}>
-                  {validationErrors.nomer_dosen}
-                </p>
-              )}
-            </Form.Group>
-            <Form.Group controlId="formTaskDeadline">
-              <Form.Label>Judul Project</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Masukkan Judul Project"
-                value={formData.judul_project}
-                onChange={(e) => {
-                  setFormData({ ...formData, judul_project: e.target.value });
-                  setValidationErrors({
-                    ...validationErrors,
-                    judul_project: "",
-                  });
-                }}
-              />
-              {validationErrors.judul_project && (
-                <p style={{ color: "red", fontSize: "14px" }}>
-                  {validationErrors.judul_project}
+                  {validationErrors.no_telp_dosen}
                 </p>
               )}
             </Form.Group>
