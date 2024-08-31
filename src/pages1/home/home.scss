@@ -203,6 +203,13 @@
   border-radius: 25px;
   text-align: center;
 }
+
+.programs__program h4 {
+  color: #331200;
+  font-size: 20px;
+  padding: 2px;
+}
+
 .programs__program small {
   margin-bottom: 50px;
   margin-top: 30px;
@@ -241,42 +248,64 @@
   padding: 5px;
   width: 90px;
   border-radius: 45px;
-  :hover{
+  :hover {
     background-color: var(--color-accent);
   }
-
 }
-
 
 //values
 .values__container {
   display: grid;
   grid-template-columns: 38% 50%;
-  gap: 12%;
+  gap: 3rem;
 }
+
 .values__image {
   transition: var(--transition);
 }
 .values__right {
-  > p {
-    margin: 1.5rem 0 5rem;
-  }
+  width: 45rem;
 }
 
 .values__wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3.4rem 2.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  --swiper-navigation-color: #914F1E;
 }
 
 .values__value {
-  padding-top: 3.5rem;
-  text-align: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
-  span {
-    position: absolute;
-    top: -1.5rem;
-  }
+  background-color: #d9a47e; /* Main card background color */
+  width: 260px;
+  height: 300px;
+  padding: 15px;
+  border-radius: 30px;
+  text-align: center;
+  margin: 50px;
+}
+
+.number_values {
+  position: absolute;
+  top: 0;
+  background-color: #8b572a; /* Icon background color */
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  transform: translateY(-30px);
+}
+
+.number_values span {
+  font-size: 25px;
+  color: aliceblue;
 }
 
 // FAQs

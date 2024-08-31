@@ -66,25 +66,25 @@ export const programs = [
 export const values = [
   {
     id: 1,
-    icon: <SiOpenaigym />,
+    icon: "1",
     title: "Langkah 1",
     desc: "Pastikan anda telah diterima oleh Koordinator Magang DISKOMINFO sebelum penggunaan aplikasi SISAPMA.",
   },
   {
     id: 2,
-    icon: <SiOpenaigym />,
+    icon: "2",
     title: "Langkah 2",
     desc: "Peserta wajib konfirmasi akun kepada Koordinator Magang DISKOMINFO untuk pendataan.",
   },
   {
     id: 3,
-    icon: <SiOpenaigym />,
+    icon: "3",
     title: "Langkah 3",
     desc: "Login Aplikasi SISAPMA sebagai Peserta menggunakan Username dan Password yang telah terinput.",
   },
   {
     id: 4,
-    icon: <SiOpenaigym />,
+    icon: "4",
     title: "Langkah 4",
     desc: "Selamat anda dapat menggunakan berbagai fitur yang tersedia sesuai arahan Koordinator Magang.",
   },

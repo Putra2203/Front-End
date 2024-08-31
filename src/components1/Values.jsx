@@ -1,8 +1,8 @@
 import Image from "../Assets/valueImage.png";
-import { SectionHeader } from "./index";
-import { GiCutDiamond } from "react-icons/gi";
 import { values } from "../data";
-import { Card } from "../UI";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation} from "swiper/modules";
+import "swiper/swiper-bundle.css";
 
 const Values = () => {
   return (
@@ -14,20 +14,31 @@ const Values = () => {
           </div>
         </div>
         <div className="values__right">
-          <SectionHeader icon={<GiCutDiamond />} title="TATA PENGGUNAAN" />
-          <p>
-            Tata Cara Menggunakan SISAPPMA Bagi Peserta Magang DISKOMINFO Kota Semarang.
-          </p>
+          <h1 className="poppins-semibold">TATA PENGGUNAAN</h1>
           <div className="values__wrapper">
-            {values.map(({ id, title, icon, desc }) => {
-              return (
-                <Card key={id} className="values__value">
-                  <span>{icon}</span>
-                  <h4>{title}</h4>
-                  <small>{desc}</small>
-                </Card>
-              );
-            })}
+            <Swiper
+              modules={[Navigation]}
+              spaceBetween={15}
+              slidesPerView={2}
+              navigation
+              onSlideChange={() => console.log("slide change")}
+              onSwiper={(swiper) => console.log(swiper)}
+            >
+              {values.map(({ id, title, icon, desc }) => {
+                return (
+                  <div className="card_values_wraper">
+                    <SwiperSlide>
+                      <div className="values__value" key={id}>
+                        <div className="number_values">
+                          <span>{icon}</span>
+                        </div>
+                        <small>{desc}</small>
+                      </div>
+                    </SwiperSlide>
+                  </div>
+                );
+              })}
+            </Swiper>
           </div>
         </div>
       </div>
