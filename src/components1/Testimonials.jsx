@@ -24,26 +24,23 @@ const Testimonials = () => {
     setIndex(newIndex);
   };
   const nextTestimonial = () => {
-    const newIndex =
-      index === testimonials.length - 1 ? 0 : index + 1;
+    const newIndex = index === testimonials.length - 1 ? 0 : index + 1;
     setIndex(newIndex);
   };
 
   return (
     <section className="testimonials">
       <div className="container testimonials__container">
-        <SectionHeader
-          icon={<ImQuotesLeft />}
-          title="Testimonials"
-          className="testimonials__head"
-        />
-        <Card className="testimonial">
+        <div className="tittle_testimonial">TESTIMONIAL</div>
+        <Card className="testimonial poppins-regular">
           <div className="testimonial__avatar">
             <img src={avatar} alt={name} />
           </div>
-          <p className="testimonial__quote">"{quote}"</p>
-          <h5>{name}</h5>
-          <small className="testimonial__title">{job}</small>
+          <div className="testimonial_right">
+            <h5 className="poppins-semibold">{name}</h5>
+            <small className="testimonial__title">{job}</small>
+            <p className="testimonial__quote">"{quote}"</p>
+          </div>
         </Card>
         <div className="testimonials__btn-container">
           <button className="testimonial__btn" onClick={prevTestimonial}>
