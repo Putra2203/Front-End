@@ -226,10 +226,9 @@ section {
 }
 
 .page-welcome {
-  margin-top: 5rem;
-  height: 20rem;
+  width: 1580px;
+  height: 720px;
   overflow: hidden;
-  border-bottom: 2px solid var(--color-gray-400);
 }
 .page-welcome-container {
   width: 100%;
@@ -237,11 +236,10 @@ section {
   position: relative;
   display: grid;
   place-items: center;
-  background: black;
+  background-image: url("./images/about-image.png");
 }
 .page-welcome-image {
   position: absolute;
-  width: 100%;
 }
 .page-welcome-image img {
   opacity: 0.5;

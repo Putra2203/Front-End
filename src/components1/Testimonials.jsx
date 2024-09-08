@@ -31,7 +31,7 @@ const Testimonials = () => {
   return (
     <section className="testimonials">
       <div className="container testimonials__container">
-        <div className="tittle_testimonial">TESTIMONIAL</div>
+        <div className="tittle_testimonial poppins-semibold">TESTIMONIAL'S</div>
         <Card className="testimonial poppins-regular">
           <div className="testimonial__avatar">
             <img src={avatar} alt={name} />
