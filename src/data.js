@@ -58,7 +58,7 @@ export const programs = [
     id: 4,
     icon: <FaHistory />,
     title: "Fitur History Presensi",
-    info: "Memudahkan Peserta Magang DISKOMINFO memantau presensi yang terinput secara sistem di SISAPPMA.",
+    info: "Memudahkan Peserta Magang DISKOMINFO memantau presensi yang terinput di sistem SISAPPMA.",
     path: "/programs/444",
   },
 ];

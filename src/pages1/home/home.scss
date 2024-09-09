@@ -147,7 +147,10 @@
   position: relative;
 }
 
-.welcome-image {
+.welcome-image-up {
+  display: none;
+}
+.welcome-image-down {
   position: relative;
   margin-top: -150px;
 }
@@ -272,7 +275,7 @@
   justify-content: center;
   align-items: center;
   margin: auto;
-  --swiper-navigation-color: #914F1E;
+  --swiper-navigation-color: #914f1e;
 }
 
 .values__value {
@@ -347,7 +350,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
 }
 .card.testimonial {
   width: 2000px;
@@ -459,9 +461,9 @@ footer {
   flex-direction: column;
   align-items: start;
   li {
-   display: flex;
-   gap: 15px;
-   margin-top: 10px;
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
   }
 }
 .icon_footer {
@@ -482,32 +484,42 @@ footer {
 
 @media (max-width: 1024.98px) {
   .welcome {
+    margin-top: 12rem;
     height: fit-content;
-    padding: 12rem 0;
   }
   .welcome-container {
     gap: 0;
   }
-  .welcome-circle {
-    width: 16rem;
-    height: 16rem;
-  }
   // Programs
   .programs__wrapper {
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    gap: 3px;
+  }
+
+  .programs__program {
+    height: 460px;
   }
 
   // Values
   .values__container {
-    grid-template-columns: 1fr;
+    display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
     gap: 4rem;
   }
-  .values__wrapper {
-    gap: 4rem 3rem;
+  .values__left {
+    width: 60%;
+  }
+  .values__right {
+    width: 95%;
+  }
+  .values__value {
+    width: 65%;
   }
   .values__image {
-    display: none;
+    display: flex;
+    width: auto;
   }
 
   // FAQs
@@ -528,47 +540,122 @@ footer {
 
 @media (max-width: 600.98px) {
   .welcome {
-    margin-top: 0;
-    padding: 12rem 0 0;
-    height: 100vh;
-  }
-  .welcome-image,
-  .welcome-circle {
-    display: none;
+    margin: 7rem 0 0;
+    height: 75vh;
   }
   .welcome-container {
-    grid-template-columns: 1fr;
+    display: flex;
+    justify-content: center;
+  }
+  .welcome-image-down {
+    display: none;
+  }
+  .welcome-image-up {
+    display: flex;
+    margin-bottom: 2rem;
+  }
+  .welcome-left {
+    h4 {
+      font-size: 20px;
+      margin: 2px;
+    }
+    h2 {
+      font-size: 19px;
+    }
+  }
+  .button-more {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    width: 150px;
+    p {
+      font-size: 10px;
+    }
   }
 
   // Programs
+  .section_header {
+    h1 {
+      font-size: 20px;
+    }
+  }
   .programs__wrapper {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
   }
   .programs__program {
-    width: 84%;
-    margin: 0 auto;
+    margin-top: -35px;
+    margin-bottom: 60px;
+    padding: 10px;
+    padding-top: 3rem;
+    width: 100%;
+    height: 90%;
+    span {
+      font-size: 20px;
+    }
+    h4 {
+      font-size: 14px;
+    }
+    small {
+      font-size: 9px;
+      text-align: center;
+    }
+  }
+
+  .icon_programs {
+    width: 40%;
+    height: 25%;
   }
 
   // Values
-  .values__wrapper {
-    grid-template-columns: 1fr;
-    gap: 3rem;
+  .values__left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36vh;
+    height: auto;
   }
-  .card.values__value {
-    width: 84%;
-    margin-inline: auto;
+
+  .values__value {
+    margin-left: 3rem;
+    width: 25vh;
+  }
+  .values__right {
+    h1 {
+      font-size: 20px;
+    }
   }
 
   // FAQS
+  .faqs {
+    margin-top: 2rem;
+    h1 {
+      font-size: 20px;
+    }
+  }
   .faqs__wrapper {
+    font-size: 15px;
     gap: 1rem;
-    margin-top: 3rem;
+    margin-top: 2rem;
   }
 
   // Testimonials
   .testimonials {
+    width: 100%;
+    margin-top: 3rem;
+  }
+  .tittle_testimonial {
+    font-size: 20px;
+  }
+
+  .card.testimonial {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .testimonial__avatar {
     width: 100%;
   }
 
@@ -581,6 +668,7 @@ footer {
     gap: 3rem;
   }
   .footer__container article {
+    width: 40vh;
     align-items: center;
     p {
       text-align: center;

@@ -23,6 +23,20 @@ const Values = () => {
               navigation
               onSlideChange={() => console.log("slide change")}
               onSwiper={(swiper) => console.log(swiper)}
+              breakpoints={{
+                300: {
+                  slidesPerView: 1,
+                  spaceBetween: 7,
+                },
+                768: {
+                  slidesPerView: 2,
+                  spaceBetween: 12,
+                },
+                1024: {
+                  slidesPerView: 2,
+                  spaceBetween: 15,
+                },
+              }}
             >
               {values.map(({ id, title, icon, desc }) => {
                 return (

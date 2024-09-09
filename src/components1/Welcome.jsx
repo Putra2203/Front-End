@@ -7,6 +7,11 @@ const Welcome = () => {
     <header className="welcome">
       <div className="container welcome-container">
         <div className="welcome-left">
+          <div>
+            <div className="welcome-image-up">
+              <img src={Image} alt="Welcome Image" />
+            </div>
+          </div>
           <h4 className="poppins-semibold text-black">
             <b>PORTAL SISAPPMA</b>
           </h4>
@@ -25,7 +30,7 @@ const Welcome = () => {
           </Link>
         </div>
         <div className="welcome-right">
-          <div className="welcome-image">
+          <div className="welcome-image-down">
             <img src={Image} alt="Welcome Image" />
           </div>
         </div>
