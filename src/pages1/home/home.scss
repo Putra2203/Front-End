@@ -109,7 +109,7 @@
 // welcome
 .welcome {
   width: 100vw;
-  height: calc(100vh - 3rem);
+  height: calc(100vh - 2rem);
   display: grid;
   place-items: center;
   margin-top: 3rem;
@@ -258,6 +258,7 @@
 
 //values
 .values__container {
+  padding-top: 7rem;
   display: grid;
   grid-template-columns: 38% 50%;
   gap: 3rem;
@@ -312,6 +313,9 @@
 }
 
 // FAQs
+.faqs {
+  margin-top: 7rem;
+}
 .faqs__wrapper {
   margin-top: 4rem;
   display: grid;
@@ -341,6 +345,7 @@
 // Testimonials
 
 .testimonials {
+  margin-top: 7rem;
   width: 80rem;
   margin-inline: auto;
 }
