@@ -335,18 +335,15 @@
   p {
     margin-top: 1.5rem;
   }
-}
-
-.faq__icon {
-  color: var(--color-primary);
-  font-size: 1rem;
+  h4 {
+    font-size: 17px;
+  }
 }
 
 // Testimonials
 
 .testimonials {
   margin-top: 7rem;
-  width: 80rem;
   margin-inline: auto;
 }
 
@@ -357,7 +354,7 @@
   justify-content: center;
 }
 .card.testimonial {
-  width: 2000px;
+  width: 90vh;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -545,7 +542,7 @@ footer {
 
 @media (max-width: 600.98px) {
   .welcome {
-    margin: 7rem 0 0;
+    margin: 9rem 0 0;
     height: 75vh;
   }
   .welcome-container {
@@ -616,6 +613,7 @@ footer {
 
   // Values
   .values__left {
+    margin-top: -7rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -656,6 +654,7 @@ footer {
   }
 
   .card.testimonial {
+    width: 40vh;
     display: flex;
     flex-direction: column;
   }

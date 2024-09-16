@@ -1,127 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import 'bulma/css/bulma.css';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import "./login.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import user_icon from '../Assets/person.png';
-import password_icon from '../Assets/password.png';
-import imagelogin from '../../Assets/diskominfo.png';
-import background_login from "../Assets/login_page.png";
-import { TabTitle } from '../../TabName';
+import image from "../Assets/ImageLogin.png";
 
 const Login = () => {
-    TabTitle('Portal Diskominfo')
-    const [username, setUser] = useState('');
-    const [password, setPassword] = useState('');
-    const [role, setRole] = useState('');
-    const [message, setMsg] = useState('');
-    const navigate = useNavigate('');
-    useEffect(() => {
-        Logout();
-    }, [])
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-    const Auth = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://localhost:3000/account/login', {
-                "username": username,
-                "password": password,
-                "role": role
-            }, {
-            })
-            if (role === "admin") {
-                navigate('/homepage');
-            } else if (role === "peserta_magang") {
-                navigate('/user/homepage');
-            }
-        } catch (error) {
-            if (error.response) {
-                setMsg(error.response.data.message);
-            }
-        }
+  useEffect(() => {
+    Logout();
+  }, []);
+
+  const Auth = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:3000/account/login", {
+        username,
+        password,
+        role,
+      });
+      role === "admin" ? navigate("/homepage") : navigate("/user/homepage");
+    } catch (error) {
+      setMessage(
+        error.response ? error.response.data.message : "Error occurred"
+      );
     }
+  };
 
-    const Logout = async () => {
-        try {
-            await axios.delete('http://localhost:3000/account/logout');
-        } catch (error) {
-            console.log("Error during logout:", error);
-        }
+  const Logout = async () => {
+    try {
+      await axios.delete("http://localhost:3000/account/logout");
+    } catch (error) {
+      console.log("Logout failed");
     }
+  };
 
-    return (
-        <section className="hero is-fullheight" style={{ backgroundImage: `url(${background_login})`, backgroundSize: 'cover' }}>
-            <div className="hero-body">
-                <div className="container">
-                    <div className="columns is-centered">
-                        <div className="column is-4-desktop">
-                            <form onSubmit={Auth} className="box">
-                                <p className='has-text-centered'>{message}</p>
-                                <img src={imagelogin} alt="" />
-                                <div className="field">
-                                    <label className="label">Username</label>
-                                    <div className="control has-icons-left">
-                                        <input
-                                            type="text"
-                                            className="input"
-                                            placeholder="Username"
-                                            value={username}
-                                            onChange={(e) => setUser(e.target.value)}
-                                        />
-                                        <span className="icon is-small is-left">
-                                            <img src={user_icon} alt="User Icon" />
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <label className="label">Password</label>
-                                    <div className="control has-icons-left">
-                                        <input
-                                            type="password"
-                                            className="input"
-                                            placeholder="Passowrd"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                        />
-                                        <span className="icon is-small is-left">
-                                            <img src={password_icon} alt="User Icon" />
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="field has-text-centered"> {/* Tambahkan class has-text-centered di sini */}
-                                    <label className="label">Role</label>
-                                    <div className="control">
-                                        <label className="radio">
-                                            <input
-                                                type="radio"
-                                                name="userType"
-                                                value="admin"
-                                                checked={role === "admin"}
-                                                onChange={() => setRole("admin")}
-                                            />
-                                            <span className="ml-2">Admin</span>
-                                        </label>
-                                        <label className="radio">
-                                            <input
-                                                type="radio"
-                                                name="userType"
-                                                value="peserta_magang"
-                                                checked={role === "peserta_magang"}
-                                                onChange={() => setRole("peserta_magang")}
-                                            />
-                                            <span className="ml-2">Peserta Magang</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="field">
-                                    <button className="button is-success is-fullwidth">Login</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <div className="container_logins">
+      <div className="wrapper-login">
+        <div className="login-container">
+          <form onSubmit={Auth} className="login-form">
+            <h2 className="login-title poppins-bold">Login</h2>
+
+            <div className="input-group-user">
+              <FontAwesomeIcon icon={faUser} className="input-icon-user" />
+              <input
+                type="username"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </div>
-        </section>
-    );
-}
+
+            <div className="input-group-pass">
+              <FontAwesomeIcon icon={faLock} className="input-icon-pass" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="role-selection">
+              <p className="poppins-bold">Role</p>
+              <label>
+                <input
+                  type="radio"
+                  value="admin"
+                  checked={role === "admin"}
+                  onChange={() => setRole("admin")}
+                />
+                Admin
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="peserta_magang"
+                  checked={role === "peserta_magang"}
+                  onChange={() => setRole("peserta_magang")}
+                />
+                Peserta Magang
+              </label>
+            </div>
+
+            <button type="submit" className="login-button">
+              Login
+            </button>
+            {message && <p className="error-message">{message}</p>}
+          </form>
+        </div>
+
+        <div className="image-container">
+          <img src={image} alt="#" />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default Login;

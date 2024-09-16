@@ -19,16 +19,12 @@ export const links = [
     path: "/gallery",
   },
   {
-    name: "Plans",
-    path: "/plans",
-  },
-  {
     name: "Trainers",
     path: "/trainers",
   },
   {
     name: "Login",
-    path: "/contact",
+    path: "/login",
   },
 ];
 
@@ -170,47 +166,7 @@ export const testimonials = [
     job: "Mahasiswi Universitas Semarang",
     avatar: require("./images/avatar5.jpg"),
   },
-];
-
-export const plans = [
-  {
-    id: 1,
-    name: "Fitur Absensi Online",
-    desc: "Fitur Absensi pada SISAPPMA merupakan inovasi dari penerapan Absensi secara Offline ke Online.",
-    price: 0.0,
-    features: [
-      { feature: "Akses Kamera", available: true },
-      { feature: "Upload Foto", available: true },
-      { feature: "Rekap Presensi", available: false },
-      { feature: "Unduh File PDF", available: false },
-      { feature: "Akses Peserta Lainnya", available: false },
-    ],
-  },
-  {
-    id: 2,
-    name: "Fitur Persuratan",
-    desc: "Fitur Persuratan memudahkan perihal Surat Menyurat bagi Peserta Magang DISKOMINFO Kota Semarang.",
-    price: 0.0,
-    features: [
-      { feature: "Unduh Surat", available: true },
-      { feature: "Edit Surat", available: true },
-      { feature: "Upload Surat", available: false },
-    ],
-  },
-  {
-    id: 3,
-    name: "Fitur Penugasan",
-    desc: "Fitur ini memudahkan untuk menerima informasi tugas dari Koordinator Magang DISKOMINFO secara online.",
-    price: 0.0,
-    features: [
-      { feature: "Akses Informasi", available: true },
-      { feature: "Upload Tugas", available: false },
-      { feature: "Edit dan Delete Tugas", available: false },
-    ],
-  },
-];
-
- 
+]; 
 
 export const trainers = [
   {

@@ -6,7 +6,7 @@ const FAQ = ({ question, answer }) => {
   return (
     <article className="faq poppins-regular">
       <div onClick={() => setOpen(!open)}>
-        <h4>{question}</h4>
+        <h4 className="poppins-regular">{question}</h4>
         <button className="faq__icon">
           {open ? <FaChevronUp /> : <FaChevronDown />}
         </button>

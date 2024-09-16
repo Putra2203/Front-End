@@ -1,8 +1,7 @@
-import { Card } from "../UI";
 
-const Trainer = ({ id, image, name, job, socials }) => {
+const Trainer = ({ image, name, job, socials }) => {
   return (
-    <Card className="trainer">
+    <div className="trainer">
       <div className="trainer__img">
         <img src={image} alt={name} />
         <h3>{name}</h3>
@@ -17,7 +16,7 @@ const Trainer = ({ id, image, name, job, socials }) => {
           })}
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

@@ -1,5 +1,3 @@
-import { PageWelcome } from "../../components1";
-import WelcomeImage from "./../../images/header_bg_5.png";
 import { Trainer } from "../../components1/index";
 import { trainers } from "../../data";
 
@@ -8,11 +6,12 @@ import "./trainers.scss";
 const Trainers = () => {
   return (
     <>
-      <PageWelcome title="STRUKTUR KOORDINATOR" image={WelcomeImage}>
-        Memudahkan Peserta Magang dalam Berinteraksi dengan Koordinator
-      </PageWelcome>
+    <div className="header-trainers">
+      <h1 className="poppins-bold">SRUKTUR KOORDINATOR</h1>
+      <p>Memudahkan Peserta Magang dalam Berinteraksi dengan Koordinator</p>
+    </div>
       <section className="trainers">
-        <div className="container trainers__container">
+        <div className="trainers__container">
           {trainers.map((trainer) => {
             return <Trainer key={trainer.id} {...trainer} />;
           })}

@@ -1,18 +1,14 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import { PageWelcome } from "../../components1";
-import WelcomeImage from "./../../images/about-image.png";
-import StoryImage from "./../../images/about1.jpeg";
-import VisionImage from "./../../images/about2.png";
-import MissionImage from "./../../images/about3.png";
 import "./about.scss";
 
 const About = () => {
   return (
     <>
-      <PageWelcome title="Mengenai DISKOMINFO" image={WelcomeImage}>
+      <PageWelcome title="Mengenai DISKOMINFO">
         Mencakup Latar Belakang, Visi dan Misi Dinas Komunikasi, Informatika,
         Statistik dan Persandian Kota Semarang
-      </PageWelcome>
+      </PageWelcome>  
       <section className="about__story">
         <div className="about__story-container">
           <div className="about__section-content poppins-regular">

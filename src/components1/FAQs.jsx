@@ -1,5 +1,4 @@
 import { SectionHeader, FAQ } from "./index";
-import { FaQuestion } from "react-icons/fa";
 import { faqs } from "../data";
 
 const FAQs = () => {

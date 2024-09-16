@@ -1,0 +1,101 @@
+/* General container styling */
+.container_logins {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wrapper-login {
+  margin-top: 10rem;
+  display: flex;
+  gap: 4rem;
+}
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-container img {
+  width: 80vh;
+}
+
+.login-form {
+  padding: 20px;
+  border-radius: 10px;
+  width: 50vh;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: black;
+}
+
+/* Input field and icon container */
+.input-group-user,
+.input-group-pass {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.input-group-user input,
+.input-group-pass input {
+  background-color: transparent;
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border: 2px solid black;
+  border-radius: 30px;
+  font-size: 1rem;
+  color: black;
+  outline: none;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+/* Icon positioning for username and password fields */
+.input-icon-user,
+.input-icon-pass {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: black;
+  font-size: 1rem;
+}
+
+/* Role selection styling */
+.role-selection {
+  margin-bottom: 20px;
+  color: black;
+}
+
+.role-selection label {
+  margin-left: 15px;
+  font-size: 0.9rem;
+}
+
+/* Button styling */
+.login-button {
+  width: 30%;
+  padding: 10px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-button:hover {
+  background-color: #3b3030;
+}
+
+/* Error message styling */
+.error-message {
+  color: red;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+

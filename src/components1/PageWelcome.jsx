@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
-const PageWelcome = ({ title, image, children }) => {
+const PageWelcome = ({ title, children }) => {
   return (
     <header className="page-welcome">
       <div className="page-welcome-container">
