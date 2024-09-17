@@ -99,3 +99,16 @@
   font-size: 0.9rem;
 }
 
+@media (max-width: 600.98px) {
+  .wrapper-login {
+    gap: 0;
+  }
+
+  .image-container img {
+    display: none;
+  }
+
+  .login-form {
+    text-align: center;
+  }
+}
