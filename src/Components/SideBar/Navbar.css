@@ -2,36 +2,26 @@
 
 /* Penyesuaian untuk desain futuristik */
 .body-main {
-    --header-height: 3rem; /* Sesuaikan tinggi header */
     --nav-width: 80px; /* Sesuaikan lebar navbar */
     --first-color: #11101D; /* Sesuaikan warna utama */
-    --first-color-light: #FFF; /* Sesuaikan warna terang */
-    --white-color: #FFF; /* Warna putih */
-    --active-color: #FFF; /* Warna aktif */
-    --body-font: 'Poppins', sans-serif; /* Font Poppins */
+    --white-color: #F9F9F9; /* Warna putih */
     --normal-font-size: 1rem;
     --z-fixed: 100; /* Z-index */
 }
 
 .body-area {
     position: relative;
-    margin: var(--header-height) 0 0 0;
-    padding: 0 1rem;
-    font-family: var(--body-font);
-    font-size: var(--normal-font-size);
     transition: .5s;
 }
 
 .header {
     width: 100%;
-    height: var(--header-height);
     position: fixed;
     top: 0;
     left: 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
     background-color: var(--white-color);
     z-index: var(--z-fixed);
     transition: .5s;
@@ -132,7 +122,7 @@
     position: absolute;
     left: 0;
     width: 2px;
-    height: 32px;
+    height: 2px;
     background-color: var(--active-color);
 }
 
@@ -146,12 +136,6 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
-}
-
-/* Tambahkan desain futuristik */
-.header {
-  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .nav_link {
@@ -196,26 +180,6 @@
         margin: calc(var(--header-height) + 1rem) 0 0 0;
         padding-left: calc(var(--nav-width) + 2rem);
     }
-
-    .header {
-        height: calc(var(--header-height) + 1rem);
-        padding: 0 2rem 0 calc(var(--nav-width) + 2rem);
-    }
-
-    .header_img {
-        width: 40px;
-        height: 40px;
-    }
-
-    .header_img img {
-        width: 45px;
-    }
-
-    .l-navbar {
-        left: 0;
-        padding: 1rem 1rem 0 0;
-    }
-
     .show {
         width: calc(var(--nav-width) + 156px);
     }
@@ -227,146 +191,7 @@
 
 /* Kode CSS yang Anda miliki */
 @media (max-width: 768px) {
-  .homepage-container {
-    flex-direction: column;
-  }
-
-  .image-container {
-    min-height: 150px !important;
-    margin-bottom: 0 !important;
-  }
-
-  .user-image img {
-    width: 50px !important;
-    height: 50px !important;
-    border-radius: 50%;
-  }
-
-  .info-box {
-    text-align: center;
-  }
-
-  .space {
-    padding-left: 0 !important;
-  }
-
-  .info-box {
-    text-align: center;
-  }
-
-  .space {
-    padding-left: 0;
-  }
-
-  .action-buttons,
-  .action-buttons-1 {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .action-buttons a,
-  .action-buttons-1 a {
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
-
-  .action-buttons img {
-    width: 150px;
-  }
-
-  .action-buttons-1 span {
-    margin-top: 5px;
-  }
-
   .body-main {
     overflow-x: hidden;
   }
-}
-
-.homepage-container {
-  width: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.image-container {
-  margin-bottom: 20px;
-  width: 100%;
-  min-height: 200px;
-}
-
-.background-home {
-  width: 100%;
-  height: auto;
-  border-radius: 6px;
-  display: block;
-  margin: 0 auto;
-}
-
-.account-info-container {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.user-info-1 {
-  font-family: 'Poppins', sans-serif;
-  color: black;
-  font-size: 20px;
-}
-
-.user-image {
-  width: 100px;
-  height: 100px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.user-image img {
-  width: 105px;
-}
-
-.info-box {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.space {
-  padding-left: 500px;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.action-buttons a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: #000;
-}
-
-.action-buttons a img {
-  width: 250px;
-  height: auto;
-}
-
-.action-buttons a span {
-  text-align: center;
-  font-weight: bold;
-  margin-top: -12px;
-  font-family: "Poppins", sans-serif;
-  margin-right: 20px;
-  color: #002c3e;
 }

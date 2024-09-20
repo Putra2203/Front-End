@@ -1,5 +1,5 @@
 import React from 'react';
-import './ListTable.css';
+
 
 function ListTable(props) {
   const { data } = props;
