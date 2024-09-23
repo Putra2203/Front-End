@@ -1,26 +1,159 @@
-.gallery__container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  article {
-    border: 1px solid transparent;
-    transition: var(--transition);
+// Variables for color palette
+$background-color: #f8f2d6;
+$text-color-dark: #563a21;
+$highlight-color: #e2b38f;
+$button-background: #deac80;
+$shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+$hover-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+
+// Base styles for the gallery container
+.gallery-container {
+  padding: 40px;
+  background-color: $background-color;
+  text-align: center;
+
+  h1 {
+    padding-top: 80px;
+    font-size: 2rem;
+    color: $text-color-dark;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+}
+
+// Styles for the button-like elements (Alumni Magang & Seputar Diskominfo)
+.alumni-magang{
+  display: inline-block;
+  color: $text-color-dark;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 20px;
+}
+.seputar-diskominfo {
+  display: inline-block;
+  color: $text-color-dark;
+  padding-left: 10px 20px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+// Image slider styles
+.image-slider {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 15px;
+  padding: 20px;
+  position: relative;
+  scroll-behavior: smooth;
+
+  .image-wrapper {
+    flex: 0 0 auto;
+    width: 220px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: $shadow;
+    text-align: center;
+    scroll-snap-align: start;
+    transition: transform 0.3s ease-in-out;
+    overflow: hidden;
+
     &:hover {
-      border-color: var(--color-gray-500);
+      transform: scale(1.05);
+      box-shadow: $hover-shadow;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    p {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: $text-color-dark;
+      background-color: $highlight-color;
+      padding: 10px;
+      border-radius: 0 0 10px 10px;
+    }
+  }
+
+  // Navigation button styles
+  .slider-btn {
+    
+    color: rgb(0, 0, 0);
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: rem;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+
+    &.prev-btn {
+      left: 10px;
+    }
+
+    &.next-btn {
+      right: 10px;
     }
   }
 }
-@media (max-width: 1024.98px) {
-  .gallery__container {
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    article {
-      border: 0;
+
+// Seputar Diskominfo section styles
+.section {
+  &.seputar-diskominfo {
+    margin-top: 40px;
+  }
+}
+
+// Gallery container grid for Seputar Diskominfo
+.container.gallery__container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 20px;
+
+  article {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: $shadow;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: $hover-shadow;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
   }
 }
-@media (max-width: 600.98px) {
-  .gallery__container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+
+// Responsive styles
+@media (max-width: 768px) {
+  .image-wrapper {
+    width: 180px;
+  }
+
+  .slider-btn {
+    font-size: 1.5rem;
+  }
+
+  .container.gallery__container {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 }
