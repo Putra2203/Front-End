@@ -1,11 +1,8 @@
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import LayoutWithNavbar from "./LayoutWithNavbar";
-
 import { NotFound, About, Contact, Gallery, Home, Trainers } from "./pages1";
-
 import Homepage from "./pages/Homepage";
 import Peserta from "./pages/Peserta";
 import PresensiMagang from "./pages/PresensiMagang";

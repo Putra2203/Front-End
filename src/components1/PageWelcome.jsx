@@ -1,13 +1,14 @@
-/* eslint-disable jsx-a11y/img-redundant-alt */
+import image from "../images/about1.jpeg";
+
 const PageWelcome = ({ title, children }) => {
   return (
-    <header className="page-welcome">
-      <div className="page-welcome-container">
-        <div className="page-welcome-image"></div>
-        <div className="welcome-content">
-          <h2>{title}</h2>
-          <p>{children}</p>
-        </div>
+    <header
+      className="relative flex items-center justify-center h-screen bg-center bg-cover "
+      style={{ backgroundImage: `url(${image})` }}
+    >
+      <div className="absolute w-1/2 text-center text-white">
+        <h2 className="mb-4 text-4xl font-semibold font-poppins">{title}</h2>
+        <p className="text-xl">{children}</p>
       </div>
     </header>
   );

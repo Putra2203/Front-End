@@ -1,59 +1,58 @@
 import Image from "../Assets/valueImage.png";
 import { values } from "../data";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation} from "swiper/modules";
+import { Navigation } from "swiper/modules";
 import "swiper/swiper-bundle.css";
 
 const Values = () => {
   return (
-    <section className="values">
-      <div className="container values__container">
-        <div className="values__left">
-          <div className="values__image">
-            <img src={Image} alt="Values Image" />
+    <section className="mt-32">
+      <div className="flex flex-col justify-center max-w-screen-sm gap-2 p-10 mx-auto lg:flex-row lg:max-w-screen-xl lg:gap-11 lg:p-0">
+        <div className="lg:w-4/12">
+          <div className="mx-auto ">
+            <img src={Image} alt="#" />
           </div>
         </div>
-        <div className="values__right">
-          <h1 className="poppins-semibold">TATA PENGGUNAAN</h1>
-          <div className="values__wrapper">
-            <Swiper
-              modules={[Navigation]}
-              spaceBetween={15}
-              slidesPerView={2}
-              navigation
-              onSlideChange={() => console.log("slide change")}
-              onSwiper={(swiper) => console.log(swiper)}
-              breakpoints={{
-                300: {
-                  slidesPerView: 1,
-                  spaceBetween: 7,
-                },
-                768: {
-                  slidesPerView: 2,
-                  spaceBetween: 12,
-                },
-                1024: {
-                  slidesPerView: 2,
-                  spaceBetween: 15,
-                },
-              }}
-            >
-              {values.map(({ id, title, icon, desc }) => {
-                return (
-                  <div className="card_values_wraper">
-                    <SwiperSlide>
-                      <div className="values__value" key={id}>
-                        <div className="number_values">
-                          <span>{icon}</span>
-                        </div>
-                        <small>{desc}</small>
-                      </div>
-                    </SwiperSlide>
+        <div className="lg:w-5/12 ">
+          <h1 className="mt-10 text-2xl font-semibold lg:text-4xl font-poppins">
+            TATA PENGGUNAAN
+          </h1>
+
+          <Swiper
+            modules={[Navigation]}
+            spaceBetween={15}
+            slidesPerView={2}
+            navigation
+            onSlideChange={() => console.log("slide change")}
+            onSwiper={(swiper) => console.log(swiper)}
+            breakpoints={{
+              300: {
+                slidesPerView: 1,
+                spaceBetween: 7,
+              },
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 12,
+              },
+              1024: {
+                slidesPerView: 2,
+                spaceBetween: 1,
+              },
+            }}
+          >
+            {values.map(({ id, title, icon, desc }) => {
+              return (
+                <SwiperSlide className="p-10" key={id}>
+                  <div className="flex flex-col items-center justify-center text-center bg-[#DEAC80] rounded-3xl relative p-4 mb-4 h-60">
+                    <div className="bg-[#914F1E] p-3 px-5 rounded-full absolute top-0 -translate-y-5">
+                      <span className="text-base text-white">{icon}</span>
+                    </div>
+                    <small className="mb-7 mt-7">{desc}</small>
                   </div>
-                );
-              })}
-            </Swiper>
-          </div>
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
         </div>
       </div>
     </section>

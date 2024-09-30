@@ -1,43 +1,39 @@
-/* eslint-disable jsx-a11y/img-redundant-alt */
 import { PageWelcome } from "../../components1";
-import "./about.scss";
 
 const About = () => {
   return (
     <>
-      <PageWelcome title="Mengenai DISKOMINFO">
+      <PageWelcome title="MENGENAI DISKOMINFO">
         Mencakup Latar Belakang, Visi dan Misi Dinas Komunikasi, Informatika,
         Statistik dan Persandian Kota Semarang
-      </PageWelcome>  
-      <section className="about__story">
-        <div className="about__story-container">
-          <div className="about__section-content poppins-regular">
-            <p>
-              Dinas Komunikasi, Informatika, Statistik dan Persandian Kota
-              Semarang berdiri pada tahun 2017 sesuai dengan Peraturan Walikota
-              Semarang Nomor 76 Tahun 2016 tentang Kedudukan, Susunan
-              Organisasi, Tugas dan Fungsi, Serta Tata Kerja Dinas Komunikasi,
-              Informatika, Statistik dan Persandian Kota Semarang.
-            </p>
-            <p>
-              Dinas Komunikasi, Informatika, Statistik dan Persandian Kota
-              Semarang semula merupakan bagian dari DISHUBKOMINFO yang mengalami
-              pemisahan menjadi DISKOMINFO dan DISHUB. DISKKOMINFO bergabung
-              dengan bagian Pelayanan data Elektronik (PDE), Bagian Rumah
-              Tangga, dan Bagian Humas Setda Kota Semarang menjadi Dinas
-              Komunikasi, Informatika, Statistik dan Persandian Kota Semarang.
-            </p>
-          </div>
+      </PageWelcome>
+
+      <section className="justify-center max-w-screen-xl mx-auto my-12">
+        <div className="text-xl font-medium text-justify font-poppins">
+          <p className="mb-4">
+            Dinas Komunikasi, Informatika, Statistik dan Persandian Kota
+            Semarang berdiri pada tahun 2017 sesuai dengan Peraturan Walikota
+            Semarang Nomor 76 Tahun 2016 tentang Kedudukan, Susunan Organisasi,
+            Tugas dan Fungsi, Serta Tata Kerja Dinas Komunikasi, Informatika,
+            Statistik dan Persandian Kota Semarang.
+          </p>
+          <p>
+            Dinas Komunikasi, Informatika, Statistik dan Persandian Kota
+            Semarang semula merupakan bagian dari DISHUBKOMINFO yang mengalami
+            pemisahan menjadi DISKOMINFO dan DISHUB. DISKKOMINFO bergabung
+            dengan bagian Pelayanan data Elektronik (PDE), Bagian Rumah Tangga,
+            dan Bagian Humas Setda Kota Semarang menjadi Dinas Komunikasi,
+            Informatika, Statistik dan Persandian Kota Semarang.
+          </p>
         </div>
-      </section>
-      <section className="about__vision">
-        <div className="about__vision-container">
-          <div className="about_vision">
-            <div className="content-left">
-              <h1 className="poppins-bold">VISI</h1>
-            </div>
-            <div className="content-right">
-              <div className="line"></div>
+
+        <div className="relative mx-auto mt-12">
+          <div className="flex-col">
+            <h1 className="absolute text-3xl font-semibold -top-4 font-poppins">
+              VISI
+            </h1>
+            <div className="pl-16">
+              <hr className="my-4 border-t-2 border-black" />
               <p>
                 <b>2021-2024</b>
               </p>
@@ -48,15 +44,14 @@ const About = () => {
             </div>
           </div>
         </div>
-      </section>
-      <section className="about__vision">
-        <div className="about__vision-container">
-          <div className="about_vision">
-            <div className="content-left">
-              <h2 className="poppins-bold">MISI</h2>
-            </div>
-            <div className="content-right">
-              <div className="line"></div>
+
+        <div className="relative mx-auto">
+          <div className="flex-col">
+            <h1 className="absolute text-3xl font-semibold -top-4 font-poppins">
+              MISI
+            </h1>
+            <div className="pl-16">
+              <hr className="my-4 border-t-2 border-black" />
               <p>
                 Misi kami adalah meningkatkan kualitas dan kapasitas sumber daya
                 manusia yang unggul dan produktif untuk mencapai kesejahteraan

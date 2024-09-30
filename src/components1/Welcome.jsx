@@ -4,38 +4,40 @@ import Image from "../images/diskominfoicon1.png";
 
 const Welcome = () => {
   return (
-    <header className="welcome">
-      <div className="container welcome-container">
-        <div className="welcome-left">
-          <div>
-            <div className="welcome-image-up">
+    <div className="flex items-center justify-center h-screen">
+      {/* left container */}
+      <div className="flex items-center justify-center max-w-screen-sm -mt-10 lg:-mt-20 lg:max-w-screen-xl h-2/3 ">
+        <div className="p-5 lg:pl-10 lg:w-9/12">
+          <div className="mb-3 lg:hidden">
+            <div>
               <img src={Image} alt="Welcome Image" />
             </div>
           </div>
-          <h4 className="poppins-semibold text-black">
+          <h4 className="mb-3 text-base lg:text-xl">
             <b>PORTAL SISAPPMA</b>
           </h4>
-          <h2 className="poppins-medium">
+          <h2 className="text-2xl leading-none lg:w-9/12 lg:leading-10 tfont-normal lg:text-4xl ">
             Dinas Komunikasi, Informatika, Statistik dan Persandian Kota
             Semarang
           </h2>
-          <p className="poppins-regular">
+          <p className="mt-2 lg:w-2/3 lg:text-base">
             <small>
               Layanan Sistem Untuk Peserta Magang DISKOMINFO Kota Semarang
               Perihal Absensi dan Surat Menyurat Magang.
             </small>
           </p>
-          <Link to="/plans" className="button-more">
-            <p className="poppins-semibold">Pelajari Lebih Lanjut</p>
+          <Link to="/about">
+            <p className="mt-2 bg-[#DEAC80] w-fit p-2 px-4 rounded-full hover:bg-[#EAD8B1] hover:underline">Pelajari Lebih Lanjut</p>
           </Link>
         </div>
-        <div className="welcome-right">
-          <div className="welcome-image-down">
-            <img src={Image} alt="Welcome Image" />
+        {/* right container */}
+        <div>
+          <div className="hidden pr-10 lg:flex">
+            <img src={Image} alt="Welcome Image"/>
           </div>
         </div>
       </div>
-    </header>
+    </div>
   );
 };
 

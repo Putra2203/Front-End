@@ -1,15 +1,15 @@
 
 const Trainer = ({ image, name, job, socials }) => {
   return (
-    <div className="trainer">
-      <div className="trainer__img">
-        <img src={image} alt={name} />
-        <h3>{name}</h3>
-        <p>{job}</p>
-        <div className="trainer__socials">
+    <div className="bg-[#DEAC80] p-10 rounded-3xl">
+      <div className="flex flex-col items-center text-center">
+        <img src={image} alt={name} className="h-[350px]" />
+        <h3 className="mt-4 text-lg font-semibold font-poppins">{name}</h3>
+        <p className="font-medium font-poppins">{job}</p>
+        <div className="flex gap-4 mt-4">
           {socials.map(({ link, icon }, index) => {
             return (
-              <a href={link} key={index}>
+              <a href={link} key={index} className="p-2 text-2xl border-2 border-black border-solid rounded-md bg-slate-300 hover:bg-slate-100">
                 {icon}
               </a>
             );
