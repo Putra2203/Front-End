@@ -28,7 +28,7 @@ const Testimonials = () => {
       </div>
       <section className="flex flex-col items-center justify-center max-w-screen-xl mx-auto mb-32 ">
         <div className="container relative flex flex-col items-center justify-center w-8/12 p-10 ">
-          <div className="flex flex-col items-center justify-center gap-4 p-6 shadow-lg shadow-2xl lg:flex-row bg-secondary rounded-3xl">
+          <div className="flex flex-col items-center justify-center gap-4 p-6 shadow-lg lg:flex-row bg-secondary rounded-3xl">
             <div className="relative w-48 lg:w-56">
               <img
                 src={avatar}

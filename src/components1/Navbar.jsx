@@ -18,16 +18,16 @@ const Navbar = () => {
 
         {/* Links for desktop and mobile */}
         <ul
-          className={`md:flex md:items-center absolute md:static  w-full left-0 top-0 md:top-0 transform ${
-            nav ? "translate-y-0 bg-primary p-5" : "-translate-y-full "
+          className={`md:flex md:items-center absolute md:static bg-background w-full left-0 top-0 md:top-0 transform ${
+            nav ? "translate-y-0 bg-primary p-5" : "-translate-y-ful"
           } md:translate-y-0 transition-transform md:w-auto z-40  md:z-auto ease-in`}
         >
           {links.map(({ name, path }, index) => (
             <li key={index} className="p-2 md:ml-4">
               <NavLink
                 to={path}
-                className="text-white md:text-black hover:underline"
-                onClick={() => setNav(true)}
+                className="text-white lg:text-black hover:underline"
+                onClick={() => setNav(false)}
               >
                 {name}
               </NavLink>
