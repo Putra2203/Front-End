@@ -27,7 +27,7 @@ const Welcome = () => {
             </small>
           </p>
           <Link to="/about">
-            <p className="mt-2 bg-[#DEAC80] w-fit p-2 px-4 rounded-full hover:bg-[#EAD8B1] hover:underline">Pelajari Lebih Lanjut</p>
+            <p className="p-2 px-4 mt-2 text-white rounded-full bg-primary w-fit hover:bg-slate-500 hover:underline">Pelajari Lebih Lanjut</p>
           </Link>
         </div>
         {/* right container */}

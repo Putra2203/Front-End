@@ -9,7 +9,7 @@ import loc from "../images/loc.png";
 const Footer = () => {
   return (
     <>
-      <div className="p-10 bg-[#DEAC80]">
+      <div className="p-10 text-white bg-primary">
         <div className="container flex flex-col justify-center max-w-screen-sm gap-12 mx-auto mt-5 text-center lg:max-w-screen-xl lg:gap-28 lg:flex-row lg:text-left">
           <article className="font-semibold font-poppins">
             <Link to="/" className="logo">
@@ -153,7 +153,8 @@ const Footer = () => {
           </article>
         </div>
       </div>
-      <div className="p-3 text-center bg-[#914F1E] text-white">
+      <div className="items-center justify-center py-3 text-center text-white bg-primary">
+        <div className="bg-white p-[1px] w-full"></div>
         <small>2024 copyright &copy; all right reserved</small>
       </div>
     </>

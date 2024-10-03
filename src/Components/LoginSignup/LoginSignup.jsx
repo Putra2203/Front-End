@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import image from "../Assets/ImageLogin.png";
+import image from "../Assets/loginFix.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");

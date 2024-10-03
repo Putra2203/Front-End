@@ -4,7 +4,7 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 const FAQ = ({ question, answer }) => {
   const [open, setOpen] = useState(false);
   return (
-    <article className=" bg-[#DEAC80] p-4 rounded-lg ">
+    <article className="p-4 text-white rounded-3xl bg-primary">
       <div className="flex justify-between transition duration-150" onClick={() => setOpen(!open)}>
         <h4 className="font-medium font-poppins">{question}</h4>
         <button className="faq__icon">

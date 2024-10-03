@@ -6,9 +6,9 @@ const PageWelcome = ({ title, children }) => {
       className="relative flex items-center justify-center h-screen bg-center bg-cover "
       style={{ backgroundImage: `url(${image})` }}
     >
-      <div className="absolute w-1/2 text-center text-white">
-        <h2 className="mb-4 text-4xl font-semibold font-poppins">{title}</h2>
-        <p className="text-xl">{children}</p>
+      <div className="absolute m-6 text-center text-white lg:w-1/2">
+        <h2 className="mb-4 text-2xl font-semibold lg:text-4xl font-poppins">{title}</h2>
+        <p className="text-base lg:text-xl">{children}</p>
       </div>
     </header>
   );

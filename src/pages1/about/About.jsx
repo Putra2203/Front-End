@@ -8,8 +8,8 @@ const About = () => {
         Statistik dan Persandian Kota Semarang
       </PageWelcome>
 
-      <section className="justify-center max-w-screen-xl mx-auto my-12">
-        <div className="text-xl font-medium text-justify font-poppins">
+      <section className="justify-center max-w-screen-sm p-10 mx-auto my-12 lg:max-w-screen-xl lg:p-0">
+        <div className="text-base font-medium text-justify font-poppins">
           <p className="mb-4">
             Dinas Komunikasi, Informatika, Statistik dan Persandian Kota
             Semarang berdiri pada tahun 2017 sesuai dengan Peraturan Walikota
@@ -27,7 +27,7 @@ const About = () => {
           </p>
         </div>
 
-        <div className="relative mx-auto mt-12">
+        <div className="relative mx-auto mt-12 font-medium">
           <div className="flex-col">
             <h1 className="absolute text-3xl font-semibold -top-4 font-poppins">
               VISI
@@ -37,7 +37,7 @@ const About = () => {
               <p>
                 <b>2021-2024</b>
               </p>
-              <p>
+              <p className="mb-14">
                 " Terwujudnya Kota Semarang yang Semakin Hebat berlandaskan
                 Pancasila dalam Bingkai NKRI Yang Ber-Bhineka Tunggal Ika "
               </p>
@@ -45,14 +45,14 @@ const About = () => {
           </div>
         </div>
 
-        <div className="relative mx-auto">
+        <div className="relative mx-auto font-medium">
           <div className="flex-col">
             <h1 className="absolute text-3xl font-semibold -top-4 font-poppins">
               MISI
             </h1>
             <div className="pl-16">
               <hr className="my-4 border-t-2 border-black" />
-              <p>
+              <p className="mb-14">
                 Misi kami adalah meningkatkan kualitas dan kapasitas sumber daya
                 manusia yang unggul dan produktif untuk mencapai kesejahteraan
                 dan keadilan sosial. Kami juga berkomitmen untuk meningkatkan

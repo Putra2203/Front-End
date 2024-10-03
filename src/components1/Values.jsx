@@ -1,4 +1,4 @@
-import Image from "../Assets/valueImage.png";
+import Image from "../Assets/fixImage.png";
 import { values } from "../data";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -40,11 +40,11 @@ const Values = () => {
               },
             }}
           >
-            {values.map(({ id, title, icon, desc }) => {
+            {values.map(({ id, icon, desc }) => {
               return (
-                <SwiperSlide className="p-10" key={id}>
-                  <div className="flex flex-col items-center justify-center text-center bg-[#DEAC80] rounded-3xl relative p-4 mb-4 h-60">
-                    <div className="bg-[#914F1E] p-3 px-5 rounded-full absolute top-0 -translate-y-5">
+                <SwiperSlide className="p-12" key={id}>
+                  <div className="relative flex flex-col items-center justify-center p-4 mb-4 text-center shadow-lg bg-secondary rounded-3xl h-60">
+                    <div className="absolute top-0 p-3 px-5 -translate-y-5 rounded-full bg-primary">
                       <span className="text-base text-white">{icon}</span>
                     </div>
                     <small className="mb-7 mt-7">{desc}</small>

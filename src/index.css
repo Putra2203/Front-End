@@ -4,6 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    background-color: #F5F5DC;
+.swiper-button-next {
+  @apply text-primary; /* Tailwind utility to set text color */
+  @apply hover:text-slate-500; /* Hover effect */
+}
+
+/* Styling the previous button */
+.swiper-button-prev {
+  @apply text-primary; /* Tailwind utility to set text color */
+  @apply hover:text-slate-500; /* Hover effect */
+}
+
+/* Optional: Increase size and customize further */
+.swiper-button-next,
+.swiper-button-prev {
+  @apply text-2xl; /* Make the navigation buttons larger */
 }

@@ -14,19 +14,19 @@ const Programs = () => {
             return (
               <>
                 <div
-                  className=" bg-[#DEAC80] w-72 lg:w-60 p-4 items-center justify-center flex-col flex relative rounded-3xl text-center"
+                  className="relative flex flex-col items-center justify-center p-4 text-center shadow-lg bg-secondary w-72 lg:w-60 rounded-3xl"
                   key={id}
                 >
-                  <div className="bg-[#914F1E] w-fit p-3 rounded-full absolute top-0 -translate-y-7">
+                  <div className="absolute top-0 p-3 rounded-full bg-primary w-fit -translate-y-7">
                     <span className="text-5xl text-white">{icon}</span>
                   </div>
-                  <h4 className="mt-10 text-[#331200] text-xl">{title}</h4>
+                  <h4 className="mt-10 text-xl">{title}</h4>
                   <small className="mt-4 text-base text-pretty">
                     <p>{info}</p>
                   </small>
                   <Link
                     to={path}
-                    className="flex items-center mt-14 bg-[#914F1E] hover:bg-[#EAD8B1] p-2 rounded-3xl text-sm px-4 text-white"
+                    className="flex items-center p-2 px-4 text-sm text-white mt-14 bg-primary hover:bg-slate-500 rounded-3xl"
                   >
                     Detail <AiFillCaretRight />
                   </Link>

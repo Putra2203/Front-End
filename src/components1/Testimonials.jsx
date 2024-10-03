@@ -2,7 +2,6 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
-import { Card } from "../UI";
 import { testimonials } from "../data";
 import { useState } from "react";
 
@@ -20,21 +19,21 @@ const Testimonials = () => {
 
   return (
     <>
-      <div className="container mt-32 ">
-        <div className="max-w-screen-xl mx-auto mb-8">
+      <div className="container flex max-w-screen-sm p-10 mx-auto mt-12 lg:mt-32 lg:max-w-screen-xl">
+        <div className="mb-0 lg:mb-8">
           <h1 className="text-4xl font-semibold font-poppins">
             TESTIMONIAL'S
           </h1>
         </div>
       </div>
-      <section className="flex flex-col items-center justify-center max-w-screen-xl mx-auto ">
+      <section className="flex flex-col items-center justify-center max-w-screen-xl mx-auto mb-32 ">
         <div className="container relative flex flex-col items-center justify-center w-8/12 p-10 ">
-          <div className="flex bg-[#DEAC80] p-6 gap-4  justify-center items-center rounded-3xl shadow-2xl">
-            <div className="w-56">
+          <div className="flex flex-col items-center justify-center gap-4 p-6 shadow-lg shadow-2xl lg:flex-row bg-secondary rounded-3xl">
+            <div className="relative w-48 lg:w-56">
               <img
                 src={avatar}
                 alt={name}
-                className="w-full h-full rounded-full"
+                className="w-full h-48 rounded-full lg:h-full"
               />
             </div>
             <div className="">
@@ -46,15 +45,15 @@ const Testimonials = () => {
             </div>
           </div>
 
-          <div className="absolute flex justify-between w-full ">
+          <div className="absolute bottom-0 flex justify-center w-full gap-4 mx-auto lg:right-0 lg:justify-between lg:top-0 lg:gap-0">
             <button
-              className="text-[#914F1E] text-4xl hover:text-[#EAD8B1]"
+              className="text-4xl text-primary hover:text-slate-500"
               onClick={prevTestimonial}
             >
               <IoIosArrowDropleftCircle />
             </button>
             <button
-              className="text-[#914F1E] text-4xl hover:text-[#EAD8B1]"
+              className="text-4xl text-primary hover:text-slate-500"
               onClick={nextTestimonial}
             >
               <IoIosArrowDroprightCircle />
