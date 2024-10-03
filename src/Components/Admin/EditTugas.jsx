@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
 import { axiosJWTadmin } from "../../config/axiosJWT";
 import { toast } from "react-toastify";
-
 
 const EditTugas = ({ tugasId, handleCloseModal, showEditTugasModal, updateTugasData }) => {
     const [tugasData, setTugasData] = useState({
@@ -17,7 +15,6 @@ const EditTugas = ({ tugasId, handleCloseModal, showEditTugasModal, updateTugasD
                 .get(`http://localhost:3000/admin/tugas-by-id/${tugasId}`)
                 .then((response) => {
                     const tugas = response.data.tugas;
-                    // Format the date string to match the expected format
                     const formattedDueDate = new Date(tugas.dueDate).toISOString().slice(0, 16);
                     setTugasData({
                         judul: tugas.judul,
@@ -38,7 +35,7 @@ const EditTugas = ({ tugasId, handleCloseModal, showEditTugasModal, updateTugasD
                 `http://localhost:3000/admin/tugas/${tugasId}/edit`, 
                 tugasData
             );
-            updateTugasData(tugasData);
+            updateTugasData({ id: tugasId, ...tugasData });
             handleCloseModal();
             showSuccessNotification("Keterangan tugas berhasil diubah.");
         } catch (error) {
@@ -63,58 +60,55 @@ const EditTugas = ({ tugasId, handleCloseModal, showEditTugasModal, updateTugasD
         });
     };
 
+    if (!showEditTugasModal) {
+        return null; // Jika modal tidak ditampilkan, return null.
+    }
+
     return (
-        <Modal
-            show={showEditTugasModal}
-            onHide={handleCloseModal}
-            backdrop="static"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}
-            dialogClassName="modal-dialog-centered"
-        >
-            <Modal.Header closeButton>
-                <Modal.Title>Edit Tugas</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form onSubmit={handleUpdateTugas}>
-                    <Form.Group controlId="judul">
-                        <Form.Label>Judul</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Masukkan judul"
-                            value={tugasData.judul}
-                            onChange={(e) => setTugasData({ ...tugasData, judul: e.target.value })}
-                        />
-                    </Form.Group>
-
-                    <Form.Group controlId="tugas_url">
-                        <Form.Label>Tugas URL</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Masukkan tugas URL"
-                            value={tugasData.tugas_url}
-                            onChange={(e) => setTugasData({ ...tugasData, tugas_url: e.target.value })}
-                        />
-                    </Form.Group>
-
-                    <Form.Group controlId="dueDate">
-                        <Form.Label>Due Date</Form.Label>
-                        <Form.Control
-                            type="datetime-local"
-                            value={tugasData.dueDate} 
-                            onChange={(e) => setTugasData({ ...tugasData, dueDate: e.target.value })}
-                        />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="success" type="submit" onClick={handleUpdateTugas}>
-                    Update
-                </Button>
-                <Button variant="secondary" onClick={handleCloseModal}>
-                    Cancel
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h5>Edit Tugas</h5>
+                    <button className="close" onClick={handleCloseModal}>&times;</button>
+                </div>
+                <div className="modal-body">
+                    <form onSubmit={handleUpdateTugas}>
+                        <div className="form-group">
+                            <label>Judul</label>
+                            <input
+                                type="text"
+                                value={tugasData.judul}
+                                onChange={(e) => setTugasData({ ...tugasData, judul: e.target.value })}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Tugas URL</label>
+                            <input
+                                type="text"
+                                value={tugasData.tugas_url}
+                                onChange={(e) => setTugasData({ ...tugasData, tugas_url: e.target.value })}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Due Date</label>
+                            <input
+                                type="datetime-local"
+                                value={tugasData.dueDate}
+                                onChange={(e) => setTugasData({ ...tugasData, dueDate: e.target.value })}
+                            />
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                                Cancel
+                            </button>
+                            <button type="submit" className="btn btn-primary">
+                                Update
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     );
 };
 
