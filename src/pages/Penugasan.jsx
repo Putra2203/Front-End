@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import icon from "../Assets/icon.png";
 import EditTugas from "../Components/Admin/EditTugas";
-import Footer from "./footer";
+
 
 export const Penugasan = () => {
   const [showNav, setShowNav] = useState(false);
@@ -415,7 +415,7 @@ export const Penugasan = () => {
         </div>
       )}
 
-      <Footer />
+      
     </div>
   );
 }

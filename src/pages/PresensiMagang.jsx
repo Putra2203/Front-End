@@ -4,7 +4,7 @@ import logo from "../Assets/diskominfo.png";
 import { axiosJWTadmin } from '../config/axiosJWT';
 import ImageOverlay from '../Components/Admin/ImageOverlay';
 import icon from "../Assets/icon.png";
-import Footer from "./footer";
+
 
 export const PresensiMagang = () => {
   const [users, setUsers] = useState([]);
@@ -328,7 +328,7 @@ export const PresensiMagang = () => {
           </div>
         </div>
       </div>
-      <Footer /> 
+       
     </div>
   );
 };

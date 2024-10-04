@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditUser from "../Components/Admin/EditUser";
 import icon from "../Assets/icon.png";
-import Footer from "./footer";
+
 import { showSuccessNotification } from "../Components/User/toastSuccess";
 import { showErrorNotification } from "../Components/User/toastFailed";
 
@@ -364,7 +364,7 @@ export const Peserta = () => {
         </div>
       )}
 
-      <Footer />
+      
     </div>
   );
 };

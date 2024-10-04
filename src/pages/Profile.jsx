@@ -5,7 +5,7 @@ import logo from "../Assets/diskominfo.png";
 import { axiosJWTadmin } from "../config/axiosJWT";
 import { TabTitle } from "../TabName";
 import icon from "../Assets/icon.png";
-import Footer from "./footer";
+
 import Profile from "../images/profile.png";
 import Edit from "../images/edit.png";
 import jwt_decode from "jwt-decode";
@@ -243,7 +243,7 @@ export const PresensiMagang = () => {
         </div>
       </div>
 
-      <Footer />
+      
     </div>
   );
 };
