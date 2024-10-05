@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Sidebar from './Navbar'; // Pastikan path ini benar
+import Navbar from './Navbar'; // Pastikan path file Navbar benar
 
 const Tugas = () => {
   const [tasks, setTasks] = useState({
@@ -16,57 +16,60 @@ const Tugas = () => {
   const [lastUpdated, setLastUpdated] = useState('-');
 
   useEffect(() => {
-    // Fetch task data from the database
+    // Mendapatkan data tugas dari database
     axios.get('/api/tasks')
       .then(response => {
         const { proses, selesai } = response.data;
         setTasks({ proses, selesai });
       })
       .catch(error => {
-        console.error('Error fetching tasks:', error);
+        console.error('Error mendapatkan data tugas:', error);
       });
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Post form data to database
+    // Mengirimkan data form ke database
     axios.post('/api/submit-task', formData)
       .then(() => {
         setSuccessMessage('Tugas Berhasil Dikumpulkan!');
         setPengumpulanStatus('Dikirimkan untuk dinilai');
         setLastUpdated(new Date().toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
         
-        // Optionally, clear form data after successful submission
+        // Reset form setelah berhasil dikirim
         setFormData({
           komentar: '',
           linkPengumpulan: '',
         });
       })
       .catch(error => {
-        console.error('Error submitting task:', error);
+        console.error('Error saat mengirim tugas:', error);
       });
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Panggil Sidebar */}
-      <Sidebar />
+      {/* Sidebar */}
+      <div className="md:w-[13%]">
+        <Navbar />
+      </div>
 
-      {/* Konten utama */}
-      <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold mb-8">Penugasan - SISAPPMA</h1>
+      {/* Konten Utama */}
+      <div className="flex-1 p-4 md:p-10 mt-5 md:ml-10 md:mt-0"> {/* Tambahkan md:mt-0 untuk mengatur margin di desktop */}
+        <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 mt-20 md:mt-0">Penugasan - SISAPPMA</h1>
+        {/* Tambahkan mt-20 agar judul tidak tertutup pada mobile */}
 
-        {/* Success message after submission */}
+        {/* Pesan sukses setelah pengumpulan tugas */}
         {successMessage && (
-          <div className="bg-green-100 text-green-800 p-4 mb-8 rounded-lg">
+          <div className="bg-green-100 text-green-800 p-4 mb-4 rounded-lg">
             🎉 {successMessage} 🎉
             <br />
             Selamat, Tugasmu telah berhasil diunggah dan diterima oleh sistem.
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Bagian Proses */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Bagian Tugas Proses */}
           <div className="lg:col-span-2">
             <h2 className="text-xl font-semibold mb-4">Proses</h2>
             <div className="space-y-4">
@@ -79,7 +82,7 @@ const Tugas = () => {
               )}
             </div>
 
-            <h2 className="text-xl font-semibold mt-8 mb-4">Selesai</h2>
+            <h2 className="text-xl font-semibold mt-4 mb-4">Selesai</h2>
             <div className="space-y-4">
               {tasks.selesai.length > 0 ? (
                 tasks.selesai.map((task, index) => (
@@ -92,7 +95,7 @@ const Tugas = () => {
           </div>
 
           {/* Bagian Form Pengumpulan */}
-          <div className="bg-white p-6 rounded-lg shadow-md border">
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md border">
             <h2 className="text-xl font-semibold mb-4">Pengumpulan</h2>
             <div className="space-y-2 text-sm">
               <p>Status Pengumpulan: <span className="font-bold">{pengumpulanStatus}</span></p>
@@ -121,11 +124,12 @@ const Tugas = () => {
   );
 };
 
+// Komponen TaskCard untuk menampilkan tugas
 const TaskCard = ({ title, description, dueDate }) => (
   <div className="bg-white p-4 rounded-lg shadow-md">
     <h3 className="font-bold">{title}</h3>
     <p className="text-sm text-gray-600">{description}</p>
-    <p className="text-sm text-gray-600">📅 Due {dueDate}</p>
+    <p className="text-sm text-gray-600">📅 Tanggal Pengumpulan: {dueDate}</p>
   </div>
 );
 
