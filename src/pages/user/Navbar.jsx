@@ -13,9 +13,8 @@ const Sidebar = ({ userData = {} }) => {
   };
 
   const handleLogout = () => {
-    // Example: Clearing the token from local storage/session storage
-    localStorage.removeItem('token'); // Assuming the token is stored in localStorage
-    sessionStorage.removeItem('token'); // Optionally, remove from sessionStorage
+    localStorage.removeItem('token'); 
+    sessionStorage.removeItem('token'); 
 
     // Redirect user to login page
     navigate('/login'); // Adjust the path to your login route
@@ -114,7 +113,7 @@ const Sidebar = ({ userData = {} }) => {
             <img src={logo} alt="#" className="w-36" />
           </div>
         </header>
-        <main className="p-8 mt-16">
+        <main className="p-8 mt-16 md:mt-0">
           {/* Tempatkan konten utama di sini */}
         </main>
       </div>

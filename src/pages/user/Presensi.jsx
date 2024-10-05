@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './Navbar'; // Pastikan path file Navbar.jsx benar
+import { useNavigate } from 'react-router-dom'; // Untuk navigasi halaman
 
 // Fungsi untuk menghitung jarak menggunakan rumus Haversine
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -40,8 +41,11 @@ const Presensi = () => {
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const navigate = useNavigate(); // Hook untuk navigasi halaman
 
   useEffect(() => {
+    let mediaStream = null;
+
     // Set tanggal dan waktu sekarang
     const currentDate = new Date();
     const hariOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -54,17 +58,19 @@ const Presensi = () => {
     }));
 
     // Mulai stream kamera
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((mediaStream) => {
+    const startCamera = async () => {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
         setStream(mediaStream);
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error accessing camera: ", err);
-      });
+      }
+    };
+
+    startCamera();
 
     // Mendapatkan lokasi pengguna
     if (navigator.geolocation) {
@@ -102,13 +108,16 @@ const Presensi = () => {
       console.error("Geolocation tidak didukung oleh browser ini.");
     }
 
-    // Cleanup saat komponen di-unmount
+    // Cleanup saat komponen di-unmount, matikan kamera segera
     return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => {
+          track.stop();  // Matikan semua track segera
+        });
+        console.log('Camera stream stopped immediately');
       }
     };
-  }, []);
+  }, []); // Pastikan hanya dipanggil sekali
 
   const takePhoto = () => {
     const context = canvasRef.current.getContext('2d');
@@ -167,30 +176,36 @@ const Presensi = () => {
     // Hapus stream kamera setelah submit
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
+      console.log('Camera stream stopped after form submit');
     }
+
+    // Arahkan kembali ke halaman lain jika diperlukan
+    navigate('/user/Homepage');
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Navbar />
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+      <div className="md:w-[13%]">
+        <Navbar />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold mb-8">Lakukan Presensi - SISAPPMA</h1>
+      <div className="flex-1 p-4 md:p-10">
+        <h1 className="text-2xl md:text-3xl font-bold mb-8">Lakukan Presensi - SISAPPMA</h1>
 
-        <div className="bg-white p-6 rounded-lg shadow-md border flex gap-10 items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-md border flex flex-col md:flex-row gap-10 items-center justify-center">
           <div className="relative">
             {/* Kamera atau gambar hasil tangkapan */}
             {!imageSrc ? (
-              <video ref={videoRef} autoPlay playsInline className="rounded-lg w-[320px] h-[400px]" />
+              <video ref={videoRef} autoPlay playsInline className="rounded-lg w-[320px] h-[400px] mb-4" />
             ) : (
-              <img src={imageSrc} alt="Captured" className="rounded-lg w-[320px] h-[400px]" />
+              <img src={imageSrc} alt="Captured" className="rounded-lg w-[320px] h-[400px] mb-4" />
             )}
             <canvas ref={canvasRef} className="hidden" width="640" height="480"></canvas>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full md:w-auto">
+            <div className="grid grid-cols-2 gap-4 md:gap-8">
               <label className="font-semibold">Nama :</label>
               <input
                 type="text"
@@ -241,7 +256,7 @@ const Presensi = () => {
               <p className="text-red-600 mt-2">{errorMessage}</p>
             )}
 
-            <div className="flex gap-4 mt-4">
+            <div className="flex gap-4 mt-4 justify-end">
               <button
                 type="button"
                 onClick={takePhoto}
