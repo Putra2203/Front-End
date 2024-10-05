@@ -95,7 +95,7 @@ const NavSidebar = () => {
               </li>
               <li className="px-4 rounded-3xl hover:bg-white hover:text-black">
                 <Link
-                  to="/presensimagang"
+                  to="/presensi"
                   className="flex flex-row items-center gap-2 text-xl "
                 >
                   <RiUserFollowFill />

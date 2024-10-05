@@ -1,28 +1,37 @@
 import { axiosJWTadmin } from "../config/axiosJWT";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import logo from "../Assets/diskominfo.png";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditUser from "../Components/Admin/EditUser";
-import icon from "../Assets/icon.png";
-
-import { showSuccessNotification } from "../Components/User/toastSuccess";
-import { showErrorNotification } from "../Components/User/toastFailed";
+import AddUser from "../Components/Admin/AddUser";
+import NavSidebar from "./NavSidebar";
+import { IoIosSearch } from "react-icons/io";
+import { HiOutlinePlusSmall } from "react-icons/hi2";
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
-  const [showNav, setShowNav] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(20);
+  const [usersPerPage] = useState(10);
   const [activeCategory, setActiveCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [editingUserId, setEditingUserId] = useState(null);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
-  
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(""); // State untuk menyimpan bulan yang dipilih
+  const [allUsers, setAllUsers] = useState([]); // Untuk menyimpan semua data peserta yang asli
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    getUsers(activeCategory).finally(() => {
+      setIsLoading(false);
+      setShouldRefresh(false);
+    });
+  }, [activeCategory, shouldRefresh]);
+
   const [formData, setFormData] = useState({
     nama: "",
     username: "",
@@ -34,93 +43,41 @@ export const Peserta = () => {
     no_telp: "",
   });
 
-  const [validationErrors, setValidationErrors] = useState({});
-
   const handleSearch = (e) => setSearchTerm(e.target.value);
 
   const getUsers = async (category) => {
     try {
       let endpoint;
       switch (category) {
-        case "aktif":
+        case "2":
           endpoint = "peserta-aktif";
           break;
-        case "alumni":
+        case "1":
           endpoint = "peserta-alumni";
           break;
-        case "calon":
-          endpoint = "peserta-calon";
-          break;
+        case "3":
+            endpoint = "peserta-calon";
+            break;
         default:
           endpoint = "peserta";
       }
-
+  
       const response = await axiosJWTadmin.get(
         `http://localhost:3000/admin/${endpoint}`
       );
-      setUsers(response.data.peserta_magang);
-      setActiveCategory(category);
+      
+      setAllUsers(response.data.peserta_magang); // Simpan semua data asli
+      setUsers(response.data.peserta_magang); // Atur data yang akan ditampilkan (bisa difilter nantinya)
+      setActiveCategory(category); // Set kategori aktif
     } catch (error) {
       navigate("/");
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    setIsLoading(true);
-    getUsers(activeCategory).finally(() => setIsLoading(false));
-  }, [activeCategory]);
-
-  const saveUser = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    try {
-      await axiosJWTadmin.post("http://localhost:3000/admin/peserta/add", formData);
-      showSuccessNotification("Berhasil menambahkan peserta");
-      handleCloseTaskForm();
-      getUsers(activeCategory); // Refresh the list of users
-    } catch (error) {
-      showErrorNotification("Gagal menambahkan peserta");
-      console.error("Error adding participant:", error);
-    }
-  };
-
-  const validateForm = () => {
-    const errors = {};
-    let isValid = true;
-
-    if (!formData.nama.trim()) {
-      errors.nama = "Nama harus diisi!";
-      isValid = false;
-    }
-    if (!formData.asal_univ.trim()) {
-      errors.asal_univ = "Asal Universitas harus diisi!";
-      isValid = false;
-    }
-    if (!formData.asal_jurusan.trim()) {
-      errors.asal_jurusan = "Asal jurusan harus diisi!";
-      isValid = false;
-    }
-    if (!formData.no_telp.trim()) {
-      errors.no_telp = "Nomor telepon harus diisi!";
-      isValid = false;
-    }
-    if (!formData.username.trim()) {
-      errors.username = "Username harus diisi!";
-      isValid = false;
-    }
-    if (!formData.password) {
-      errors.password = "Password harus diisi!";
-      isValid = false;
-    }
-
-    setValidationErrors(errors);
-    return isValid;
-  };
+  
 
   const handleCloseTaskForm = () => {
-    setShowTaskForm(false);
+    setShowTaskForm(false); // Menutup modal AddUser
     setFormData({
       nama: "",
       username: "",
@@ -131,10 +88,9 @@ export const Peserta = () => {
       tanggal_selesai: "",
       no_telp: "",
     });
-    setValidationErrors({});
   };
 
-  const handleShowTaskForm = () => setShowTaskForm(true);
+  const handleShowTaskForm = () => setShowTaskForm(true); // Membuka modal AddUser
 
   const handleOpenEditUserModal = (userId) => {
     setEditingUserId(userId);
@@ -143,7 +99,7 @@ export const Peserta = () => {
 
   const handleCloseEditUserModal = () => {
     setShowEditUserModal(false);
-    getUsers(activeCategory); // Refresh the list after editing
+    getUsers(activeCategory);
   };
 
   const filteredUsers = users.filter((user) =>
@@ -154,217 +110,196 @@ export const Peserta = () => {
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const displayedUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const handleFilterByMonth = (month) => {
+    setSelectedMonth(month); // Simpan bulan yang dipilih di state
+  
+    if (month !== "") {
+      const filtered = allUsers.filter((user) => {
+        const startDate = new Date(user.tanggal_mulai); // Konversi tanggal mulai ke objek Date
+        const endDate = new Date(user.tanggal_selesai); // Konversi tanggal selesai ke objek Date
+        return (
+          startDate.getMonth() + 1 === parseInt(month) ||
+          endDate.getMonth() + 1 === parseInt(month)
+        );
+      });
+      setUsers(filtered); // Tampilkan data yang sudah difilter
+    } else {
+      setUsers(allUsers); // Reset ke data asli jika tidak ada bulan yang dipilih
+    }
+  };
+  
+
   return (
-    <div className="body-main">
-      <div className={`body-area${showNav ? " body-pd" : ""}`}>
-        <header className={`header${showNav ? " body-pd" : ""}`}>
-          <div className="header_toggle"></div>
-          <div className="header_img">
-            <img src={icon} alt="User icon" />
+    <div className="flex flex-col w-full">
+      <NavSidebar />
+      <div className="pl-64">
+        <div className="flex flex-col p-4 ">
+          <p className="text-4xl font-semibold font-poppins">
+            Daftar Peserta Magang - SISAPPMA
+          </p>
+
+          <div className="relative w-64 mt-4">
+            <input
+              type="text"
+              placeholder="Cari Peserta..."
+              onChange={handleSearch}
+              className="w-64 px-4 border rounded-3xl bg-slate-200"
+            />
+            <i className="absolute top-1 right-3">
+              <IoIosSearch />
+            </i>
           </div>
-        </header>
-        <div className={`sidebar${showNav ? " open" : ""}`}>
-          <div className="logo-details">
-            <a href="/homepage" target="_self" className="logo_name">
-              <img src={logo} alt="Diskominfo" style={{ width: "120px" }} />
-            </a>
-            <i className="bi-list" id="btn" onClick={() => setShowNav(!showNav)}></i>
-          </div>
-          <ul className="nav-list">
-            <li><a href="homepage"><i className="bi bi-house nav_icon" />Home</a></li>
-            <li><a href="admin"><i className="bi bi-person-check-fill nav_icon" />Admin</a></li>
-            <li><a href="peserta"><i className="bi bi-person nav_icon" />Peserta</a></li>
-            <li><a href="presensi"><i className="bi bi-person-check nav_icon" />Presensi Magang</a></li>
-            <li><a href="penugasan"><i className="bi bi-list-task nav_icon" />Penugasan</a></li>
-            <li><a href="profile"><i className="bi bi-person nav_icon" />Profile</a></li>
-            <li><a href="/"><i className="bi bi-box-arrow-left nav_icon" />Sign Out</a></li>
-          </ul>
-        </div>
 
-        <div className="home-section">
-          <div className="pb-4">
-            <div className="mt-5 columns">
-              <div className="column">
-                <div className="info-peserta-magang" style={{ display: "flex", justifyContent: "space-between" }}>
-                  <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 25, marginBottom: 20 }}>Peserta</p>
-                  <p className="count-peserta" style={{ textAlign: "center" }}>
-                    Jumlah Peserta: {searchTerm === "" ? users.length : filteredUsers.length} Peserta
-                  </p>
-                </div>
-
-                <div className="search-peserta" style={{ display: "flex", justifyContent: "space-between" }}>
-                  <button onClick={handleShowTaskForm} className="button is-success" style={{ marginTop: 18 }}>Tambah Peserta</button>
-                  <div style={{ position: "relative" }}>
-                    <input
-                      type="text"
-                      placeholder="Cari Peserta..."
-                      onChange={handleSearch}
-                      style={{
-                        padding: "10px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                        fontSize: "16px",
-                        width: "100%",
-                        maxWidth: "300px",
-                        margin: "10px 0",
-                      }}
-                    />
-                    <i className="bi bi-search" style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)" }}></i>
-                  </div>
-                </div>
-
-                <div className="table-container-peserta">
-                  <table className="custom-table-peserta">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Universitas</th>
-                        <th>Jurusan</th>
-                        <th>No telp</th>
-                        <th>Tanggal Mulai</th>
-                        <th>Tanggal Selesai</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {isLoading ? (
-                        <tr><td colSpan="8">Loading...</td></tr>
-                      ) : (
-                        displayedUsers.map((user, index) => (
-                          <tr key={user.id}>
-                            <td>{index + 1}</td>
-                            <td>{user.nama}</td>
-                            <td>{user.asal_univ}</td>
-                            <td>{user.asal_jurusan}</td>
-                            <td>{user.no_telp}</td>
-                            <td>{user.tanggal_mulai}</td>
-                            <td>{user.tanggal_selesai}</td>
-                            <td>
-                              <button
-                                className="button is-small is-info"
-                                style={{ minWidth: "60px" }}
-                                onClick={() => handleOpenEditUserModal(user.id)}
-                              >
-                                Edit
-                              </button>
-                              <button className="button is-small is-danger" style={{ minWidth: "60px" }}>Delete</button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-
-                  {/* Edit User Modal */}
-                  {showEditUserModal && (
-                    <EditUser
-                      userId={editingUserId}
-                      handleCloseModal={handleCloseEditUserModal}
-                      showEditUserModal={showEditUserModal}
-                      updateUserData={() => getUsers(activeCategory)}
-                    />
-                  )}
-                </div>
+          <div className="flex items-center justify-between gap-4 mt-4">
+            <div className="flex gap-4">
+              <button
+                onClick={handleShowTaskForm}
+                className="bg-[#183028] px-4 py-1 text-white mb-4 rounded-3xl hover:bg-slate-400 flex items-center gap-2"
+              >
+                Tambah Peserta <HiOutlinePlusSmall />
+              </button>
+              <div className="dropdown">
+                <select
+                  value={activeCategory}
+                  onChange={(e) => getUsers(e.target.value)}
+                  className="bg-[#183028] px-4 py-1 text-white mb-4 rounded-3xl hover:bg-slate-400 "
+                >
+                  <option value="all">Semua Peserta</option>
+                  <option value="2">Peserta Aktif</option>
+                  <option value="1">Peserta Alumni</option>
+                  <option value="3">Peserta Calon</option>
+                </select>
+              </div>
+              <div className="dropdown">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => handleFilterByMonth(e.target.value)} // Panggil fungsi filter ketika bulan dipilih
+                  className="bg-[#183028] px-4 py-1 text-white mb-4 rounded-3xl hover:bg-slate-400"
+                >
+                  <option value="">Periode / Bulan</option>
+                  <option value="01">Januari</option>
+                  <option value="02">Februari</option>
+                  <option value="03">Maret</option>
+                  <option value="04">April</option>
+                  <option value="05">Mei</option>
+                  <option value="06">Juni</option>
+                  <option value="07">Juli</option>
+                  <option value="08">Agustus</option>
+                  <option value="09">September</option>
+                  <option value="10">Oktober</option>
+                  <option value="11">November</option>
+                  <option value="12">Desember</option>
+                </select>
               </div>
             </div>
+            <p className="bg-[#183028] px-4 py-1 text-white mb-4 rounded-3xl ">
+              Jumlah Peserta:{" "}
+              {searchTerm === "" ? users.length : filteredUsers.length} Peserta
+            </p>
+          </div>
+
+          <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
+            <table className="table w-full text-center">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Universitas</th>
+                  <th>Jurusan</th>
+                  <th>No telp</th>
+                  <th>Tanggal Mulai</th>
+                  <th>Tanggal Selesai</th>
+                  <th>Nama Dosen</th>
+                  <th>No Dosen</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan="8">Loading...</td>
+                  </tr>
+                ) : (
+                  displayedUsers.map((user, index) => (
+                    <tr key={user.id}>
+                      <td>{index + 1}</td>
+                      <td>{user.nama}</td>
+                      <td>{user.asal_univ}</td>
+                      <td>{user.asal_jurusan}</td>
+                      <td>{user.no_telp}</td>
+                      <td>{user.tanggal_mulai}</td>
+                      <td>{user.tanggal_selesai}</td>
+                      <td>{user.nama_dosen}</td>
+                      <td>{user.no_telp_dosen}</td>
+                      <td>
+                        <div className="flex gap-2">
+                          <button
+                            className="bg-[#183028] text-white rounded-3xl hover:bg-slate-400"
+                            style={{ minWidth: "60px" }}
+                            onClick={() => handleOpenEditUserModal(user.id)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="text-white bg-red-500 rounded-3xl hover:bg-slate-400"
+                            style={{ minWidth: "60px" }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          {/* Pagination using DaisyUI */}
+          <div className="flex justify-center mt-4 join">
+            <button
+              className="join-item btn"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              «
+            </button>
+            <button className="join-item btn">
+              Page {currentPage} of {totalPages}
+            </button>
+            <button
+              className="join-item btn"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              »
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Modal Tambah Peserta */}
-      {showTaskForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5>Tambah Peserta</h5>
-              <button className="close" onClick={handleCloseTaskForm}>&times;</button>
-            </div>
-            <div className="modal-body">
-              <form onSubmit={saveUser}>
-                <div className="form-group">
-                  <label>Nama</label>
-                  <input
-                    type="text"
-                    value={formData.nama}
-                    onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-                  />
-                  {validationErrors.nama && <p style={{ color: "red" }}>{validationErrors.nama}</p>}
-                </div>
-                <div className="form-group">
-                  <label>Universitas</label>
-                  <input
-                    type="text"
-                    value={formData.asal_univ}
-                    onChange={(e) => setFormData({ ...formData, asal_univ: e.target.value })}
-                  />
-                  {validationErrors.asal_univ && <p style={{ color: "red" }}>{validationErrors.asal_univ}</p>}
-                </div>
-                <div className="form-group">
-                  <label>Jurusan</label>
-                  <input
-                    type="text"
-                    value={formData.asal_jurusan}
-                    onChange={(e) => setFormData({ ...formData, asal_jurusan: e.target.value })}
-                  />
-                  {validationErrors.asal_jurusan && <p style={{ color: "red" }}>{validationErrors.asal_jurusan}</p>}
-                </div>
-                <div className="form-group">
-                  <label>No Telepon</label>
-                  <input
-                    type="text"
-                    value={formData.no_telp}
-                    onChange={(e) => setFormData({ ...formData, no_telp: e.target.value })}
-                  />
-                  {validationErrors.no_telp && <p style={{ color: "red" }}>{validationErrors.no_telp}</p>}
-                </div>
-                <div className="form-group">
-                  <label>Tanggal Mulai</label>
-                  <input
-                    type="date"
-                    value={formData.tanggal_mulai}
-                    onChange={(e) => setFormData({ ...formData, tanggal_mulai: e.target.value })}
-                  />
-                  {validationErrors.tanggal_mulai && <p style={{ color: "red" }}>{validationErrors.tanggal_mulai}</p>}
-                </div>
-                <div className="form-group">
-                  <label>Tanggal Selesai</label>
-                  <input
-                    type="date"
-                    value={formData.tanggal_selesai}
-                    onChange={(e) => setFormData({ ...formData, tanggal_selesai: e.target.value })}
-                  />
-                  {validationErrors.tanggal_selesai && <p style={{ color: "red" }}>{validationErrors.tanggal_selesai}</p>}
-                </div>
-                <div className="form-group">
-                  <label>Username</label>
-                  <input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  />
-                  {validationErrors.username && <p style={{ color: "red" }}>{validationErrors.username}</p>}
-                </div>
-                <div className="form-group">
-                  <label>Password</label>
-                  <input
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  />
-                  {validationErrors.password && <p style={{ color: "red" }}>{validationErrors.password}</p>}
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={handleCloseTaskForm}>Batal</button>
-                  <button type="submit" className="btn btn-primary">Simpan</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+      {showEditUserModal && (
+        <EditUser
+          userId={editingUserId}
+          handleCloseModal={handleCloseEditUserModal}
+          showEditUserModal={showEditUserModal}
+          updateUserData={() => getUsers(activeCategory)}
+        />
       )}
 
-      
+      {showTaskForm && (
+        <AddUser
+          handleClose={handleCloseTaskForm}
+          refreshData={() => getUsers(activeCategory)}
+        />
+      )}
     </div>
   );
 };

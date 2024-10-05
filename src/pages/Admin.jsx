@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import logo from "../Assets/diskominfo.png";
 import { axiosJWTadmin } from "../config/axiosJWT";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditAdmin from "../Components/Admin/EditAdmin";
-import icon from "../Assets/icon.png";
+import AddAdminModal from "../Components/Admin/AddAdminModal";
 import { IoIosSearch } from "react-icons/io";
 import NavSidebar from "./NavSidebar";
 import Footer1 from "./Footer1";
@@ -16,11 +15,11 @@ export const Admin = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [adminsPerPage] = useState(20);
+  const [adminsPerPage] = useState(3);
   const maxPageButtons = 5;
   const [editingAdminId, setEditingAdminId] = useState(null);
   const [showEditAdminModal, setShowEditAdminModal] = useState(false);
-
+  const [showTaskForm, setShowTaskForm] = useState(false);
   const indexOfLastAdmin = currentPage * adminsPerPage;
   const indexOfFirstAdmin = indexOfLastAdmin - adminsPerPage;
 
@@ -71,6 +70,7 @@ export const Admin = () => {
   const handleCloseModal = () => {
     setEditingAdminId(null);
     setShowEditAdminModal(false);
+    setShowTaskForm(false); // Close add admin modal if open
   };
 
   const handleSearch = (e) => {
@@ -150,34 +150,52 @@ export const Admin = () => {
     indexOfLastAdmin
   );
 
+  const handleShowTaskForm = () => setShowTaskForm(true);
+  const handleCloseTaskForm = () => setShowTaskForm(false);
+
   return (
     <div className="flex flex-col w-full">
       {/* Sidebar */}
       <NavSidebar />
 
       <div className="pl-64">
-        <div className="flex flex-col p-4 bg-slate-300">
-          <div className="bg-white">
-            <p className="text-4xl font-semibold font-poppins">
-              Admin - SISAPPMA
-            </p>
-            <div className="mt-4">
-              <div className="relative w-64">
-                <input
-                  type="text"
-                  placeholder="Cari Admin..."
-                  onChange={handleSearch}
-                  className="w-64 px-4 border rounded-3xl bg-slate-200"
-                />
-                <i className="absolute top-1 right-3">
-                  <IoIosSearch />
-                </i>
-              </div>
+        <div className="flex flex-col p-4 ">
+          <p className="text-4xl font-semibold font-poppins">
+            Admin - SISAPPMA
+          </p>
+          <div className="mt-4">
+            <div className="relative w-64">
+              <input
+                type="text"
+                placeholder="Cari Admin..."
+                onChange={handleSearch}
+                className="w-64 px-4 border rounded-3xl bg-slate-200"
+              />
+              <i className="absolute top-1 right-3">
+                <IoIosSearch />
+              </i>
             </div>
-            
-            {/* table component */}
-            <div className="my-4">
-              <table className="w-full text-center">
+          </div>
+
+          <div className="p-4 my-4">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleShowTaskForm}
+                className="bg-[#183028] px-4 py-0.5 text-white mb-4 rounded-3xl hover:bg-slate-400"
+              >
+                Tambah Admin
+              </button>
+              <button
+                onClick={exportAdmin}
+                className="bg-[#183028] px-4 py-0.5 text-white mb-4 rounded-3xl hover:bg-slate-400"
+              >
+                Export to Excel
+              </button>
+            </div>
+
+            {/* table */}
+            <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
+              <table className="table w-full text-center">
                 <thead>
                   <tr>
                     <th>No</th>
@@ -193,75 +211,75 @@ export const Admin = () => {
                       <td>{admin.nama}</td>
                       <td>{admin.username}</td>
                       <td>
-                        <button
-                          className="button is-small is-info"
-                          onClick={() => handleOpenEditAdminModal(admin.id)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          style={{ minWidth: "60px" }}
-                          onClick={() => deleteAdmin(admin.id)}
-                          className="button is-small is-danger"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            className="px-4 text-white bg-[#183028] rounded-2xl hover:bg-slate-400"
+                            onClick={() => handleOpenEditAdminModal(admin.id)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteAdmin(admin.id)}
+                            className="px-4 text-white bg-red-700 rounded-2xl hover:bg-slate-400"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              
+            </div>
+
+            <div className="flex justify-center mt-4 join">
+              <button
+                onClick={() => paginate(currentPage - 1)}
+                className={`join-item btn ${
+                  currentPage === 1 ? "btn-disabled" : ""
+                }`}
+              >
+                «
+              </button>
+
+              {getRenderedPageNumbers().map((number) => (
+                <button
+                  key={number}
+                  onClick={() => paginate(number)}
+                  className={`join-item btn ${
+                    number === currentPage ? "btn-active" : ""
+                  }`}
+                >
+                  {number}
+                </button>
+              ))}
+
+              <button
+                onClick={() => paginate(currentPage + 1)}
+                className={`join-item btn ${
+                  currentPage === totalPages ? "btn-disabled" : ""
+                }`}
+              >
+                »
+              </button>
+            </div>
+
+            {/* Modal for editing admin */}
+            {showEditAdminModal && (
               <EditAdmin
                 adminId={editingAdminId}
                 handleCloseModal={handleCloseModal}
                 showEditAdminModal={showEditAdminModal}
                 updateAdminData={updateAdminData}
               />
-            </div>
-            
-            <div className="pagination-admin" style={{ marginTop: 10 }}>
-              <ul className="pagination-list-admin">
-                <li className="pagination-item">
-                  <button
-                    onClick={() => paginate(currentPage - 1)}
-                    className={`pagination-link ${
-                      currentPage === 1 ? "is-disabled" : ""
-                    }`}
-                  >
-                    Previous
-                  </button>
-                </li>
-                {getRenderedPageNumbers().map((number) => (
-                  <li key={number} className="pagination-item">
-                    <button
-                      onClick={() => paginate(number)}
-                      className={`pagination-link ${
-                        number === currentPage ? "is-current" : ""
-                      }`}
-                    >
-                      {number}
-                    </button>
-                  </li>
-                ))}
-                <li className="pagination-item">
-                  <button
-                    onClick={() => paginate(currentPage + 1)}
-                    className={`pagination-link ${
-                      currentPage === totalPages ? "is-disabled" : ""
-                    }`}
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </div>
-            <button
-              onClick={exportAdmin}
-              className="export-button button is-success"
-            >
-              Export to Excel
-            </button>
+            )}
+
+            {/* AddAdminModal component */}
+            <AddAdminModal
+              showTaskForm={showTaskForm}
+              handleCloseTaskForm={handleCloseTaskForm}
+              getAdmin={getAdmin}
+            />
           </div>
         </div>
       </div>
