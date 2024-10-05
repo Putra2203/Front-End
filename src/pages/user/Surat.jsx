@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from './Navbar'; // Pastikan path file Navbar.jsx sudah benar
+import Navbar from './Navbar'; // Pastikan path file Navbar.jsx benar
 
 const SuratMagang = () => {
   const [formData, setFormData] = useState({
@@ -11,170 +11,197 @@ const SuratMagang = () => {
     tanggalMasuk: '',
     tanggalKeluar: '',
     jenisSurat: '',
+    checkbox: false,
   });
-  const [isChecked, setIsChecked] = useState(false);
+
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+
+    // Menghapus pesan error saat pengguna mulai mengetik
+    setErrors({
+      ...errors,
+      [name]: '',
+    });
   };
 
-  const handleCheckboxChange = (e) => {
-    setIsChecked(e.target.checked);
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.nama) newErrors.nama = 'Nama wajib diisi';
+    if (!formData.nim) newErrors.nim = 'NIM wajib diisi';
+    if (!formData.programStudi) newErrors.programStudi = 'Program Studi wajib diisi';
+    if (!formData.fakultas) newErrors.fakultas = 'Fakultas wajib diisi';
+    if (!formData.asalInstansi) newErrors.asalInstansi = 'Asal Instansi wajib diisi';
+    if (!formData.tanggalMasuk) newErrors.tanggalMasuk = 'Tanggal Masuk wajib diisi';
+    if (!formData.tanggalKeluar) newErrors.tanggalKeluar = 'Tanggal Keluar wajib diisi';
+    if (!formData.jenisSurat) newErrors.jenisSurat = 'Jenis Surat wajib dipilih';
+    if (!formData.checkbox) newErrors.checkbox = 'Anda harus menyetujui data sudah benar';
+    
+    return newErrors;
   };
 
-  const handleDownload = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (isChecked) {
-      let fileUrl = '';
-
-      if (formData.jenisSurat === 'Surat Selesai Magang') {
-        fileUrl = '/documents/selesaimagang.docx'; // URL file di public folder
-      } else if (formData.jenisSurat === 'Sertifikat Magang') {
-        fileUrl = '/documents/sertifikatmagang.docx'; // URL file di public folder
-      }
-
-      if (fileUrl) {
-        // Mulai unduh file
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.download = fileUrl.split('/').pop(); // Nama file yang akan diunduh
-        link.click();
-      } else {
-        alert('Pilih jenis surat sebelum mengunduh.');
-      }
+    const formErrors = validateForm();
+    
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
     } else {
-      alert('Harap konfirmasi data sebelum mengunduh.');
+      // Jika tidak ada error, proses download file
+      if (formData.jenisSurat === 'selesai_magang') {
+        window.open('/path/to/selesaimagang.docx');
+      } else if (formData.jenisSurat === 'sertifikat_magang') {
+        window.open('/path/to/sertifikatmagang.docx');
+      }
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Navbar /> {/* Memanggil Navbar */}
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#f7f7f7]"> {/* Background terang */}
+      {/* Sidebar */}
+      <div className="md:w-[13%]">
+        <Navbar />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold mb-8">Surat Selesai Magang - SISAPPMA</h1>
-
-        <div className="bg-white p-6 rounded-lg shadow-md border">
-          <form className="grid grid-cols-1 gap-4">
-            <label>
+      <div className="flex-1 p-4 md:p-10">
+        <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-[#171a34]">Surat Selesai Magang - SISAPPMA</h1>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-4 md:p-6 rounded-lg shadow-md w-full space-y-4" // Menggunakan w-full untuk lebar penuh
+        >
+          <div className="grid grid-cols-1 gap-4"> {/* Kolom tunggal per input */}
+            <label className="block">
               Nama:
               <input
                 type="text"
                 name="nama"
                 value={formData.nama}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
                 placeholder="Masukkan Nama"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]" // Warna teks lebih gelap
               />
+              {errors.nama && <p className="text-red-600 text-sm">{errors.nama}</p>}
             </label>
 
-            <label>
+            <label className="block">
               NIM:
               <input
                 type="text"
                 name="nim"
                 value={formData.nim}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
                 placeholder="Masukkan NIM"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               />
+              {errors.nim && <p className="text-red-600 text-sm">{errors.nim}</p>}
             </label>
 
-            <label>
+            <label className="block">
               Program Studi:
               <input
                 type="text"
                 name="programStudi"
                 value={formData.programStudi}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
                 placeholder="Masukkan Program Studi"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               />
+              {errors.programStudi && <p className="text-red-600 text-sm">{errors.programStudi}</p>}
             </label>
 
-            <label>
+            <label className="block">
               Fakultas:
               <input
                 type="text"
                 name="fakultas"
                 value={formData.fakultas}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
                 placeholder="Masukkan Fakultas"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               />
+              {errors.fakultas && <p className="text-red-600 text-sm">{errors.fakultas}</p>}
             </label>
 
-            <label>
+            <label className="block">
               Asal Instansi:
               <input
                 type="text"
                 name="asalInstansi"
                 value={formData.asalInstansi}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
                 placeholder="Masukkan Asal Instansi"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               />
+              {errors.asalInstansi && <p className="text-red-600 text-sm">{errors.asalInstansi}</p>}
             </label>
 
-            <label>
+            <label className="block">
               Tanggal Masuk:
               <input
                 type="date"
                 name="tanggalMasuk"
                 value={formData.tanggalMasuk}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               />
+              {errors.tanggalMasuk && <p className="text-red-600 text-sm">{errors.tanggalMasuk}</p>}
             </label>
 
-            <label>
+            <label className="block">
               Tanggal Keluar:
               <input
                 type="date"
                 name="tanggalKeluar"
                 value={formData.tanggalKeluar}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               />
+              {errors.tanggalKeluar && <p className="text-red-600 text-sm">{errors.tanggalKeluar}</p>}
             </label>
 
-            <label>
+            <label className="block">
               Jenis Surat:
               <select
                 name="jenisSurat"
                 value={formData.jenisSurat}
                 onChange={handleChange}
-                className="border p-2 rounded-lg w-full"
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               >
-                <option value="" disabled>
-                  Pilih Satu Jenis Surat
-                </option>
-                <option value="Surat Selesai Magang">Surat Selesai Magang</option>
-                <option value="Sertifikat Magang">Sertifikat Magang</option>
+                <option value="">Pilih Satu Jenis Surat</option>
+                <option value="selesai_magang">Surat Selesai Magang</option>
+                <option value="sertifikat_magang">Sertifikat Magang</option>
               </select>
+              {errors.jenisSurat && <p className="text-red-600 text-sm">{errors.jenisSurat}</p>}
             </label>
+          </div>
 
-            <div>
-              <input
-                type="checkbox"
-                checked={isChecked}
-                onChange={handleCheckboxChange}
-                className="mr-2"
-              />
-              <label>Saya telah mengisi data saya dengan benar</label>
-            </div>
+          <label className="flex items-center mt-4">
+            <input
+              type="checkbox"
+              name="checkbox"
+              checked={formData.checkbox}
+              onChange={handleChange}
+              className="mr-2"
+            />
+            <span className="text-[#171a34]">Saya telah mengisi data saya dengan benar</span>
+            {errors.checkbox && <p className="text-red-600 text-sm">{errors.checkbox}</p>}
+          </label>
 
+          <div className="flex justify-end mt-6">
             <button
               type="submit"
-              onClick={handleDownload}
-              className="bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
+              className="bg-[#000126] text-[#ffffff] py-3 px-8 rounded-lg hover:bg-blue-700 transition duration-300"
             >
               Unduh
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );
