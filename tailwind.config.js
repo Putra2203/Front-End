@@ -6,12 +6,14 @@ module.exports = {
       colors: {
         primary: "#171717",
         secondary: "#F1F1F1",
-        background: "F5F5F5",
+        
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('daisyui'),
+  ],
 };

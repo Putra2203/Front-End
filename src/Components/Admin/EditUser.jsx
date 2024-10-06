@@ -17,6 +17,9 @@ const EditUser = ({
     tanggal_selesai: "",
     username: "",
     password: "",
+    nama_dosen: "",
+    no_telp_dosen: "",
+    status_aktif: "",
   });
 
   useEffect(() => {
@@ -72,111 +75,169 @@ const EditUser = ({
   if (!showEditUserModal) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h2>Edit User</h2>
-          <button className="close-button" onClick={handleCloseModal}>
+    <div className="modal modal-open">
+      <div className="modal-box">
+        <div className="flex flex-row justify-between">
+          <h2 className="text-xl font-semibold font-poppins">Edit User</h2>
+          <button
+            className="px-2 py-1 bg-red-500 rounded-lg hover:bg-slate-400"
+            onClick={handleCloseModal}
+          >
             &times;
           </button>
         </div>
-        <form onSubmit={handleUpdateUser}>
-          <div className="form-group">
+        <form onSubmit={handleUpdateUser} className="flex flex-col gap-2 mt-4">
+          <div className="flex flex-row justify-between">
             <label>Nama</label>
             <input
               type="text"
               placeholder="Masukkan nama"
               value={userData.nama}
-              onChange={(e) => setUserData({ ...userData, nama: e.target.value })}
+              className="flex px-2 py-1 border"
+              onChange={(e) =>
+                setUserData({ ...userData, nama: e.target.value })
+              }
             />
           </div>
 
-          <div className="form-group">
+          <div className="flex flex-row justify-between">
             <label>Asal Universitas</label>
             <input
               type="text"
               placeholder="Masukkan asal universitas"
               value={userData.asal_univ}
+              className="flex px-2 py-1 border"
               onChange={(e) =>
                 setUserData({ ...userData, asal_univ: e.target.value })
               }
             />
           </div>
 
-          <div className="form-group">
+          <div className="flex flex-row justify-between">
             <label>Asal Jurusan</label>
             <input
               type="text"
               placeholder="Masukkan asal jurusan"
               value={userData.asal_jurusan}
+              className="flex px-2 py-1 border"
               onChange={(e) =>
                 setUserData({ ...userData, asal_jurusan: e.target.value })
               }
             />
           </div>
 
-          <div className="form-group">
+          <div className="flex flex-row justify-between">
             <label>Nomor Telepon</label>
             <input
               type="text"
               placeholder="Masukkan nomor telepon"
               value={userData.no_telp}
+              className="flex px-2 py-1 border"
               onChange={(e) =>
                 setUserData({ ...userData, no_telp: e.target.value })
               }
             />
           </div>
 
-          <div className="form-group">
+          <div className="flex flex-row justify-between">
             <label>Tanggal Mulai</label>
             <input
               type="date"
               value={userData.tanggal_mulai}
+              className="flex px-2 py-1 border"
               onChange={(e) =>
                 setUserData({ ...userData, tanggal_mulai: e.target.value })
               }
             />
           </div>
 
-          <div className="form-group">
+          <div className="flex flex-row justify-between">
             <label>Tanggal Selesai</label>
             <input
               type="date"
               value={userData.tanggal_selesai}
+              className="flex px-2 py-1 border"
               onChange={(e) =>
                 setUserData({ ...userData, tanggal_selesai: e.target.value })
               }
             />
           </div>
 
-          <div className="form-group">
+          {/* Tambahan Nama Dosen */}
+          <div className="flex flex-row justify-between">
+            <label>Nama Dosen</label>
+            <input
+              type="text"
+              placeholder="Masukkan nama dosen"
+              value={userData.nama_dosen}
+              className="flex px-2 py-1 border"
+              onChange={(e) =>
+                setUserData({ ...userData, nama_dosen: e.target.value })
+              }
+            />
+          </div>
+
+          {/* Tambahan Nomor Telepon Dosen */}
+          <div className="flex flex-row justify-between">
+            <label>Nomor Telepon Dosen</label>
+            <input
+              type="text"
+              placeholder="Masukkan nomor telepon dosen"
+              value={userData.no_telp_dosen}
+              className="flex px-2 py-1 border"
+              onChange={(e) =>
+                setUserData({ ...userData, no_telp_dosen: e.target.value })
+              }
+            />
+          </div>
+
+          {/* Tambahan Dropdown Status Aktif */}
+          <div className="flex flex-row justify-between">
+            <label>Status Aktif</label>
+            <select
+              value={userData.status_aktif}
+              className="flex px-2 py-1 border"
+              onChange={(e) =>
+                setUserData({
+                  ...userData,
+                  status_aktif: parseInt(e.target.value),
+                })
+              }
+            >
+              <option value="">--Pilih Status--</option>
+              <option value="2">Aktif</option>
+              <option value="1">Alumni</option>
+              <option value="3">Calon</option>
+            </select>
+          </div>
+
+          <div className="flex flex-row justify-between">
             <label>Username</label>
             <input
               type="text"
               placeholder="Masukkan username"
               value={userData.username}
+              className="flex px-2 py-1 border"
               onChange={(e) =>
                 setUserData({ ...userData, username: e.target.value })
               }
             />
           </div>
 
-          <div className="form-group">
+          <div className="flex flex-row justify-between">
             <label>Password</label>
             <input
               type="password"
               placeholder="Masukkan password (biarkan kosong jika tidak ingin mengubah)"
+              className="flex px-2 py-1 border"
               onChange={(e) => {
                 setUserData({ ...userData, password: e.target.value });
               }}
             />
           </div>
 
-          <div className="modal-footer">
-            <button type="button" className="btn-secondary" onClick={handleCloseModal}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-primary">
+          <div className="mt-4">
+            <button type="submit" className="px-4 py-1 bg-[#183028] text-white rounded-3xl hover:bg-slate-400">
               Update
             </button>
           </div>
