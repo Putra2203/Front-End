@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
@@ -13,35 +15,66 @@ const UserPages = () => {
   });
   const [presensi, setPresensi] = useState([]);
   const [penugasan, setPenugasan] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user data from the database
-    axios.get('/api/user')
-      .then(response => {
-        setUserData(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching user data:', error);
-      });
-
-    // Fetch presensi data from the database
-    axios.get('/api/presensi')
-      .then(response => {
-        setPresensi(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching presensi data:', error);
-      });
-
-    // Fetch penugasan data from the database
-    axios.get('/api/penugasan')
-      .then(response => {
-        setPenugasan(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching penugasan data:', error);
-      });
+    refreshToken(); // Refresh token ketika komponen dimuat
   }, []);
+
+  const refreshToken = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/account/token', {
+        headers: {
+          'role': 'peserta_magang',
+        },
+      });
+      const decoded = jwt_decode(response.data.token);
+      setUserData((prevState) => ({
+        ...prevState,
+        name: decoded.nama,
+        username: decoded.username,
+      }));
+
+      // Menyimpan token agar dapat digunakan untuk permintaan API berikutnya
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+      // Memuat data setelah mendapatkan token yang valid
+      fetchUserData();
+      fetchPresensiData();
+      fetchPenugasanData();
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      // Jika token tidak valid, arahkan ke halaman login
+      navigate('/');
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get('/api/user');
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  const fetchPresensiData = async () => {
+    try {
+      const response = await axios.get('/api/presensi');
+      setPresensi(response.data);
+    } catch (error) {
+      console.error('Error fetching presensi data:', error);
+    }
+  };
+
+  const fetchPenugasanData = async () => {
+    try {
+      const response = await axios.get('/api/penugasan');
+      setPenugasan(response.data);
+    } catch (error) {
+      console.error('Error fetching penugasan data:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">

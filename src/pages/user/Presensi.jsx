@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './Navbar'; // Pastikan path file Navbar.jsx benar
 import { useNavigate } from 'react-router-dom'; // Untuk navigasi halaman
+import jwt_decode from "jwt-decode"; // Untuk decode token JWT
+import axios from 'axios'; // Untuk request ke server
+import { isUnauthorizedError } from '../../config/errorHandling'; // Untuk handle error otorisasi (ubah path sesuai dengan struktur proyek)
+import { axiosJWTuser } from '../../config/axiosJWT'; // Instance axios yang sudah di-setting JWT (ubah path sesuai struktur proyek)
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Fungsi untuk menghitung jarak menggunakan rumus Haversine
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -8,7 +14,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const φ1 = (lat1 * Math.PI) / 180;
   const φ2 = (lat2 * Math.PI) / 180;
   const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+  const Δλ = ((lon1 - lon2) * Math.PI) / 180;
 
   const a =
     Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
@@ -32,7 +38,6 @@ const Presensi = () => {
   const [errorMessage, setErrorMessage] = useState(''); // Menyimpan pesan error
   const [successMessage, setSuccessMessage] = useState(''); // Menyimpan pesan sukses
 
-  // Lokasi magang (latitude dan longitude)
   const magangLocation = {
     latitude: -6.983109, // Lokasi magang yang baru
     longitude: 110.413630,
@@ -46,31 +51,41 @@ const Presensi = () => {
   useEffect(() => {
     let mediaStream = null;
 
-    // Set tanggal dan waktu sekarang
-    const currentDate = new Date();
-    const hariOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const waktu = currentDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-    setFormData((prevData) => ({
-      ...prevData,
-      hari: currentDate.toLocaleDateString('id-ID', hariOptions),
-      jam: waktu,
-    }));
-
-    // Mulai stream kamera
-    const startCamera = async () => {
+    // Autentikasi token JWT
+    const checkAuth = async () => {
       try {
+        const response = await axios.get('http://localhost:3000/account/token', {
+          headers: {
+            'role': "peserta_magang"
+          },
+        });
+        const decoded = jwt_decode(response.data.token);
+        console.log('Decoded token:', decoded);
+
+        // Jika token valid, set data pengguna
+        setFormData((prevData) => ({
+          ...prevData,
+          nama: decoded.name, // Ganti 'name' dengan field sesuai dengan token
+        }));
+
+        // Mulai stream kamera
         mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
         setStream(mediaStream);
         if (videoRef.current) {
           videoRef.current.srcObject = mediaStream;
         }
-      } catch (err) {
-        console.error("Error accessing camera: ", err);
+
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          // Jika token tidak valid, arahkan ke halaman login
+          navigate('/');
+        }
+        console.error("Error verifying token: ", error);
       }
     };
 
-    startCamera();
+    // Jalankan fungsi autentikasi
+    checkAuth();
 
     // Mendapatkan lokasi pengguna
     if (navigator.geolocation) {
@@ -117,7 +132,7 @@ const Presensi = () => {
         console.log('Camera stream stopped immediately');
       }
     };
-  }, []); // Pastikan hanya dipanggil sekali
+  }, [navigate]); // Pastikan hanya dipanggil sekali
 
   const takePhoto = () => {
     const context = canvasRef.current.getContext('2d');
@@ -137,7 +152,7 @@ const Presensi = () => {
     setImageSrc(canvasRef.current.toDataURL('image/png'));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Jika ada pesan error (misalnya, berada di luar lokasi), batalkan pengiriman
@@ -145,42 +160,45 @@ const Presensi = () => {
       return;
     }
 
-    // Ambil jam saat ini
-    const currentDate = new Date();
-    const currentHour = currentDate.getHours();
-    const currentMinutes = currentDate.getMinutes();
+    try {
+      // Ambil token untuk autentikasi
+      const response = await axios.get('http://localhost:3000/account/token', {
+        headers: {
+          'role': "peserta_magang"
+        },
+      });
 
-    // Validasi untuk absensi pagi dan sore
-    if (currentHour === 8 && currentMinutes >= 0 && currentMinutes <= 59) {
-      // Jam 8 pagi sampai 9 pagi
-      setErrorMessage(''); // Reset pesan error jika absensi valid
-    } else if (currentHour === 9 && currentMinutes === 0) {
-      // Jam 9 pagi tepat (untuk batas waktu absensi)
-      setErrorMessage('');
-    } else if (currentHour === 15 && currentMinutes === 30) {
-      // Absensi sore hanya pada jam 15:30
-      setErrorMessage('');
-    } else {
-      // Jika diluar jam yang diizinkan
-      setErrorMessage('Waktu absensi tidak valid. Absensi pagi: 08:00 - 09:00, Absensi sore: 15:30.');
-      return;
+      const decoded = jwt_decode(response.data.token);
+
+      // Simpan presensi dengan gambar dan data lainnya
+      const formData = new FormData();
+      formData.append('image', imageSrc);
+      formData.append('nama', decoded.name); // Sesuaikan dengan token
+      formData.append('lokasi', location);
+
+      const uploadResponse = await axiosJWTuser.post(`http://localhost:3000/user/presensi/${decoded.userId}`, formData, {
+        headers: {
+          'role': "peserta_magang",
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      console.log('Upload success:', uploadResponse.data);
+      setSuccessMessage("Presensi berhasil dikirim!");
+
+      // Stop kamera setelah presensi
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        console.log('Camera stream stopped after form submit');
+      }
+
+      // Arahkan kembali ke halaman lain jika diperlukan
+      navigate('/user/Homepage');
+
+    } catch (error) {
+      console.error('Error uploading presensi:', error);
+      setErrorMessage('Gagal mengirim presensi. Silakan coba lagi.');
     }
-
-    // Set success message dan tampilkan pop-up
-    setSuccessMessage('Presensi Berhasil Dikumpulkan! Selamat, Putra22! Presensi telah berhasil diunggah dan diterima oleh sistem.');
-
-    // Lakukan pengiriman form absensi di sini
-    console.log('Form submitted:', formData);
-    console.log('Captured image:', imageSrc);
-
-    // Hapus stream kamera setelah submit
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      console.log('Camera stream stopped after form submit');
-    }
-
-    // Arahkan kembali ke halaman lain jika diperlukan
-    navigate('/user/Homepage');
   };
 
   return (
@@ -284,6 +302,7 @@ const Presensi = () => {
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 };

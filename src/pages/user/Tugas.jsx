@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar'; // Pastikan path file Navbar benar
 
 const Tugas = () => {
@@ -14,18 +16,45 @@ const Tugas = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [pengumpulanStatus, setPengumpulanStatus] = useState('Belum Dikirim');
   const [lastUpdated, setLastUpdated] = useState('-');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Mendapatkan data tugas dari database
-    axios.get('/api/tasks')
-      .then(response => {
-        const { proses, selesai } = response.data;
-        setTasks({ proses, selesai });
-      })
-      .catch(error => {
-        console.error('Error mendapatkan data tugas:', error);
-      });
+    refreshToken(); // Refresh token ketika komponen dimuat
   }, []);
+
+  const refreshToken = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/account/token', {
+        headers: {
+          'role': 'peserta_magang',
+        },
+      });
+      const decoded = jwt_decode(response.data.token);
+
+      // Menyimpan token untuk penggunaan API berikutnya
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+      // Setelah mendapatkan token, lakukan permintaan data
+      fetchTasks();
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      // Jika token tidak valid, arahkan ke halaman login
+      navigate('/');
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get('/api/tasks');
+      const { proses, selesai } = response.data;
+      setTasks({ proses, selesai });
+    } catch (error) {
+      console.error('Error mendapatkan data tugas:', error);
+      if (error.response && error.response.status === 401) {
+        navigate('/'); // Arahkan ke halaman login jika tidak terautentikasi
+      }
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,7 +64,7 @@ const Tugas = () => {
         setSuccessMessage('Tugas Berhasil Dikumpulkan!');
         setPengumpulanStatus('Dikirimkan untuk dinilai');
         setLastUpdated(new Date().toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
-        
+
         // Reset form setelah berhasil dikirim
         setFormData({
           komentar: '',
@@ -44,6 +73,9 @@ const Tugas = () => {
       })
       .catch(error => {
         console.error('Error saat mengirim tugas:', error);
+        if (error.response && error.response.status === 401) {
+          navigate('/'); // Arahkan ke halaman login jika tidak terautentikasi
+        }
       });
   };
 
@@ -55,9 +87,8 @@ const Tugas = () => {
       </div>
 
       {/* Konten Utama */}
-      <div className="flex-1 p-4 md:p-10 mt-5 md:ml-10 md:mt-0"> {/* Tambahkan md:mt-0 untuk mengatur margin di desktop */}
+      <div className="flex-1 p-4 md:p-10 mt-5 md:ml-10 md:mt-0">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 mt-20 md:mt-0">Penugasan - SISAPPMA</h1>
-        {/* Tambahkan mt-20 agar judul tidak tertutup pada mobile */}
 
         {/* Pesan sukses setelah pengumpulan tugas */}
         {successMessage && (

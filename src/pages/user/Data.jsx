@@ -1,20 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from './Navbar';
 import axios from 'axios';
+import jwt_decode from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 
 const Data = () => {
   const [presensi, setPresensi] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch data presensi dari API atau backend
-    axios.get('/api/presensi')
-      .then((response) => {
-        setPresensi(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching presensi data:', error);
-      });
+    refreshToken(); // Melakukan refresh token ketika komponen dimuat
   }, []);
+
+  const refreshToken = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/account/token', {
+        headers: {
+          'role': "peserta_magang"
+        }
+      });
+      const decoded = jwt_decode(response.data.token);
+
+      // Menyimpan token untuk penggunaan API berikutnya
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+      // Setelah token diperbarui, ambil data presensi
+      fetchPresensiData();
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      // Jika token tidak valid, arahkan ke halaman login
+      navigate('/');
+    }
+  };
+
+  const fetchPresensiData = async () => {
+    try {
+      const response = await axios.get('/api/presensi');
+      setPresensi(response.data);
+    } catch (error) {
+      console.error('Error fetching presensi data:', error);
+      if (error.response && error.response.status === 401) {
+        navigate('/'); // Arahkan ke halaman login jika tidak terautentikasi
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">

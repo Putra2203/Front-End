@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar'; // Pastikan path file Navbar.jsx benar
 
 const SuratMagang = () => {
@@ -13,8 +16,32 @@ const SuratMagang = () => {
     jenisSurat: '',
     checkbox: false,
   });
-
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+
+  // Fungsi untuk melakukan refresh token saat komponen dimuat
+  useEffect(() => {
+    refreshToken(); 
+  }, []);
+
+  // Fungsi refresh token untuk memastikan pengguna terautentikasi
+  const refreshToken = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/account/token', {
+        headers: {
+          'role': 'peserta_magang',
+        },
+      });
+      const decoded = jwt_decode(response.data.token);
+
+      // Menyimpan token untuk penggunaan API berikutnya
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      // Jika token tidak valid, arahkan ke halaman login
+      navigate('/');
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -41,22 +68,45 @@ const SuratMagang = () => {
     if (!formData.tanggalKeluar) newErrors.tanggalKeluar = 'Tanggal Keluar wajib diisi';
     if (!formData.jenisSurat) newErrors.jenisSurat = 'Jenis Surat wajib dipilih';
     if (!formData.checkbox) newErrors.checkbox = 'Anda harus menyetujui data sudah benar';
-    
+
     return newErrors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const formErrors = validateForm();
-    
+
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     } else {
       // Jika tidak ada error, proses download file
-      if (formData.jenisSurat === 'selesai_magang') {
-        window.open('/path/to/selesaimagang.docx');
-      } else if (formData.jenisSurat === 'sertifikat_magang') {
-        window.open('/path/to/sertifikatmagang.docx');
+      downloadSurat(formData.jenisSurat);
+    }
+  };
+
+  const downloadSurat = async (jenisSurat) => {
+    try {
+      const endpoint = jenisSurat === 'selesai_magang' ? '/generate-selesai-magang' : '/generate-sertifikat-magang';
+      const response = await axios.get(`http://localhost:3000${endpoint}`, {
+        responseType: 'blob',
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        // File generated successfully, initiate download
+        const downloadUrl = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.setAttribute('download', `${jenisSurat}.docx`);
+        document.body.appendChild(link);
+        link.click();
+      } else {
+        console.error('Error generating file:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error saat mengunduh surat:', error);
+      if (error.response && error.response.status === 401) {
+        navigate('/'); // Arahkan ke halaman login jika tidak terautentikasi
       }
     }
   };
@@ -73,9 +123,9 @@ const SuratMagang = () => {
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-[#171a34]">Surat Selesai Magang - SISAPPMA</h1>
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-4 md:p-6 rounded-lg shadow-md w-full space-y-4" // Menggunakan w-full untuk lebar penuh
+          className="bg-white p-4 md:p-6 rounded-lg shadow-md w-full space-y-4"
         >
-          <div className="grid grid-cols-1 gap-4"> {/* Kolom tunggal per input */}
+          <div className="grid grid-cols-1 gap-4">
             <label className="block">
               Nama:
               <input
@@ -84,7 +134,7 @@ const SuratMagang = () => {
                 value={formData.nama}
                 onChange={handleChange}
                 placeholder="Masukkan Nama"
-                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]" // Warna teks lebih gelap
+                className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
               />
               {errors.nama && <p className="text-red-600 text-sm">{errors.nama}</p>}
             </label>
