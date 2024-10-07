@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import logo from "../Assets/diskominfo.png";
 import { axiosJWTadmin } from "../config/axiosJWT";
 import ImageOverlay from "../Components/Admin/ImageOverlay";
-import icon from "../Assets/icon.png";
 import NavSidebar from "./NavSidebar";
 
 export const PresensiMagang = () => {
@@ -35,7 +33,6 @@ export const PresensiMagang = () => {
     fetchCurrentTime();
     const today = new Date().toISOString().slice(0, 10);
     setSearchDate(today);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDateChange = (e) => {
@@ -45,7 +42,6 @@ export const PresensiMagang = () => {
 
   useEffect(() => {
     getUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchDate]);
 
   const exportPresensi = async () => {
@@ -148,157 +144,131 @@ export const PresensiMagang = () => {
       <NavSidebar />
       <div className="pl-64">
         <div className="container flex flex-col p-4">
-          <div className="column">
-            <p
-              style={{
-                fontFamily: "Poppins, sans-serif",
-                fontSize: 25,
-                marginBottom: 20,
-              }}
-            >
-              Presensi Magang
+          <div className="flex justify-between">
+            <p className="text-4xl font-semibold font-poppins">
+              Presensi Magang - SISAPPMA
             </p>
-            <div className="cards">
-              <div
-                className="card-1"
-                style={{
-                  backgroundColor: "#4CAF50",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  textAlign: "center",
-                }}
-              >
-                <p style={{ color: "white" }}>Total Hadir Hari Ini</p>
-                <p style={{ color: "white" }}>{totalAttendance}</p>
-              </div>
-              <div
-                className="card-2"
-                style={{
-                  backgroundColor: "#FF5733",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  textAlign: "center",
-                }}
-              >
-                <p style={{ color: "white" }}>Tanggal Hari Ini</p>
-                <p style={{ color: "white" }}>{currentTime}</p>
-              </div>
+            <div className="bg-[#183028] px-4 text-white py-4 text-center  rounded-lg">
+              <p>Tanggal Hari Ini</p>
+              <p>{currentTime}</p>
             </div>
-            <div className="button-container">
+          </div>
+
+          <div className="flex flex-col mt-4">
+            <div className="bg-[#183028] px-4 text-white py-4 text-center  rounded-lg w-44">
+              <p>Total Hadir Hari Ini</p>
+              <p>{totalAttendance}</p>
+            </div>
+            <div className="mt-4">
+              <input
+                className="px-4 border bg-slate-200 rounded-3xl"
+                type="date"
+                value={searchDate}
+                onChange={handleDateChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-between mt-4">
+            <div className="flex gap-4">
               <button
                 onClick={() => getPresensiBelum()}
-                className="button is-small is-danger"
+                className="bg-[#183028] px-4 text-white py-2 text-center  rounded-3xl hover:bg-slate-400"
               >
                 Peserta Belum Absen
               </button>
               <button
                 onClick={() => getUsers()}
-                className="button is-small is-success"
+                className="bg-[#183028] px-4 text-white py-2 text-center  rounded-3xl hover:bg-slate-400"
               >
                 Peserta Sudah Absen
               </button>
             </div>
-            <div className="search">
-              <input
-                type="date"
-                value={searchDate}
-                onChange={handleDateChange}
-                style={{
-                  padding: "10px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  fontSize: "16px",
-                  width: "100%",
-                  maxWidth: "300px",
-                  margin: "10px 0",
-                }}
-              />
+            <div>
+              <button
+                onClick={exportPresensi}
+                className="bg-[#183028] px-4 text-white py-2 text-center  rounded-3xl hover:bg-slate-400"
+              >
+                Export to Excel
+              </button>
             </div>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <div className="table-container-presensi">
-                <table className="custom-table-presensi">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Nama</th>
-                      <th>Check-In</th>
-                      <th>Check-Out</th>
-                      <th>Image In</th>
-                      <th>Image Out</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(users) &&
-                      users.map((user, index) => (
-                        <tr key={user.id}>
-                          <td>{index + 1}</td>
-                          <td>{user.nama}</td>
-                          {user.presensimagang.map((entry, entryIndex) => (
-                            <React.Fragment key={entry.id}>
-                              <td>
-                                {entry.check_in
-                                  ? formatDateTime(entry.check_in)
-                                  : "-"}
-                              </td>
-                              <td>
-                                {entry.check_out
-                                  ? formatDateTime(entry.check_out)
-                                  : "-"}
-                              </td>
-                              <td>
-                                {entry.image_url_in ? (
-                                  <button
-                                    onClick={() =>
-                                      handleImageClick(entry.image_url_in)
-                                    }
-                                    className="button is-small is-success"
-                                  >
-                                    Absen Masuk
-                                  </button>
-                                ) : (
-                                  "-"
-                                )}
-                              </td>
-                              <td>
-                                {entry.image_url_out ? (
-                                  <button
-                                    onClick={() =>
-                                      handleImageClick(entry.image_url_out)
-                                    }
-                                    className="button is-small is-success"
-                                  >
-                                    Absen Pulang
-                                  </button>
-                                ) : (
-                                  "-"
-                                )}
-                              </td>
-                            </React.Fragment>
-                          ))}
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            {showImageOverlay && (
-              <ImageOverlay
-                imageUrl={selectedImage}
-                onClose={handleCloseImageOverlay}
-              />
-            )}
-            <button
-              onClick={exportPresensi}
-              className="button is-success"
-              style={{ marginTop: 18, float: "right" }}
-            >
-              Export to Excel
-            </button>
           </div>
+
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <div className="p-10 mt-4 overflow-x-auto bg-slate-200 rounded-2xl">
+              <table className="table w-full text-center">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Image In</th>
+                    <th>Image Out</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(users) &&
+                    users.map((user, index) => (
+                      <tr key={user.id}>
+                        <td>{index + 1}</td>
+                        <td>{user.nama}</td>
+                        {user.presensimagang.map((entry, entryIndex) => (
+                          <React.Fragment key={entry.id}>
+                            <td>
+                              {entry.check_in
+                                ? formatDateTime(entry.check_in)
+                                : "-"}
+                            </td>
+                            <td>
+                              {entry.check_out
+                                ? formatDateTime(entry.check_out)
+                                : "-"}
+                            </td>
+                            <td>
+                              {entry.image_url_in ? (
+                                <button
+                                  onClick={() =>
+                                    handleImageClick(entry.image_url_in)
+                                  }
+                                  className="button is-small is-success"
+                                >
+                                  Absen Masuk
+                                </button>
+                              ) : (
+                                "-"
+                              )}
+                            </td>
+                            <td>
+                              {entry.image_url_out ? (
+                                <button
+                                  onClick={() =>
+                                    handleImageClick(entry.image_url_out)
+                                  }
+                                  className="button is-small is-success"
+                                >
+                                  Absen Pulang
+                                </button>
+                              ) : (
+                                "-"
+                              )}
+                            </td>
+                          </React.Fragment>
+                        ))}
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {showImageOverlay && (
+            <ImageOverlay
+              imageUrl={selectedImage}
+              onClose={handleCloseImageOverlay}
+            />
+          )}
         </div>
       </div>
     </div>
