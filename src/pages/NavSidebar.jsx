@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import logo from "../images/logo.png";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -13,6 +13,7 @@ const NavSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [nama, setNama] = useState("");
   const [profil, setProfil] = useState("");
+  const navigate = useNavigate(); // useNavigate digunakan untuk navigasi
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -37,6 +38,19 @@ const NavSidebar = () => {
     }
   };
 
+  // Fungsi Logout
+  const handleLogout = () => {
+    // Hapus token dari localStorage atau sessionStorage
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+
+    // Navigasi ke halaman login
+    navigate("/login");
+
+    // Tambahkan notifikasi atau pesan logout sukses jika diperlukan
+    console.log("User logged out successfully");
+  };
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -50,7 +64,7 @@ const NavSidebar = () => {
             <img src={logo} alt="logo" className="w-40" />
             {isOpen && (
               <button onClick={toggleSidebar} className="text-white md:hidden">
-                <IoClose size={20} /> {/* Icon close untuk menutup sidebar */}
+                <IoClose size={20} />
               </button>
             )}
           </div>
@@ -121,8 +135,12 @@ const NavSidebar = () => {
                 </Link>
               </li>
             </ul>
+
             <div className="fixed bottom-5 right-5">
-              <button className="px-4 py-2 border-2 border-gray-300 rounded-3xl hover:">
+              <button
+                onClick={handleLogout} // Tambahkan fungsi logout
+                className="px-4 py-2 border-2 border-gray-300 rounded-3xl hover:bg-white hover:text-black"
+              >
                 Log Out
               </button>
             </div>

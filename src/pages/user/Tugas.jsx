@@ -1,167 +1,135 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import jwt_decode from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar'; // Pastikan path file Navbar benar
+import React, { useEffect, useState } from "react";
+import Cards from "../../Assets/Cards";
+import jwt_decode from "jwt-decode";
+import axios from "axios";
+import { axiosJWTuser } from "../../config/axiosJWT";
+import { isUnauthorizedError } from "../../config/errorHandling";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "./Navbar";
 
-const Tugas = () => {
-  const [tasks, setTasks] = useState({
-    proses: [],
-    selesai: [],
-  });
-  const [formData, setFormData] = useState({
-    komentar: '',
-    linkPengumpulan: '',
-  });
-  const [successMessage, setSuccessMessage] = useState('');
-  const [pengumpulanStatus, setPengumpulanStatus] = useState('Belum Dikirim');
-  const [lastUpdated, setLastUpdated] = useState('-');
+function Tugas() {
+  const [cardData, setData] = useState([]);
   const navigate = useNavigate();
 
+  // Menyortir tugas berdasarkan deadline
+  const filterTasksByDueDate = (dueDate, filterType) => {
+    const currentDate = new Date();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const taskDueDate = new Date(dueDate);
+    currentDate.setHours(0, 0, 0, 0);
+    taskDueDate.setHours(0, 0, 0, 0);
+
+    switch (filterType) {
+      case "today":
+        return (
+          taskDueDate.getDate() === currentDate.getDate() &&
+          taskDueDate.getMonth() === currentDate.getMonth() &&
+          taskDueDate.getFullYear() === currentDate.getFullYear()
+        );
+      case "nextWeek":
+        const nextWeek = new Date(currentDate.getTime() + 7 * oneDay);
+        return taskDueDate > currentDate && taskDueDate <= nextWeek;
+      case "all":
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  // Variabel yang berisi tugas terpisah berdasarkan deadline
+  const dueTodayTasks = cardData.filter((card) =>
+    filterTasksByDueDate(card.tugas.dueDate, "today")
+  );
+  const nextWeekTasks = cardData.filter((card) =>
+    filterTasksByDueDate(card.tugas.dueDate, "nextWeek")
+  );
+  const allTasks = cardData.filter((card) =>
+    filterTasksByDueDate(card.tugas.dueDate, "all")
+  );
+
+  // Mengambil data tugas dari backend
   useEffect(() => {
-    refreshToken(); // Refresh token ketika komponen dimuat
-  }, []);
-
-  const refreshToken = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/account/token', {
-        headers: {
-          'role': 'peserta_magang',
-        },
-      });
-      const decoded = jwt_decode(response.data.token);
-
-      // Menyimpan token untuk penggunaan API berikutnya
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-
-      // Setelah mendapatkan token, lakukan permintaan data
-      fetchTasks();
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      // Jika token tidak valid, arahkan ke halaman login
-      navigate('/');
-    }
-  };
-
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get('/api/tasks');
-      const { proses, selesai } = response.data;
-      setTasks({ proses, selesai });
-    } catch (error) {
-      console.error('Error mendapatkan data tugas:', error);
-      if (error.response && error.response.status === 401) {
-        navigate('/'); // Arahkan ke halaman login jika tidak terautentikasi
-      }
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Mengirimkan data form ke database
-    axios.post('/api/submit-task', formData)
-      .then(() => {
-        setSuccessMessage('Tugas Berhasil Dikumpulkan!');
-        setPengumpulanStatus('Dikirimkan untuk dinilai');
-        setLastUpdated(new Date().toLocaleString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
-
-        // Reset form setelah berhasil dikirim
-        setFormData({
-          komentar: '',
-          linkPengumpulan: '',
+    const fetchData = async () => {
+      try {
+        const ambilid = await axios.get("http://localhost:3000/account/token", {
+          headers: {
+            role: "peserta_magang",
+          },
         });
-      })
-      .catch(error => {
-        console.error('Error saat mengirim tugas:', error);
-        if (error.response && error.response.status === 401) {
-          navigate('/'); // Arahkan ke halaman login jika tidak terautentikasi
+        const decoded = jwt_decode(ambilid.data.token);
+
+        const response = await axiosJWTuser.get(
+          `http://localhost:3000/user/tugas-list/${decoded.userId}`
+        );
+        setData(response.data.tugas);
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          navigate("/");
         }
-      });
-  };
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="md:w-[13%]">
-        <Navbar />
-      </div>
+    <div className="flex flex-col w-full">
+      {/* Header */}
+      <Sidebar />
+      <div className="pl-64">
+        <div className="container flex flex-col p-4">
+          <h1 className="ml-4 text-2xl font-semibold">Penugasan - SISAPPMA</h1>
+          
 
-      {/* Konten Utama */}
-      <div className="flex-1 p-4 md:p-10 mt-5 md:ml-10 md:mt-0">
-        <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 mt-20 md:mt-0">Penugasan - SISAPPMA</h1>
+          {/* Main Content */}
+          <div className="p-6">
+            {/* Tenggat Hari Ini */}
+            <h2 className="mb-4 text-xl font-semibold">Tenggat Hari Ini</h2>
+            {!dueTodayTasks.length ? (
+              <p className="text-gray-600">Tidak ada tugas untuk hari ini.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {dueTodayTasks.map((card) => (
+                  <Cards key={card.id} data={card} setData={setData} />
+                ))}
+              </div>
+            )}
 
-        {/* Pesan sukses setelah pengumpulan tugas */}
-        {successMessage && (
-          <div className="bg-green-100 text-green-800 p-4 mb-4 rounded-lg">
-            🎉 {successMessage} 🎉
-            <br />
-            Selamat, Tugasmu telah berhasil diunggah dan diterima oleh sistem.
-          </div>
-        )}
+            {/* Tenggat dalam 7 Hari */}
+            <h2 className="mt-10 mb-4 text-xl font-semibold">
+              Tenggat dalam 7 Hari
+            </h2>
+            {!nextWeekTasks.length ? (
+              <p className="text-gray-600">
+                Tidak ada tugas dalam 7 hari ke depan.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {nextWeekTasks.map((card) => (
+                  <Cards key={card.id} data={card} setData={setData} />
+                ))}
+              </div>
+            )}
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {/* Bagian Tugas Proses */}
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold mb-4">Proses</h2>
-            <div className="space-y-4">
-              {tasks.proses.length > 0 ? (
-                tasks.proses.map((task, index) => (
-                  <TaskCard key={index} title={task.title} description={task.description} dueDate={task.dueDate} />
-                ))
-              ) : (
-                <p className="text-gray-600">Tidak ada tugas dalam proses.</p>
-              )}
-            </div>
-
-            <h2 className="text-xl font-semibold mt-4 mb-4">Selesai</h2>
-            <div className="space-y-4">
-              {tasks.selesai.length > 0 ? (
-                tasks.selesai.map((task, index) => (
-                  <TaskCard key={index} title={task.title} description={task.description} dueDate={task.dueDate} />
-                ))
-              ) : (
-                <p className="text-gray-600">Tidak ada tugas yang sudah selesai.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Bagian Form Pengumpulan */}
-          <div className="bg-white p-4 md:p-6 rounded-lg shadow-md border">
-            <h2 className="text-xl font-semibold mb-4">Pengumpulan</h2>
-            <div className="space-y-2 text-sm">
-              <p>Status Pengumpulan: <span className="font-bold">{pengumpulanStatus}</span></p>
-              <p>Terakhir Diubah: <span className="font-bold">{lastUpdated}</span></p>
-              <p>Pengumpulan Link: <span className="font-bold">{formData.linkPengumpulan || '-'}</span></p>
-              <p>Komentar: <span className="font-bold">Komentar (0)</span></p>
-            </div>
-
-            <div className="mb-4 mt-4">
-              <textarea
-                value={formData.komentar}
-                onChange={(e) => setFormData({ ...formData, komentar: e.target.value })}
-                className="w-full p-3 border rounded-lg text-sm"
-                rows="4"
-                placeholder="Tambahkan komentar"
-              ></textarea>
-            </div>
-
-            <button onClick={handleSubmit} className="bg-blue-600 text-white py-2 px-4 rounded-lg w-full text-center">
-              Kirim
-            </button>
+            {/* Semua Tugas */}
+            <h2 className="mt-10 mb-4 text-xl font-semibold">Semua Tugas</h2>
+            {!allTasks.length ? (
+              <p className="text-gray-600">
+                Tidak ada tugas yang harus dikerjakan.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {allTasks.map((card) => (
+                  <Cards key={card.id} data={card} setData={setData} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-// Komponen TaskCard untuk menampilkan tugas
-const TaskCard = ({ title, description, dueDate }) => (
-  <div className="bg-white p-4 rounded-lg shadow-md">
-    <h3 className="font-bold">{title}</h3>
-    <p className="text-sm text-gray-600">{description}</p>
-    <p className="text-sm text-gray-600">📅 Tanggal Pengumpulan: {dueDate}</p>
-  </div>
-);
+}
 
 export default Tugas;

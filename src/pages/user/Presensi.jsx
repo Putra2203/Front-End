@@ -1,308 +1,251 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Navbar from './Navbar'; // Pastikan path file Navbar.jsx benar
-import { useNavigate } from 'react-router-dom'; // Untuk navigasi halaman
-import jwt_decode from "jwt-decode"; // Untuk decode token JWT
-import axios from 'axios'; // Untuk request ke server
-import { isUnauthorizedError } from '../../config/errorHandling'; // Untuk handle error otorisasi (ubah path sesuai dengan struktur proyek)
-import { axiosJWTuser } from '../../config/axiosJWT'; // Instance axios yang sudah di-setting JWT (ubah path sesuai struktur proyek)
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-// Fungsi untuk menghitung jarak menggunakan rumus Haversine
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371e3; // Radius Bumi dalam meter
-  const φ1 = (lat1 * Math.PI) / 180;
-  const φ2 = (lat2 * Math.PI) / 180;
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-  const Δλ = ((lon1 - lon2) * Math.PI) / 180;
-
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c; // Jarak dalam meter
-};
+import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import jwt_decode from "jwt-decode";
+import { showSuccessNotification } from "../../Components/User/toastSuccess";
+import { showErrorNotification } from "../../Components/User/toastFailed";
+import Sidebar from "./Navbar";
 
 const Presensi = () => {
-  const [imageSrc, setImageSrc] = useState(null);
-  const [stream, setStream] = useState(null);
-  const [location, setLocation] = useState(''); // Menyimpan lokasi pengguna
-  const [formData, setFormData] = useState({
-    nama: 'Putra22',  // Bisa diisi dari userData jika menggunakan API
-    hari: '',
-    jam: '',
-    kategori: 'Mahasiswa',
-    lokasi: '',
-  });
-  const [errorMessage, setErrorMessage] = useState(''); // Menyimpan pesan error
-  const [successMessage, setSuccessMessage] = useState(''); // Menyimpan pesan sukses
-
-  const magangLocation = {
-    latitude: -6.983109, // Lokasi magang yang baru
-    longitude: 110.413630,
-    radius: 500, // Radius batasan lokasi dalam meter (500 meter)
-  };
-
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const navigate = useNavigate(); // Hook untuk navigasi halaman
+  const [imageSrc, setImageSrc] = useState(null);
+  const [captureTime, setCaptureTime] = useState(null);
+  const [presensi, setPresensi] = useState({});
+  const [showModal, setShowModal] = useState(false); 
+  const navigate = useNavigate();
+
+  const isUnauthorizedError = (error) => {
+    return error.response && error.response.status === 401;
+  };
 
   useEffect(() => {
-    let mediaStream = null;
+    let stream;
 
-    // Autentikasi token JWT
-    const checkAuth = async () => {
+    const startCamera = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/account/token', {
+        await axios.get("http://localhost:3000/account/token", {
           headers: {
-            'role': "peserta_magang"
+            role: "peserta_magang",
           },
         });
-        const decoded = jwt_decode(response.data.token);
-        console.log('Decoded token:', decoded);
-
-        // Jika token valid, set data pengguna
-        setFormData((prevData) => ({
-          ...prevData,
-          nama: decoded.name, // Ganti 'name' dengan field sesuai dengan token
-        }));
-
-        // Mulai stream kamera
-        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-        }
-
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoRef.current.srcObject = stream;
       } catch (error) {
         if (isUnauthorizedError(error)) {
-          // Jika token tidak valid, arahkan ke halaman login
-          navigate('/');
+          navigate("/");
         }
-        console.error("Error verifying token: ", error);
+        console.error("Error accessing camera:", error);
       }
     };
 
-    // Jalankan fungsi autentikasi
-    checkAuth();
+    startCamera();
 
-    // Mendapatkan lokasi pengguna
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const lokasiPengguna = `${latitude}, ${longitude}`;
-          setLocation(lokasiPengguna);
-          setFormData((prevData) => ({
-            ...prevData,
-            lokasi: lokasiPengguna, // Memasukkan lokasi ke formData
-          }));
-
-          // Hitung jarak pengguna dari lokasi magang
-          const distance = calculateDistance(
-            latitude,
-            longitude,
-            magangLocation.latitude,
-            magangLocation.longitude
-          );
-
-          if (distance > magangLocation.radius) {
-            setErrorMessage(
-              `Anda berada di luar radius lokasi magang. Jarak: ${(distance / 1000).toFixed(2)} km.`
-            );
-          } else {
-            setErrorMessage(''); // Jika jarak dalam batas yang diizinkan
-          }
-        },
-        (error) => {
-          console.error("Error mendapatkan lokasi: ", error);
-        }
-      );
-    } else {
-      console.error("Geolocation tidak didukung oleh browser ini.");
-    }
-
-    // Cleanup saat komponen di-unmount, matikan kamera segera
     return () => {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach((track) => {
-          track.stop();  // Matikan semua track segera
-        });
-        console.log('Camera stream stopped immediately');
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop());
       }
     };
-  }, [navigate]); // Pastikan hanya dipanggil sekali
+  }, [navigate]);
 
-  const takePhoto = () => {
-    const context = canvasRef.current.getContext('2d');
-    
-    // Pastikan ukuran canvas sesuai dengan ukuran video
-    const videoWidth = videoRef.current.videoWidth;
-    const videoHeight = videoRef.current.videoHeight;
+  // Fungsi untuk mengambil data presensi dari backend
+  useEffect(() => {
+    const fetchPresensi = async () => {
+      try {
+        const ambilid = await axios.get("http://localhost:3000/account/token", {
+          headers: {
+            role: "peserta_magang",
+          },
+        });
+        const decoded = jwt_decode(ambilid.data.token);
 
-    // Set ukuran canvas agar sesuai dengan ukuran video
-    canvasRef.current.width = videoWidth;
-    canvasRef.current.height = videoHeight;
+        const response = await axios.get(
+          `http://localhost:3000/presensi/${decoded.userId}`,
+          {
+            headers: {
+              role: "peserta_magang",
+            },
+          }
+        );
+        setPresensi(response.data.presensi[0]); // Simpan data presensi dari respons
+      } catch (error) {
+        console.error("Error fetching presensi:", error);
+        if (isUnauthorizedError(error)) {
+          navigate("/");
+        }
+      }
+    };
 
-    // Gambar video ke canvas dengan proporsi yang benar
-    context.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
+    fetchPresensi();
+  }, [navigate]);
 
-    // Set hasil gambar dari canvas ke imageSrc
-    setImageSrc(canvasRef.current.toDataURL('image/png'));
+  const capture = async () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const context = canvas.getContext("2d");
+    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const capturedImageBlob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg")
+    );
+    const capturedImageFile = new File(
+      [capturedImageBlob],
+      "captured-image.jpg",
+      {
+        type: "image/jpeg",
+      }
+    );
+
+    setImageSrc(capturedImageFile);
+    setCaptureTime(new Date());
+    console.log("Captured Image:", capturedImageFile);
+
+    setShowModal(true); // Menampilkan modal setelah gambar diambil
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Jika ada pesan error (misalnya, berada di luar lokasi), batalkan pengiriman
-    if (errorMessage) {
-      return;
-    }
-
+  const uploadImage = async () => {
     try {
-      // Ambil token untuk autentikasi
-      const response = await axios.get('http://localhost:3000/account/token', {
+      const ambilid = await axios.get("http://localhost:3000/account/token", {
         headers: {
-          'role': "peserta_magang"
+          role: "peserta_magang",
         },
       });
 
-      const decoded = jwt_decode(response.data.token);
+      console.log("Token response:", ambilid.data);
 
-      // Simpan presensi dengan gambar dan data lainnya
-      const formData = new FormData();
-      formData.append('image', imageSrc);
-      formData.append('nama', decoded.name); // Sesuaikan dengan token
-      formData.append('lokasi', location);
+      const decoded = jwt_decode(ambilid.data.token);
 
-      const uploadResponse = await axiosJWTuser.post(`http://localhost:3000/user/presensi/${decoded.userId}`, formData, {
-        headers: {
-          'role': "peserta_magang",
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      console.log("Decoded token:", decoded);
 
-      console.log('Upload success:', uploadResponse.data);
-      setSuccessMessage("Presensi berhasil dikirim!");
-
-      // Stop kamera setelah presensi
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-        console.log('Camera stream stopped after form submit');
+      if (!imageSrc) {
+        throw new Error("No image captured");
       }
 
-      // Arahkan kembali ke halaman lain jika diperlukan
-      navigate('/user/Homepage');
+      const formData = new FormData();
+      formData.append("image", imageSrc);
 
+      console.log("FormData:", formData);
+
+      const response = await axios.patch(
+        `http://localhost:3000/user/presensi/${decoded.userId}/up`,
+        formData,
+        {
+          headers: {
+            role: "peserta_magang",
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Server Response:", response.data);
+      showSuccessNotification("Berhasil Melakukan Presensi");
+      setShowModal(false); // Menutup modal setelah berhasil mengirim presensi
     } catch (error) {
-      console.error('Error uploading presensi:', error);
-      setErrorMessage('Gagal mengirim presensi. Silakan coba lagi.');
+      console.error("Error object:", error);
+
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        console.error("Error response data:", error.response.data);
+        showErrorNotification(
+          `Gagal Melakukan Presensi: ${error.response.data.message}`
+        );
+      } else if (error.message) {
+        showErrorNotification(`Gagal Melakukan Presensi: ${error.message}`);
+      }
+
+      if (isUnauthorizedError(error)) {
+        navigate("/");
+      }
+
+      console.error("Error detail:", error);
     }
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
-      <div className="md:w-[13%]">
-        <Navbar />
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-4 md:p-10">
-        <h1 className="text-2xl md:text-3xl font-bold mb-8">Lakukan Presensi - SISAPPMA</h1>
-
-        <div className="bg-white p-6 rounded-lg shadow-md border flex flex-col md:flex-row gap-10 items-center justify-center">
-          <div className="relative">
-            {/* Kamera atau gambar hasil tangkapan */}
-            {!imageSrc ? (
-              <video ref={videoRef} autoPlay playsInline className="rounded-lg w-[320px] h-[400px] mb-4" />
-            ) : (
-              <img src={imageSrc} alt="Captured" className="rounded-lg w-[320px] h-[400px] mb-4" />
-            )}
-            <canvas ref={canvasRef} className="hidden" width="640" height="480"></canvas>
+    <div className="flex flex-col w-full">
+      <Sidebar />
+      <div className="pl-64">
+        <div className="container flex flex-col p-4">
+          <h2 className="text-4xl font-semibold font-poppins">
+            Lakukan Presensi - SISAPPMA
+          </h2>
+          <div className="flex items-center justify-center">
+            <div className="flex p-10 m-10 shadow-lg bg-slate-200 rounded-xl">
+              <div className="flex flex-col items-center justify-center gap-4 my-5 h-96">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="object-cover w-full h-full rounded-lg"
+                ></video>
+                <button onClick={capture} className="flex btn btn-primary">
+                  Ambil Gambar
+                </button>
+                {imageSrc && <p>Gambar berhasil diambil</p>}
+              </div>
+            </div>
+            <div className="flex ">
+              <div className="flex flex-col gap-4">
+                <h1 className="text-xl font-semibold underline font-poppins">
+                  Waktu Presensi
+                </h1>
+                <ul className="flex flex-col gap-4">
+                  <li className="p-4 rounded-lg shadow-md bg-slate-100">
+                    <p>Hari kerja Senin hingga Kamis</p>
+                    <p>• Absen pagi: 07:45 - 08:15</p>
+                    <p>• Absen sore: 15:45 - 16:15</p>
+                  </li>
+                  <li className="p-4 rounded-lg shadow-md bg-slate-100">
+                    <p>Hari Jumat</p>
+                    <p>• Absen pagi: 07:15 - 08:45</p>
+                    <p>• Absen sore: 13:45 - 14:15</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full md:w-auto">
-            <div className="grid grid-cols-2 gap-4 md:gap-8">
-              <label className="font-semibold">Nama :</label>
-              <input
-                type="text"
-                value={formData.nama}
-                disabled
-                className="border p-2 rounded-lg bg-gray-200 font-medium"
-              />
-
-              <label className="font-semibold">Hari :</label>
-              <input
-                type="text"
-                value={formData.hari}
-                disabled
-                className="border p-2 rounded-lg bg-gray-200 font-medium"
-              />
-
-              <label className="font-semibold">Jam :</label>
-              <input
-                type="text"
-                value={formData.jam}
-                disabled
-                className="border p-2 rounded-lg bg-gray-200 font-medium"
-              />
-
-              <label className="font-semibold">Kategori :</label>
-              <input
-                type="text"
-                value={formData.kategori}
-                disabled
-                className="border p-2 rounded-lg bg-gray-200 font-medium"
-              />
-
-              <label className="font-semibold">Lokasi :</label>
-              <input
-                type="text"
-                value={formData.lokasi}
-                disabled
-                className="border p-2 rounded-lg bg-gray-200 font-medium"
-              />
-            </div>
-
-            <p className="text-sm text-gray-500 mt-2 font-light">
-              *Pengambilan Foto maks. 1 mahasiswa
-            </p>
-
-            {/* Tampilkan pesan error jika ada */}
-            {errorMessage && (
-              <p className="text-red-600 mt-2">{errorMessage}</p>
-            )}
-
-            <div className="flex gap-4 mt-4 justify-end">
-              <button
-                type="button"
-                onClick={takePhoto}
-                className="bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
-              >
-                Ambil Foto
-              </button>
-
-              <button
-                type="submit"
-                className="bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300"
-                disabled={!!errorMessage} // Disable jika ada error
-              >
-                Kirim Absensi
-              </button>
-            </div>
-          </form>
         </div>
-
-        {/* Notifikasi sukses */}
-        {successMessage && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-6" role="alert">
-            <strong className="font-bold">🎉 {successMessage}</strong>
-            <span className="block sm:inline"> Presensi berhasil disimpan.</span>
-          </div>
-        )}
       </div>
-      <ToastContainer />
+
+      {/* Modal menggunakan DaisyUI */}
+      {showModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Konfirmasi Presensi</h3>
+            <ul className="py-4">
+              <li>
+                <strong>Nama:</strong> {presensi?.nama || "Tidak tersedia"}
+              </li>
+              <li>
+                <strong>Tanggal:</strong>{" "}
+                {presensi?.tanggal || "Tidak tersedia"}
+              </li>
+              <li>
+                <strong>Hari:</strong> {presensi?.hari || "Tidak tersedia"}
+              </li>
+              <li>
+                <strong>Check-in:</strong>{" "}
+                {presensi?.check_in || "Belum check-in"}
+              </li>
+              <li>
+                <strong>Check-out:</strong>{" "}
+                {presensi?.check_out || "Belum check-out"}
+              </li>
+            </ul>
+            <div className="modal-action">
+              <button onClick={uploadImage} className="btn btn-primary">
+                Kirim Presensi
+              </button>
+              <button onClick={() => setShowModal(false)} className="btn">
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

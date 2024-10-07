@@ -1,112 +1,199 @@
-import React, { useEffect, useState } from 'react';
-import Sidebar from './Navbar';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import Sidebar from "./Navbar";
+import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { useNavigate } from 'react-router-dom';
 
 const Data = () => {
+  // Format waktu untuk presensi
+  function formatDueDate(inputDate) {
+    const date = new Date(inputDate);
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return hours + ":" + minutes;
+  }
+
   const [presensi, setPresensi] = useState([]);
-  const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+
+  // State untuk pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; // Tentukan berapa banyak data per halaman
 
   useEffect(() => {
-    refreshToken(); // Melakukan refresh token ketika komponen dimuat
+    const fetchDataAndPresensiData = async () => {
+      try {
+        const ambilid = await axios.get("http://localhost:3000/account/token", {
+          headers: {
+            role: "peserta_magang",
+          },
+        });
+
+        const decoded = jwt_decode(ambilid.data.token);
+        const response = await axios.get(
+          `http://localhost:3000/user/presensi/${decoded.userId}`
+        );
+
+        const dataWithKosong = response.data.presensi.map((item) => ({
+          ...item,
+          check_in: item.check_in
+            ? formatDueDate(item.check_in)
+            : "Belum Presensi",
+          check_out: item.check_out
+            ? formatDueDate(item.check_out)
+            : "Belum Presensi",
+          image_url_in: item.image_url_in || "Belum Ada Gambar",
+          image_url_out: item.image_url_out || "Belum Ada Gambar",
+        }));
+
+        setPresensi(dataWithKosong);
+      } catch (error) {
+        console.error("Error fetching data", error);
+      }
+    };
+
+    fetchDataAndPresensiData();
   }, []);
 
-  const refreshToken = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/account/token', {
-        headers: {
-          'role': "peserta_magang"
-        }
-      });
-      const decoded = jwt_decode(response.data.token);
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setShowImageModal(true);
+  };
 
-      // Menyimpan token untuk penggunaan API berikutnya
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+  const closeImageModal = () => {
+    setShowImageModal(false);
+  };
 
-      // Setelah token diperbarui, ambil data presensi
-      fetchPresensiData();
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      // Jika token tidak valid, arahkan ke halaman login
-      navigate('/');
+  // Logika Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = presensi.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(presensi.length / itemsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
-  const fetchPresensiData = async () => {
-    try {
-      const response = await axios.get('/api/presensi');
-      setPresensi(response.data);
-    } catch (error) {
-      console.error('Error fetching presensi data:', error);
-      if (error.response && error.response.status === 401) {
-        navigate('/'); // Arahkan ke halaman login jika tidak terautentikasi
-      }
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="flex flex-col w-full">
       {/* Sidebar */}
-      <div className="md:w-[13%]">
-        <Sidebar />
-      </div>
+      <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 p-6 md:p-10">
-        <h1 className="text-3xl font-bold mb-8">History Presensi - SISAPPMA</h1>
+      <div className="pl-64">
+        <div className="container flex flex-col p-4">
+          <h1 className="mb-8 text-3xl font-bold">
+            History Presensi - SISAPPMA
+          </h1>
 
-        <div className="bg-white p-6 rounded-lg shadow-md overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Tanggal
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Check-in
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Lokasi Check-in
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Check-Out
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Lokasi Check-Out
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Image In
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                  Image Out
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {presensi.length > 0 ? (
-                presensi.map((item, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{item.tanggal}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{item.checkIn}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{item.lokasiCheckIn}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{item.checkOut}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{item.lokasiCheckOut}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{item.imageIn ? 'Ada' : '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">{item.imageOut ? 'Ada' : '-'}</td>
-                  </tr>
-                ))
-              ) : (
+          <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
+            <table className="table w-full text-center">
+              <thead>
                 <tr>
-                  <td colSpan="7" className="px-6 py-4 text-center text-sm">
-                    Tidak ada data presensi.
-                  </td>
+                  <th>Tanggal</th>
+                  <th>Check-in</th>
+                  <th>Lokasi Check-in</th>
+                  <th>Check-Out</th>
+                  <th>Lokasi Check-Out</th>
+                  <th>Image In</th>
+                  <th>Image Out</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.tanggal}</td>
+                      <td>{item.check_in}</td>
+                      <td>{item.lokasiCheckIn}</td>
+                      <td>{item.check_out}</td>
+                      <td>{item.lokasiCheckOut}</td>
+                      <td>
+                        <span
+                          className="text-blue-500 cursor-pointer"
+                          onClick={() => handleImageClick(item.image_url_in)}
+                        >
+                          {item.image_url_in === "Belum Ada Gambar"
+                            ? "Belum Presensi"
+                            : "Lihat Gambar"}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className="text-blue-500 cursor-pointer"
+                          onClick={() => handleImageClick(item.image_url_out)}
+                        >
+                          {item.image_url_out === "Belum Ada Gambar"
+                            ? "Belum Presensi"
+                            : "Lihat Gambar"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-4 text-sm text-center">
+                      Tidak ada data presensi.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-center">
+            <div className="mt-4 join">
+              <button
+                className="join-item btn"
+                onClick={prevPage}
+                disabled={currentPage === 1}
+              >
+                «
+              </button>
+              <button className="join-item btn">
+                Page {currentPage} of {totalPages}
+              </button>
+              <button
+                className="join-item btn"
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+              >
+                »
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Modal untuk gambar */}
+      {showImageModal && selectedImage && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-4 bg-white rounded-lg shadow-lg">
+            <img
+              src={selectedImage}
+              alt="Presensi"
+              className="max-w-full max-h-full"
+            />
+            <button
+              className="px-4 py-2 mt-4 text-white bg-red-500 rounded-lg"
+              onClick={closeImageModal}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
