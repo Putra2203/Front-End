@@ -4,15 +4,6 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 
 const Data = () => {
-  // Format waktu untuk presensi
-  function formatDueDate(inputDate) {
-    const date = new Date(inputDate);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    return hours + ":" + minutes;
-  }
-
   const [presensi, setPresensi] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -35,16 +26,13 @@ const Data = () => {
           `http://localhost:3000/user/presensi/${decoded.userId}`
         );
 
+        // Data dari controller sudah diformat, jadi langsung gunakan
         const dataWithKosong = response.data.presensi.map((item) => ({
           ...item,
-          check_in: item.check_in
-            ? formatDueDate(item.check_in)
-            : "Belum Presensi",
-          check_out: item.check_out
-            ? formatDueDate(item.check_out)
-            : "Belum Presensi",
-          image_url_in: item.image_url_in || "Belum Ada Gambar",
-          image_url_out: item.image_url_out || "Belum Ada Gambar",
+          check_in: item.check_in || "Belum Presensi", // Jika null, tampilkan "Belum Presensi"
+          check_out: item.check_out || "Belum Presensi",
+          image_url_in: item.image_url_in || null, // null jika tidak ada gambar
+          image_url_out: item.image_url_out || null, // null jika tidak ada gambar
         }));
 
         setPresensi(dataWithKosong);
@@ -57,8 +45,11 @@ const Data = () => {
   }, []);
 
   const handleImageClick = (imageUrl) => {
-    setSelectedImage(imageUrl);
-    setShowImageModal(true);
+    console.log("Image URL clicked:", imageUrl); // Log URL yang di-klik
+    if (imageUrl) {
+      setSelectedImage(imageUrl);
+      setShowImageModal(true);
+    }
   };
 
   const closeImageModal = () => {
@@ -100,7 +91,9 @@ const Data = () => {
             <table className="table w-full text-center">
               <thead>
                 <tr>
+                  <th>Nama</th>
                   <th>Tanggal</th>
+                  <th>Hari</th>
                   <th>Check-in</th>
                   <th>Lokasi Check-in</th>
                   <th>Check-Out</th>
@@ -113,36 +106,42 @@ const Data = () => {
                 {currentItems.length > 0 ? (
                   currentItems.map((item, index) => (
                     <tr key={index}>
+                      <td>{item.nama}</td>
                       <td>{item.tanggal}</td>
+                      <td>{item.hari}</td>
                       <td>{item.check_in}</td>
                       <td>{item.lokasiCheckIn}</td>
                       <td>{item.check_out}</td>
                       <td>{item.lokasiCheckOut}</td>
                       <td>
-                        <span
-                          className="text-blue-500 cursor-pointer"
-                          onClick={() => handleImageClick(item.image_url_in)}
-                        >
-                          {item.image_url_in === "Belum Ada Gambar"
-                            ? "Belum Presensi"
-                            : "Lihat Gambar"}
-                        </span>
+                        {item.image_url_in ? ( // Hanya tampilkan jika gambar ada
+                          <span
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => handleImageClick(item.image_url_in)}
+                          >
+                            Lihat Gambar
+                          </span>
+                        ) : (
+                          "Belum Presensi"
+                        )}
                       </td>
                       <td>
-                        <span
-                          className="text-blue-500 cursor-pointer"
-                          onClick={() => handleImageClick(item.image_url_out)}
-                        >
-                          {item.image_url_out === "Belum Ada Gambar"
-                            ? "Belum Presensi"
-                            : "Lihat Gambar"}
-                        </span>
+                        {item.image_url_out ? ( // Hanya tampilkan jika gambar ada
+                          <span
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => handleImageClick(item.image_url_out)}
+                          >
+                            Lihat Gambar
+                          </span>
+                        ) : (
+                          "Belum Presensi"
+                        )}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="px-6 py-4 text-sm text-center">
+                    <td colSpan="9" className="px-6 py-4 text-sm text-center">
                       Tidak ada data presensi.
                     </td>
                   </tr>
