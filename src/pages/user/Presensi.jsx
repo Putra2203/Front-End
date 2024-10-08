@@ -76,6 +76,14 @@ const Presensi = () => {
           check_out: item.check_out || "Belum Presensi",
           image_url_in: item.image_url_in || null,
           image_url_out: item.image_url_out || null,
+          lokasi_in:
+            item.latitude_in && item.longitude_in
+              ? `${item.latitude_in}, ${item.longitude_in}`
+              : "Lokasi tidak tersedia",
+          lokasi_out:
+            item.latitude_out && item.longitude_out
+              ? `${item.latitude_out}, ${item.longitude_out}`
+              : "Lokasi tidak tersedia",
         }));
 
         setPresensi(dataWithKosong);
@@ -103,7 +111,9 @@ const Presensi = () => {
           },
           (error) => {
             console.error("Error getting location:", error);
-            showErrorNotification("Gagal mendapatkan lokasi. Aktifkan GPS Anda.");
+            showErrorNotification(
+              "Gagal mendapatkan lokasi. Aktifkan GPS Anda."
+            );
           }
         );
       } else {
@@ -169,7 +179,6 @@ const Presensi = () => {
     setImageSrc(capturedImageFile);
     setCaptureTime(new Date());
     console.log("Captured Image:", capturedImageFile);
-
     setShowModal(true); // Menampilkan modal setelah gambar diambil
   };
 
@@ -243,11 +252,12 @@ const Presensi = () => {
                   ref={videoRef}
                   autoPlay
                   playsInline
-                  className="object-cover w-full h-full rounded-lg"
+                  className="object-cover rounded-lg h-96 w-96"
                 ></video>
                 {userLocation && (
                   <p>
-                    Lokasi Anda: {userLocation.latitude.toFixed(5)}, {userLocation.longitude.toFixed(5)}
+                    Lokasi Anda: {userLocation.latitude.toFixed(5)},{" "}
+                    {userLocation.longitude.toFixed(5)}
                   </p>
                 )}
                 {userLocation && (
@@ -301,27 +311,44 @@ const Presensi = () => {
                 <strong>Nama:</strong> {presensi[0]?.nama || "Tidak tersedia"}
               </li>
               <li>
-                <strong>Tanggal:</strong> {new Date().toLocaleDateString("id-ID")}
+                <strong>Tanggal:</strong>{" "}
+                {new Date().toLocaleDateString("id-ID")}
               </li>
               <li>
-                <strong>Hari:</strong> {new Date().toLocaleDateString("en-US", { weekday: 'long' })}
+                <strong>Hari:</strong>{" "}
+                {new Date().toLocaleDateString("en-US", { weekday: "long" })}
               </li>
               <li>
-                <strong>Check-in:</strong> {presensi[0]?.check_in || "Belum check-in"}
+                <strong>Check-in:</strong>{" "}
+                {presensi[0]?.check_in || "Belum check-in"}
               </li>
               <li>
-                <strong>Check-out:</strong> {presensi[0]?.check_out || "Belum check-out"}
+                <strong>Check-out:</strong>{" "}
+                {presensi[0]?.check_out || "Belum check-out"}
               </li>
               <li>
-                <strong>Lokasi Anda:</strong> {userLocation?.latitude.toFixed(5)}, {userLocation?.longitude.toFixed(5)}
+                <strong>Lokasi Anda:</strong>{" "}
+                {userLocation?.latitude.toFixed(5)},{" "}
+                {userLocation?.longitude.toFixed(5)}
               </li>
               <li>
-                <strong>Jarak ke lokasi presensi:</strong> {getDistance(
+                <strong>Lokasi Check-in:</strong>{" "}
+                {presensi[0]?.lokasi_in || "Lokasi tidak tersedia"}
+              </li>
+              <li>
+                <strong>Lokasi Check-out:</strong>{" "}
+                {presensi[0]?.lokasi_out || "Lokasi tidak tersedia"}
+              </li>
+
+              <li>
+                <strong>Jarak ke lokasi presensi:</strong>{" "}
+                {getDistance(
                   userLocation?.latitude,
                   userLocation?.longitude,
                   allowedLatitude,
                   allowedLongitude
-                ).toFixed(2)} meter
+                ).toFixed(2)}{" "}
+                meter
               </li>
             </ul>
             <div className="modal-action">

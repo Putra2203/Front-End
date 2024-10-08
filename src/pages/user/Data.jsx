@@ -31,8 +31,14 @@ const Data = () => {
           check_out: item.check_out || "Belum Presensi",
           image_url_in: item.image_url_in || null,
           image_url_out: item.image_url_out || null,
-          lokasiCheckIn: item.lokasi_in || "Lokasi tidak tersedia",
-          lokasiCheckOut: item.lokasi_out || "Lokasi tidak tersedia",
+          lokasiCheckIn:
+            item.latitude_in && item.longitude_in
+              ? `${item.latitude_in}, ${item.longitude_in}`
+              : "Lokasi tidak tersedia",
+          lokasiCheckOut:
+            item.latitude_out && item.longitude_out
+              ? `${item.latitude_out}, ${item.longitude_out}`
+              : "Lokasi tidak tersedia",
         }));
 
         setPresensi(dataWithKosong);
@@ -78,7 +84,9 @@ const Data = () => {
       <Sidebar />
       <div className="pl-64">
         <div className="container flex flex-col p-4">
-          <h1 className="mb-8 text-3xl font-bold">History Presensi - SISAPPMA</h1>
+          <h1 className="mb-8 text-3xl font-bold">
+            History Presensi - SISAPPMA
+          </h1>
           <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
             <table className="table w-full text-center">
               <thead>
