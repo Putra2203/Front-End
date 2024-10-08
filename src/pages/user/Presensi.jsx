@@ -11,7 +11,7 @@ const Presensi = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [captureTime, setCaptureTime] = useState(null);
   const [presensi, setPresensi] = useState([]);
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const isUnauthorizedError = (error) => {
@@ -67,10 +67,10 @@ const Presensi = () => {
         const dataWithKosong = response.data.presensi.map((item) => ({
           ...item,
           nama: item.nama,
-          check_in: item.check_in || "Belum Presensi", // Jika null, tampilkan "Belum Presensi"
+          check_in: item.check_in || "Belum Presensi",
           check_out: item.check_out || "Belum Presensi",
-          image_url_in: item.image_url_in || null, // null jika tidak ada gambar
-          image_url_out: item.image_url_out || null, // null jika tidak ada gambar
+          image_url_in: item.image_url_in || null,
+          image_url_out: item.image_url_out || null,
         }));
 
         setPresensi(dataWithKosong);
@@ -193,7 +193,7 @@ const Presensi = () => {
                 {imageSrc && <p>Gambar berhasil diambil</p>}
               </div>
             </div>
-            <div className="flex ">
+            <div className="flex">
               <div className="flex flex-col gap-4">
                 <h1 className="text-xl font-semibold underline font-poppins">
                   Waktu Presensi
@@ -218,37 +218,37 @@ const Presensi = () => {
 
       {/* Modal menggunakan DaisyUI */}
       {showModal && (
-  <div className="modal modal-open">
-    <div className="modal-box">
-      <h3 className="text-lg font-bold">Konfirmasi Presensi</h3>
-      <ul className="py-4">
-        <li>
-          <strong>Nama:</strong> {presensi[0]?.nama || "Tidak tersedia"}
-        </li>
-        <li>
-          <strong>Tanggal:</strong> {new Date().toLocaleDateString("id-ID")} {/* Tanggal hari ini */}
-        </li>
-        <li>
-          <strong>Hari:</strong> {new Date().toLocaleDateString("en-US", { weekday: 'long' })} {/* Hari hari ini */}
-        </li>
-        <li>
-          <strong>Check-in:</strong> {presensi[0]?.check_in || "Belum check-in"}
-        </li>
-        <li>
-          <strong>Check-out:</strong> {presensi[0]?.check_out || "Belum check-out"}
-        </li>
-      </ul>
-      <div className="modal-action">
-        <button onClick={uploadImage} className="btn btn-primary">
-          Kirim Presensi
-        </button>
-        <button onClick={() => setShowModal(false)} className="btn">
-          Batal
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Konfirmasi Presensi</h3>
+            <ul className="py-4">
+              <li>
+                <strong>Nama:</strong> {presensi[0]?.nama || "Tidak tersedia"}
+              </li>
+              <li>
+                <strong>Tanggal:</strong> {new Date().toLocaleDateString("id-ID")} {/* Tanggal hari ini */}
+              </li>
+              <li>
+                <strong>Hari:</strong> {new Date().toLocaleDateString("en-US", { weekday: 'long' })} {/* Hari hari ini */}
+              </li>
+              <li>
+                <strong>Check-in:</strong> {presensi[0]?.check_in || "Belum check-in"}
+              </li>
+              <li>
+                <strong>Check-out:</strong> {presensi[0]?.check_out || "Belum check-out"}
+              </li>
+            </ul>
+            <div className="modal-action">
+              <button onClick={uploadImage} className="btn btn-primary">
+                Kirim Presensi
+              </button>
+              <button onClick={() => setShowModal(false)} className="btn">
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
