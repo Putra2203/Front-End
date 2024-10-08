@@ -10,7 +10,7 @@ const Presensi = () => {
   const videoRef = useRef(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [captureTime, setCaptureTime] = useState(null);
-  const [presensi, setPresensi] = useState({});
+  const [presensi, setPresensi] = useState([]);
   const [showModal, setShowModal] = useState(false); 
   const navigate = useNavigate();
 
@@ -48,35 +48,41 @@ const Presensi = () => {
     };
   }, [navigate]);
 
-  // Fungsi untuk mengambil data presensi dari backend
+  // Mengambil data presensi dari backend
   useEffect(() => {
-    const fetchPresensi = async () => {
+    const fetchDataAndPresensiData = async () => {
       try {
         const ambilid = await axios.get("http://localhost:3000/account/token", {
           headers: {
             role: "peserta_magang",
           },
         });
-        const decoded = jwt_decode(ambilid.data.token);
 
+        const decoded = jwt_decode(ambilid.data.token);
         const response = await axios.get(
-          `http://localhost:3000/presensi/${decoded.userId}`,
-          {
-            headers: {
-              role: "peserta_magang",
-            },
-          }
+          `http://localhost:3000/user/presensi/${decoded.userId}`
         );
-        setPresensi(response.data.presensi[0]); // Simpan data presensi dari respons
+
+        // Data dari controller sudah diformat, jadi langsung gunakan
+        const dataWithKosong = response.data.presensi.map((item) => ({
+          ...item,
+          nama: item.nama,
+          check_in: item.check_in || "Belum Presensi", // Jika null, tampilkan "Belum Presensi"
+          check_out: item.check_out || "Belum Presensi",
+          image_url_in: item.image_url_in || null, // null jika tidak ada gambar
+          image_url_out: item.image_url_out || null, // null jika tidak ada gambar
+        }));
+
+        setPresensi(dataWithKosong);
       } catch (error) {
-        console.error("Error fetching presensi:", error);
+        console.error("Error fetching data", error);
         if (isUnauthorizedError(error)) {
           navigate("/");
         }
       }
     };
 
-    fetchPresensi();
+    fetchDataAndPresensiData();
   }, [navigate]);
 
   const capture = async () => {
@@ -212,40 +218,37 @@ const Presensi = () => {
 
       {/* Modal menggunakan DaisyUI */}
       {showModal && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="text-lg font-bold">Konfirmasi Presensi</h3>
-            <ul className="py-4">
-              <li>
-                <strong>Nama:</strong> {presensi?.nama || "Tidak tersedia"}
-              </li>
-              <li>
-                <strong>Tanggal:</strong>{" "}
-                {presensi?.tanggal || "Tidak tersedia"}
-              </li>
-              <li>
-                <strong>Hari:</strong> {presensi?.hari || "Tidak tersedia"}
-              </li>
-              <li>
-                <strong>Check-in:</strong>{" "}
-                {presensi?.check_in || "Belum check-in"}
-              </li>
-              <li>
-                <strong>Check-out:</strong>{" "}
-                {presensi?.check_out || "Belum check-out"}
-              </li>
-            </ul>
-            <div className="modal-action">
-              <button onClick={uploadImage} className="btn btn-primary">
-                Kirim Presensi
-              </button>
-              <button onClick={() => setShowModal(false)} className="btn">
-                Batal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="modal modal-open">
+    <div className="modal-box">
+      <h3 className="text-lg font-bold">Konfirmasi Presensi</h3>
+      <ul className="py-4">
+        <li>
+          <strong>Nama:</strong> {presensi[0]?.nama || "Tidak tersedia"}
+        </li>
+        <li>
+          <strong>Tanggal:</strong> {new Date().toLocaleDateString("id-ID")} {/* Tanggal hari ini */}
+        </li>
+        <li>
+          <strong>Hari:</strong> {new Date().toLocaleDateString("en-US", { weekday: 'long' })} {/* Hari hari ini */}
+        </li>
+        <li>
+          <strong>Check-in:</strong> {presensi[0]?.check_in || "Belum check-in"}
+        </li>
+        <li>
+          <strong>Check-out:</strong> {presensi[0]?.check_out || "Belum check-out"}
+        </li>
+      </ul>
+      <div className="modal-action">
+        <button onClick={uploadImage} className="btn btn-primary">
+          Kirim Presensi
+        </button>
+        <button onClick={() => setShowModal(false)} className="btn">
+          Batal
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };
