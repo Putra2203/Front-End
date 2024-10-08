@@ -12,7 +12,12 @@ const Presensi = () => {
   const [captureTime, setCaptureTime] = useState(null);
   const [presensi, setPresensi] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
   const navigate = useNavigate();
+
+  const allowedLatitude = -6.983066906515344;
+  const allowedLongitude = 110.41367971193375;
+  const allowedRadius = 1500; // radius in meters
 
   const isUnauthorizedError = (error) => {
     return error.response && error.response.status === 401;
@@ -85,7 +90,66 @@ const Presensi = () => {
     fetchDataAndPresensiData();
   }, [navigate]);
 
+  // Mengambil lokasi pengguna
+  useEffect(() => {
+    const getLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setUserLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            showErrorNotification("Gagal mendapatkan lokasi. Aktifkan GPS Anda.");
+          }
+        );
+      } else {
+        showErrorNotification("Geolocation tidak didukung di browser ini.");
+      }
+    };
+
+    getLocation();
+  }, []);
+
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = toRad(lat1);
+    const φ2 = toRad(lat2);
+    const Δφ = toRad(lat2 - lat1);
+    const Δλ = toRad(lon2 - lon1);
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+  };
+
   const capture = async () => {
+    if (!userLocation) {
+      showErrorNotification("Gagal mengambil gambar. Lokasi tidak tersedia.");
+      return;
+    }
+
+    const distance = getDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      allowedLatitude,
+      allowedLongitude
+    );
+
+    if (distance > allowedRadius) {
+      showErrorNotification(
+        `Anda berada di luar radius ${allowedRadius} meter dari lokasi yang diizinkan.`
+      );
+      return;
+    }
+
     const canvas = document.createElement("canvas");
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
@@ -117,11 +181,7 @@ const Presensi = () => {
         },
       });
 
-      console.log("Token response:", ambilid.data);
-
       const decoded = jwt_decode(ambilid.data.token);
-
-      console.log("Decoded token:", decoded);
 
       if (!imageSrc) {
         throw new Error("No image captured");
@@ -129,8 +189,8 @@ const Presensi = () => {
 
       const formData = new FormData();
       formData.append("image", imageSrc);
-
-      console.log("FormData:", formData);
+      formData.append("latitude", userLocation.latitude);
+      formData.append("longitude", userLocation.longitude);
 
       const response = await axios.patch(
         `http://localhost:3000/user/presensi/${decoded.userId}/up`,
@@ -143,7 +203,6 @@ const Presensi = () => {
         }
       );
 
-      console.log("Server Response:", response.data);
       showSuccessNotification("Berhasil Melakukan Presensi");
       setShowModal(false); // Menutup modal setelah berhasil mengirim presensi
     } catch (error) {
@@ -154,7 +213,6 @@ const Presensi = () => {
         error.response.data &&
         error.response.data.message
       ) {
-        console.error("Error response data:", error.response.data);
         showErrorNotification(
           `Gagal Melakukan Presensi: ${error.response.data.message}`
         );
@@ -187,6 +245,23 @@ const Presensi = () => {
                   playsInline
                   className="object-cover w-full h-full rounded-lg"
                 ></video>
+                {userLocation && (
+                  <p>
+                    Lokasi Anda: {userLocation.latitude.toFixed(5)}, {userLocation.longitude.toFixed(5)}
+                  </p>
+                )}
+                {userLocation && (
+                  <p>
+                    Jarak ke lokasi presensi:{" "}
+                    {getDistance(
+                      userLocation.latitude,
+                      userLocation.longitude,
+                      allowedLatitude,
+                      allowedLongitude
+                    ).toFixed(2)}{" "}
+                    meter
+                  </p>
+                )}
                 <button onClick={capture} className="flex btn btn-primary">
                   Ambil Gambar
                 </button>
@@ -226,16 +301,27 @@ const Presensi = () => {
                 <strong>Nama:</strong> {presensi[0]?.nama || "Tidak tersedia"}
               </li>
               <li>
-                <strong>Tanggal:</strong> {new Date().toLocaleDateString("id-ID")} {/* Tanggal hari ini */}
+                <strong>Tanggal:</strong> {new Date().toLocaleDateString("id-ID")}
               </li>
               <li>
-                <strong>Hari:</strong> {new Date().toLocaleDateString("en-US", { weekday: 'long' })} {/* Hari hari ini */}
+                <strong>Hari:</strong> {new Date().toLocaleDateString("en-US", { weekday: 'long' })}
               </li>
               <li>
                 <strong>Check-in:</strong> {presensi[0]?.check_in || "Belum check-in"}
               </li>
               <li>
                 <strong>Check-out:</strong> {presensi[0]?.check_out || "Belum check-out"}
+              </li>
+              <li>
+                <strong>Lokasi Anda:</strong> {userLocation?.latitude.toFixed(5)}, {userLocation?.longitude.toFixed(5)}
+              </li>
+              <li>
+                <strong>Jarak ke lokasi presensi:</strong> {getDistance(
+                  userLocation?.latitude,
+                  userLocation?.longitude,
+                  allowedLatitude,
+                  allowedLongitude
+                ).toFixed(2)} meter
               </li>
             </ul>
             <div className="modal-action">

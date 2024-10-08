@@ -8,9 +8,8 @@ const Data = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showImageModal, setShowImageModal] = useState(false);
 
-  // State untuk pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Tentukan berapa banyak data per halaman
+  const itemsPerPage = 8;
 
   useEffect(() => {
     const fetchDataAndPresensiData = async () => {
@@ -26,13 +25,14 @@ const Data = () => {
           `http://localhost:3000/user/presensi/${decoded.userId}`
         );
 
-        // Data dari controller sudah diformat, jadi langsung gunakan
         const dataWithKosong = response.data.presensi.map((item) => ({
           ...item,
-          check_in: item.check_in || "Belum Presensi", // Jika null, tampilkan "Belum Presensi"
+          check_in: item.check_in || "Belum Presensi",
           check_out: item.check_out || "Belum Presensi",
-          image_url_in: item.image_url_in || null, // null jika tidak ada gambar
-          image_url_out: item.image_url_out || null, // null jika tidak ada gambar
+          image_url_in: item.image_url_in || null,
+          image_url_out: item.image_url_out || null,
+          lokasiCheckIn: item.lokasi_in || "Lokasi tidak tersedia",
+          lokasiCheckOut: item.lokasi_out || "Lokasi tidak tersedia",
         }));
 
         setPresensi(dataWithKosong);
@@ -45,7 +45,6 @@ const Data = () => {
   }, []);
 
   const handleImageClick = (imageUrl) => {
-    console.log("Image URL clicked:", imageUrl); // Log URL yang di-klik
     if (imageUrl) {
       setSelectedImage(imageUrl);
       setShowImageModal(true);
@@ -56,7 +55,6 @@ const Data = () => {
     setShowImageModal(false);
   };
 
-  // Logika Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = presensi.slice(indexOfFirstItem, indexOfLastItem);
@@ -77,16 +75,10 @@ const Data = () => {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Sidebar */}
       <Sidebar />
-
-      {/* Main Content */}
       <div className="pl-64">
         <div className="container flex flex-col p-4">
-          <h1 className="mb-8 text-3xl font-bold">
-            History Presensi - SISAPPMA
-          </h1>
-
+          <h1 className="mb-8 text-3xl font-bold">History Presensi - SISAPPMA</h1>
           <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
             <table className="table w-full text-center">
               <thead>
@@ -114,7 +106,7 @@ const Data = () => {
                       <td>{item.check_out}</td>
                       <td>{item.lokasiCheckOut}</td>
                       <td>
-                        {item.image_url_in ? ( // Hanya tampilkan jika gambar ada
+                        {item.image_url_in ? (
                           <span
                             className="text-blue-500 cursor-pointer"
                             onClick={() => handleImageClick(item.image_url_in)}
@@ -126,7 +118,7 @@ const Data = () => {
                         )}
                       </td>
                       <td>
-                        {item.image_url_out ? ( // Hanya tampilkan jika gambar ada
+                        {item.image_url_out ? (
                           <span
                             className="text-blue-500 cursor-pointer"
                             onClick={() => handleImageClick(item.image_url_out)}
@@ -150,7 +142,6 @@ const Data = () => {
             </table>
           </div>
 
-          {/* Pagination */}
           <div className="flex justify-center">
             <div className="mt-4 join">
               <button
@@ -175,7 +166,6 @@ const Data = () => {
         </div>
       </div>
 
-      {/* Modal untuk gambar */}
       {showImageModal && selectedImage && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-4 bg-white rounded-lg shadow-lg">
