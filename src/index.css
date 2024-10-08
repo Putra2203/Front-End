@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: #F5F5F5;
+  color: black;
+}
+
 .swiper-button-next {
   @apply text-primary; /* Tailwind utility to set text color */
   @apply hover:text-slate-500; /* Hover effect */

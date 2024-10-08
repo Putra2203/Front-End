@@ -1,12 +1,14 @@
 import { axiosJWTadmin } from "../config/axiosJWT";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditUser from "../Components/Admin/EditUser";
 import AddUser from "../Components/Admin/AddUser";
 import NavSidebar from "./NavSidebar";
 import { IoIosSearch } from "react-icons/io";
 import { HiOutlinePlusSmall } from "react-icons/hi2";
+
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
@@ -135,6 +137,22 @@ export const Peserta = () => {
       setUsers(allUsers); // Reset ke data asli jika tidak ada bulan yang dipilih
     }
   };
+
+  const deleteUser = async (id) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
+      try {
+        await axiosJWTadmin.delete(
+          `http://localhost:3000/admin/peserta/${id}/delete`
+        );
+        getUsers();
+        toast.success("Pengguna berhasil dihapus.");
+      } catch (error) {
+        navigate("/");
+        toast.error("Gagal menghapus pengguna.");
+        console.log(error);
+      }
+    }
+  };
   
 
   return (
@@ -251,6 +269,7 @@ export const Peserta = () => {
                           <button
                             className="text-white bg-red-500 rounded-3xl hover:bg-slate-400"
                             style={{ minWidth: "60px" }}
+                            onClick={() => deleteUser(user.id)}
                           >
                             Delete
                           </button>
