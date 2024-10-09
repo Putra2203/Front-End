@@ -4,23 +4,29 @@ import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { hitungPersentaseKehadiran } from "../../Components/User/percantage";
+import SisaWaktuMagang from "../../Components/User/SisaWaktuMagang";
 
 const UserPages = () => {
   const [userData, setUserData] = useState({
     profilePicture: "",
     name: "",
     username: "",
-    remainingTime: "",
+    remainingTime: null,
     attendancePercentage: 0,
   });
   const [presensi, setPresensi] = useState([]);
   const [penugasan, setPenugasan] = useState([]);
   const navigate = useNavigate();
 
+  // Hitung persentase kehadiran menggunakan data presensi
+  const attendancePercentage = hitungPersentaseKehadiran(presensi);
+
   useEffect(() => {
     refreshToken();
   }, []);
 
+  // Fungsi untuk merefresh token
   const refreshToken = async () => {
     try {
       const response = await axios.get("http://localhost:3000/account/token", {
@@ -35,7 +41,7 @@ const UserPages = () => {
         username: decoded.username,
       }));
 
-      // Menyimpan token agar dapat digunakan untuk permintaan API berikutnya
+      // Set token untuk digunakan dalam permintaan API selanjutnya
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${response.data.token}`;
@@ -44,13 +50,43 @@ const UserPages = () => {
       fetchUserData();
       fetchPresensiData();
       fetchPenugasanData();
+      fetchSisaWaktuMagang(decoded.userId);
     } catch (error) {
       console.error("Error refreshing token:", error);
-      // Jika token tidak valid, arahkan ke halaman login
-      navigate("/");
+      navigate("/"); // Arahkan ke login jika token tidak valid
     }
   };
 
+  // Fungsi untuk mengambil data sisa waktu magang dari backend
+  const fetchSisaWaktuMagang = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/peserta/${userId}/sisa-waktu`
+      );
+
+      // Pastikan sisa waktu berhasil diambil dari response
+      if (response.data && typeof response.data.sisaWaktu === "number") {
+        setUserData((prevState) => ({
+          ...prevState,
+          remainingTime: response.data.sisaWaktu, // Set sisa waktu magang
+        }));
+      } else {
+        console.error("Sisa waktu tidak ditemukan atau format salah");
+        setUserData((prevState) => ({
+          ...prevState,
+          remainingTime: "Tidak tersedia", // Atur sebagai fallback jika tidak ditemukan
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching sisa waktu magang:", error);
+      setUserData((prevState) => ({
+        ...prevState,
+        remainingTime: "Gagal mengambil data", // Jika ada error, tampilkan pesan error
+      }));
+    }
+  };
+
+  // Fungsi untuk mengambil data pengguna
   const fetchUserData = async () => {
     try {
       const response = await axios.get("/api/user");
@@ -60,6 +96,7 @@ const UserPages = () => {
     }
   };
 
+  // Fungsi untuk mengambil data presensi
   const fetchPresensiData = async () => {
     try {
       const response = await axios.get("/api/presensi");
@@ -69,6 +106,7 @@ const UserPages = () => {
     }
   };
 
+  // Fungsi untuk mengambil data penugasan
   const fetchPenugasanData = async () => {
     try {
       const response = await axios.get("/api/penugasan");
@@ -123,7 +161,10 @@ const UserPages = () => {
                 Sisa Waktu Magang
               </h2>
               <p className="text-xl font-bold md:text-2xl">
-                {userData.remainingTime}
+                {userData.remainingTime !== "" &&
+                userData.remainingTime !== null
+                  ? `${userData.remainingTime} hari`
+                  : "Loading..."}
               </p>
             </div>
 
@@ -185,7 +226,7 @@ const UserPages = () => {
                   />
                 </svg>
                 <p className="absolute inset-0 flex items-center justify-center text-2xl font-bold md:text-3xl">
-                  {userData.attendancePercentage}%
+                  {attendancePercentage.toFixed(2)}%
                 </p>
               </div>
             </div>

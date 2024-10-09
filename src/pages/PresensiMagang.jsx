@@ -3,15 +3,14 @@ import { useLocation } from "react-router-dom";
 import { axiosJWTadmin } from "../config/axiosJWT";
 import ImageOverlay from "../Components/Admin/ImageOverlay";
 import NavSidebar from "./NavSidebar";
+import moment from "moment";
 
 export const PresensiMagang = () => {
   const [users, setUsers] = useState([]);
   const [totalAttendance, setTotalAttendance] = useState(0);
-
   const [currentTime, setCurrentTime] = useState("");
-  const [searchDate, setSearchDate] = useState("");
+  const [searchDate, setSearchDate] = useState(""); // State untuk date picker
   const [loading, setLoading] = useState(true);
-
   const [showImageOverlay, setShowImageOverlay] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
 
@@ -28,20 +27,25 @@ export const PresensiMagang = () => {
     setShowImageOverlay(false);
   };
 
+  // Set tanggal hari ini saat komponen pertama kali dimuat
   useEffect(() => {
     getUsers();
     fetchCurrentTime();
-    const today = new Date().toISOString().slice(0, 10);
-    setSearchDate(today);
+    const today = new Date().toISOString().split("T")[0]; // Format ke YYYY-MM-DD
+    setSearchDate(today); // Set tanggal hari ini secara otomatis
   }, []);
 
+  // Handle perubahan tanggal
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
-    setSearchDate(selectedDate);
+    setSearchDate(selectedDate); // Mengubah nilai searchDate saat pengguna memilih tanggal
   };
 
+  // Fetch ulang data users ketika searchDate berubah
   useEffect(() => {
-    getUsers();
+    if (searchDate) {
+      getUsers();
+    }
   }, [searchDate]);
 
   const exportPresensi = async () => {
@@ -93,7 +97,7 @@ export const PresensiMagang = () => {
     setLoading(true);
     const url = searchDate
       ? `http://localhost:3000/admin/presensi?tanggal=${searchDate}`
-      : "http://localhost:3000/admin/presensi";
+      : `http://localhost:3000/admin/presensi`;
 
     try {
       const response = await axiosJWTadmin.get(url);
@@ -148,23 +152,24 @@ export const PresensiMagang = () => {
             <p className="text-4xl font-semibold font-poppins">
               Presensi Magang - SISAPPMA
             </p>
-            <div className="bg-[#183028] px-4 text-white py-4 text-center  rounded-lg">
+            <div className="bg-[#183028] px-4 text-white py-4 text-center rounded-lg">
               <p>Tanggal Hari Ini</p>
               <p>{currentTime}</p>
             </div>
           </div>
 
           <div className="flex flex-col mt-4">
-            <div className="bg-[#183028] px-4 text-white py-4 text-center  rounded-lg w-44">
+            <div className="bg-[#183028] px-4 text-white py-4 text-center rounded-lg w-44">
               <p>Total Hadir Hari Ini</p>
               <p>{totalAttendance}</p>
             </div>
             <div className="mt-4">
+              {/* Date picker yang otomatis terisi dengan tanggal hari ini */}
               <input
                 className="px-4 border bg-slate-200 rounded-3xl"
                 type="date"
-                value={searchDate}
-                onChange={handleDateChange}
+                value={searchDate} // Menggunakan nilai searchDate
+                onChange={handleDateChange} // Ubah tanggal secara manual jika diperlukan
               />
             </div>
           </div>
@@ -173,13 +178,13 @@ export const PresensiMagang = () => {
             <div className="flex gap-4">
               <button
                 onClick={() => getPresensiBelum()}
-                className="bg-[#183028] px-4 text-white py-2 text-center  rounded-3xl hover:bg-slate-400"
+                className="bg-[#183028] px-4 text-white py-2 text-center rounded-3xl hover:bg-slate-400"
               >
                 Peserta Belum Absen
               </button>
               <button
                 onClick={() => getUsers()}
-                className="bg-[#183028] px-4 text-white py-2 text-center  rounded-3xl hover:bg-slate-400"
+                className="bg-[#183028] px-4 text-white py-2 text-center rounded-3xl hover:bg-slate-400"
               >
                 Peserta Sudah Absen
               </button>
@@ -187,7 +192,7 @@ export const PresensiMagang = () => {
             <div>
               <button
                 onClick={exportPresensi}
-                className="bg-[#183028] px-4 text-white py-2 text-center  rounded-3xl hover:bg-slate-400"
+                className="bg-[#183028] px-4 text-white py-2 text-center rounded-3xl hover:bg-slate-400"
               >
                 Export to Excel
               </button>
@@ -220,12 +225,12 @@ export const PresensiMagang = () => {
                             <td>
                               {entry.check_in
                                 ? formatDateTime(entry.check_in)
-                                : "-"}
+                                : '-'}
                             </td>
                             <td>
                               {entry.check_out
                                 ? formatDateTime(entry.check_out)
-                                : "-"}
+                                : '-'}
                             </td>
                             <td>
                               {entry.image_url_in ? (
@@ -238,7 +243,7 @@ export const PresensiMagang = () => {
                                   Absen Masuk
                                 </button>
                               ) : (
-                                "-"
+                                '-'
                               )}
                             </td>
                             <td>
@@ -252,7 +257,7 @@ export const PresensiMagang = () => {
                                   Absen Pulang
                                 </button>
                               ) : (
-                                "-"
+                                '-'
                               )}
                             </td>
                           </React.Fragment>

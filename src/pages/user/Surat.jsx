@@ -2,29 +2,32 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar"; // Pastikan path file Navbar.jsx benar
+import { isUnauthorizedError } from "../../config/errorHandling";
+import { MdEmail } from "react-icons/md";
+import Navbar from "./Navbar";
 
-const SuratMagang = () => {
-  const [formData, setFormData] = useState({
-    nama: "",
-    nim: "",
-    programStudi: "",
-    fakultas: "",
-    asalInstansi: "",
-    tanggalMasuk: "",
-    tanggalKeluar: "",
-    jenisSurat: "",
-    checkbox: false,
-  });
-  const [errors, setErrors] = useState({});
+const Surat = () => {
+  const [nama, setNama] = useState("");
   const navigate = useNavigate();
+  const [username, setUserName] = useState("");
+  const [confirmationChecked, setConfirmationChecked] = useState(false);
+  const [showNav, setShowNav] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    nim: "",
+    prodi: "",
+    fakultas: "",
+    universitas: "",
+    tgl_masuk: "",
+    tgl_keluar: "",
+  });
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Fungsi untuk melakukan refresh token saat komponen dimuat
   useEffect(() => {
     refreshToken();
   }, []);
 
-  // Fungsi refresh token untuk memastikan pengguna terautentikasi
   const refreshToken = async () => {
     try {
       const response = await axios.get("http://localhost:3000/account/token", {
@@ -33,262 +36,212 @@ const SuratMagang = () => {
         },
       });
       const decoded = jwt_decode(response.data.token);
-
-      // Menyimpan token untuk penggunaan API berikutnya
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${response.data.token}`;
+      setNama(decoded.nama);
+      setUserName(decoded.username);
     } catch (error) {
-      console.error("Error refreshing token:", error);
-      // Jika token tidak valid, arahkan ke halaman login
-      navigate("/");
+      if (isUnauthorizedError(error)) {
+        navigate("/");
+      }
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-
-    // Menghapus pesan error saat pengguna mulai mengetik
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrorMessage(""); // Clear error message when input fields are filled
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.nama) newErrors.nama = "Nama wajib diisi";
-    if (!formData.nim) newErrors.nim = "NIM wajib diisi";
-    if (!formData.programStudi)
-      newErrors.programStudi = "Program Studi wajib diisi";
-    if (!formData.fakultas) newErrors.fakultas = "Fakultas wajib diisi";
-    if (!formData.asalInstansi)
-      newErrors.asalInstansi = "Asal Instansi wajib diisi";
-    if (!formData.tanggalMasuk)
-      newErrors.tanggalMasuk = "Tanggal Masuk wajib diisi";
-    if (!formData.tanggalKeluar)
-      newErrors.tanggalKeluar = "Tanggal Keluar wajib diisi";
-    if (!formData.jenisSurat)
-      newErrors.jenisSurat = "Jenis Surat wajib dipilih";
-    if (!formData.checkbox)
-      newErrors.checkbox = "Anda harus menyetujui data sudah benar";
-
-    return newErrors;
+  const handleConfirmationChange = (e) => {
+    setConfirmationChecked(e.target.checked);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formErrors = validateForm();
-
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-    } else {
-      // Jika tidak ada error, proses download file
-      downloadSurat(formData.jenisSurat);
-    }
-  };
-
-  const downloadSurat = async (jenisSurat) => {
+  const handleGenerateDocx = async () => {
     try {
-      const endpoint =
-        jenisSurat === "selesai_magang"
-          ? "/generate-selesai-magang"
-          : "/generate-sertifikat-magang";
-      const response = await axios.get(`http://localhost:3000${endpoint}`, {
-        responseType: "blob",
-        withCredentials: true,
-      });
+      if (
+        !formData.first_name ||
+        !formData.last_name ||
+        !formData.nim ||
+        !formData.prodi ||
+        !formData.fakultas ||
+        !formData.universitas ||
+        !formData.tgl_masuk ||
+        !formData.tgl_keluar
+      ) {
+        setErrorMessage("Isi data diatas terlebih dahulu.");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:3000/generateDocx",
+        {
+          data: formData,
+        },
+        { responseType: "blob", withCredentials: true }
+      );
 
       if (response.status === 200) {
-        // File generated successfully, initiate download
         const downloadUrl = window.URL.createObjectURL(
           new Blob([response.data])
         );
         const link = document.createElement("a");
         link.href = downloadUrl;
-        link.setAttribute("download", `${jenisSurat}.docx`);
+        link.setAttribute("download", "SuratDiterimaMagang.docx");
         document.body.appendChild(link);
         link.click();
       } else {
         console.error("Error generating file:", response.data.error);
       }
     } catch (error) {
-      console.error("Error saat mengunduh surat:", error);
-      if (error.response && error.response.status === 401) {
-        navigate("/"); // Arahkan ke halaman login jika tidak terautentikasi
-      }
+      console.error("Error:", error.message);
     }
   };
 
   return (
     <div className="flex flex-col w-full">
-      {/* Sidebar */}
       <Navbar />
-      {/* Main Content */}
       <div className="pl-64">
         <div className="container flex flex-col p-4">
-          <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-[#171a34]">
-            Surat Selesai Magang - SISAPPMA
-          </h1>
-          <form
-            onSubmit={handleSubmit}
-            className="w-full p-4 space-y-4 rounded-lg shadow-lg bg-slate-100 md:p-6"
-          >
-            <div className="grid grid-cols-1 gap-4">
-              <label className="block">
-                Nama:
-                <input
-                  type="text"
-                  name="nama"
-                  value={formData.nama}
-                  onChange={handleChange}
-                  placeholder="Masukkan Nama"
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                />
-                {errors.nama && (
-                  <p className="text-sm text-red-600">{errors.nama}</p>
-                )}
-              </label>
-
-              <label className="block">
-                NIM:
-                <input
-                  type="text"
-                  name="nim"
-                  value={formData.nim}
-                  onChange={handleChange}
-                  placeholder="Masukkan NIM"
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                />
-                {errors.nim && (
-                  <p className="text-sm text-red-600">{errors.nim}</p>
-                )}
-              </label>
-
-              <label className="block">
-                Program Studi:
-                <input
-                  type="text"
-                  name="programStudi"
-                  value={formData.programStudi}
-                  onChange={handleChange}
-                  placeholder="Masukkan Program Studi"
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                />
-                {errors.programStudi && (
-                  <p className="text-sm text-red-600">{errors.programStudi}</p>
-                )}
-              </label>
-
-              <label className="block">
-                Fakultas:
-                <input
-                  type="text"
-                  name="fakultas"
-                  value={formData.fakultas}
-                  onChange={handleChange}
-                  placeholder="Masukkan Fakultas"
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                />
-                {errors.fakultas && (
-                  <p className="text-sm text-red-600">{errors.fakultas}</p>
-                )}
-              </label>
-
-              <label className="block">
-                Asal Instansi:
-                <input
-                  type="text"
-                  name="asalInstansi"
-                  value={formData.asalInstansi}
-                  onChange={handleChange}
-                  placeholder="Masukkan Asal Instansi"
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                />
-                {errors.asalInstansi && (
-                  <p className="text-sm text-red-600">{errors.asalInstansi}</p>
-                )}
-              </label>
-
-              <label className="block">
-                Tanggal Masuk:
-                <input
-                  type="date"
-                  name="tanggalMasuk"
-                  value={formData.tanggalMasuk}
-                  onChange={handleChange}
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                />
-                {errors.tanggalMasuk && (
-                  <p className="text-sm text-red-600">{errors.tanggalMasuk}</p>
-                )}
-              </label>
-
-              <label className="block">
-                Tanggal Keluar:
-                <input
-                  type="date"
-                  name="tanggalKeluar"
-                  value={formData.tanggalKeluar}
-                  onChange={handleChange}
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                />
-                {errors.tanggalKeluar && (
-                  <p className="text-sm text-red-600">{errors.tanggalKeluar}</p>
-                )}
-              </label>
-
-              <label className="block">
-                Jenis Surat:
-                <select
-                  name="jenisSurat"
-                  value={formData.jenisSurat}
-                  onChange={handleChange}
-                  className="mt-1 border p-2 rounded-lg w-full text-[#171a34]"
-                >
-                  <option value="">Pilih Satu Jenis Surat</option>
-                  <option value="selesai_magang">Surat Selesai Magang</option>
-                  <option value="sertifikat_magang">Sertifikat Magang</option>
-                </select>
-                {errors.jenisSurat && (
-                  <p className="text-sm text-red-600">{errors.jenisSurat}</p>
-                )}
-              </label>
+          <div className="flex flex-col gap-2 p-6 rounded-lg bg-slate-200">
+            <h1 className="text-xl font-bold">Unduh Surat Diterima Magang</h1>
+            <div className="flex flex-col justify-between gap-1">
+              <label>First Name:</label>
+              <input
+                type="text"
+                name="first_name"
+                className="input"
+                onChange={handleInputChange}
+              />
             </div>
-
-            <label className="flex items-center mt-4">
+            <div className="flex flex-col justify-between gap-1">
+              <label>Last Name:</label>
+              <input
+                type="text"
+                name="last_name"
+                className="input"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-1">
+              <label>NIM:</label>
+              <input
+                type="text"
+                name="nim"
+                className="input"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-1">
+              <label>Program Studi:</label>
+              <input
+                type="text"
+                name="prodi"
+                className="input"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-1">
+              <label>Fakultas:</label>
+              <input
+                type="text"
+                name="fakultas"
+                className="input"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-1">
+              <label>Asal Instansi:</label>
+              <input
+                type="text"
+                name="universitas"
+                className="input"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-1">
+              <label>Tanggal Masuk:</label>
+              <input
+                type="text"
+                name="tgl_masuk"
+                className="input"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-1">
+              <label>Tanggal Keluar:</label>
+              <input
+                type="text"
+                name="tgl_keluar"
+                className="input"
+                onChange={handleInputChange}
+              />
+            </div>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            <div className="confirmation-checkbox">
               <input
                 type="checkbox"
-                name="checkbox"
-                checked={formData.checkbox}
-                onChange={handleChange}
-                className="mr-2"
+                id="confirmation"
+                checked={confirmationChecked}
+                onChange={handleConfirmationChange}
               />
-              <span className="text-[#171a34]">
-                Saya telah mengisi data saya dengan benar
-              </span>
-              {errors.checkbox && (
-                <p className="text-sm text-red-600">{errors.checkbox}</p>
-              )}
-            </label>
-
-            <div className="flex justify-end mt-6">
+              <label htmlFor="confirmation">
+                &nbsp;Saya telah mengisi data diatas dengan benar
+              </label>
+            </div>
+            <div className="mt-4">
               <button
-                type="submit"
-                className="bg-[#000126] text-[#ffffff] py-3 px-8 rounded-lg hover:bg-blue-700 transition duration-300"
+                className="bg-[#000126] text-white px-4 py-2 rounded-lg"
+                onClick={handleGenerateDocx}
+                disabled={!confirmationChecked}
               >
-                Unduh
+                Generate Docx
               </button>
             </div>
-          </form>
+          </div>
+          <div className="flex flex-col my-2">
+            <p>Referensi: </p>
+            <p>Nama terdaftar :&nbsp;{nama}</p>
+          </div>
+          <div className="flex flex-col">
+            <a
+              href="/user/surat"
+              target="_parent"
+              rel="noreferrer noopener"
+              className="flex items-center gap-2 px-4 py-3 text-white bg-red-500 rounded-md"
+            >
+              <MdEmail />{" "}
+              <span>
+                <b> Unduh Surat Diterima Magang </b>
+              </span>
+            </a>
+            <br />
+            <a
+              href="/user/suratkeluar"
+              target="_parent"
+              rel="noreferrer noopener"
+              className="flex items-center gap-2 px-4 py-3 text-white bg-red-500 rounded-md"
+            >
+              <MdEmail />{" "}
+              <span>
+                <b> Unduh Surat Selesai Magang </b>
+              </span>
+            </a>
+            <br></br>
+            <a
+              href="/user/sertifikat"
+              target="_parent"
+              rel="noreferrer noopener"
+              className="flex items-center gap-2 px-4 py-3 text-white bg-red-500 rounded-md"
+            >
+              <MdEmail />{" "}
+              <span>
+                <b> Unduh Sertifikat Magang </b>
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default SuratMagang;
+export default Surat;

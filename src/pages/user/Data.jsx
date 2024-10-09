@@ -25,25 +25,27 @@ const Data = () => {
           `http://localhost:3000/user/presensi/${decoded.userId}`
         );
 
+        console.log(response.data.presensi);
+
         const dataWithKosong = response.data.presensi.map((item) => ({
           ...item,
           check_in: item.check_in || "Belum Presensi",
           check_out: item.check_out || "Belum Presensi",
           image_url_in: item.image_url_in || null,
           image_url_out: item.image_url_out || null,
-          lokasiCheckIn:
-            item.latitude_in && item.longitude_in
-              ? `${item.latitude_in}, ${item.longitude_in}`
-              : "Lokasi tidak tersedia",
-          lokasiCheckOut:
-            item.latitude_out && item.longitude_out
-              ? `${item.latitude_out}, ${item.longitude_out}`
-              : "Lokasi tidak tersedia",
+          lokasi_in: item.lokasi_in || null,
+          lokasi_out: item.lokasi_out || null,
         }));
 
         setPresensi(dataWithKosong);
       } catch (error) {
-        console.error("Error fetching data", error);
+        if (error.response && error.response.status === 401) {
+          // Token is invalid or expired
+          alert("Session expired. Please login again.");
+          // Redirect to login or handle session expiry
+        } else {
+          console.error("Error fetching data", error);
+        }
       }
     };
 
@@ -110,9 +112,9 @@ const Data = () => {
                       <td>{item.tanggal}</td>
                       <td>{item.hari}</td>
                       <td>{item.check_in}</td>
-                      <td>{item.lokasiCheckIn}</td>
+                      <td>{item.lokasi_in}</td>
                       <td>{item.check_out}</td>
-                      <td>{item.lokasiCheckOut}</td>
+                      <td>{item.lokasi_out}</td>
                       <td>
                         {item.image_url_in ? (
                           <span

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../Assets/diskominfo.png";
 import { axiosJWTadmin } from "../config/axiosJWT";
-import { TabTitle } from "../TabName";
 import icon from "../Assets/icon.png";
 import Profile1 from "../images/profile.png";
 import Edit from "../images/edit.png";
 import jwt_decode from "jwt-decode";
 import { isUnauthorizedError } from "../config/errorHandling";
-import { useNavigate } from "react-router-dom";
 import { showSuccessNotification } from "../Components/User/toastSuccess";
 import { showErrorNotification } from "../Components/User/toastFailed";
 import NavSidebar from "./NavSidebar";
@@ -21,6 +19,7 @@ export const Profile = () => {
   const [profilePicture, setProfilePicture] = useState(Profile1);
   const navigate = useNavigate();
   const [nama, setNama] = useState("");
+  const [userName, setUserName] = useState("");
   const [tempImage, setTempImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -38,6 +37,7 @@ export const Profile = () => {
       const decoded = jwt_decode(response.data.token);
       setNama(decoded.nama);
       setProfilePicture(decoded.foto_profil);
+      setUserName(decoded.username);
     } catch (error) {
       if (isUnauthorizedError(error)) {
         navigate("/");
@@ -84,7 +84,7 @@ export const Profile = () => {
       const formData = new FormData();
       formData.append("image", blob, "profile.png");
 
-      const response = await axiosJWTadmin.patch(
+      await axiosJWTadmin.patch(
         `http://localhost:3000/admin/edit-admin/${decoded.userId}/edit-foto-profil`,
         formData,
         {
@@ -110,48 +110,57 @@ export const Profile = () => {
   };
 
   return (
-    <div className="flex flex-col w-fullbody-main">
+    <div className="flex flex-col w-full min-h-screen bg-gray-100 md:flex-row">
       <NavSidebar />
-      <div className="pl-64">
-        <div className="flex flex-col p-4">
-          <div className="profile-picture">
-            <img
-              src={profilePicture || Profile1}
-              alt="Profile"
-              className="w-24 h-24 border-2 border-gray-300 rounded-full profile-img"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handlePictureChange}
-              className="hidden upload-input"
-              id="file-input"
-            />
-            <label htmlFor="file-input" className="mt-4 upload-button btn btn-primary">
-              <img src={Edit} alt="Edit" className="w-5 h-5 edit-icon" /> Upload Gambar
-            </label>
+      <div className="flex-grow p-6 md:pl-72">
+        <div className="p-6 bg-white rounded-lg shadow-md">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <div className="relative">
+              <img
+                src={profilePicture || Profile1}
+                alt="Profile"
+                className="w-32 h-32 border-4 border-gray-300 rounded-full"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePictureChange}
+                className="hidden"
+                id="file-input"
+              />
+              <label
+                htmlFor="file-input"
+                className="absolute bottom-0 right-0 p-2 text-white rounded-full shadow-lg cursor-pointer bg-primary hover:bg-primary-focus"
+              >
+                <img src={Edit} alt="Edit" className="w-5 h-5" />
+              </label>
+            </div>
+            <h2 className="text-2xl font-semibold">{nama}</h2>
+            <p className="text-gray-500">@{userName}</p>
           </div>
-          <center>
-            <strong className="text-xl">Selamat Datang, {nama}</strong>
-          </center>
         </div>
-      </div>
 
-      {/* Modal untuk pratinjau gambar menggunakan DaisyUI */}
-      <div className={`modal ${isModalOpen ? "modal-open" : ""}`}>
-        <div className="modal-box">
-          <h2 className="text-xl font-bold">Preview</h2>
-          <img src={tempImage} alt="Preview" className="w-full mt-4 rounded-lg modal-img" />
-          <div className="modal-action">
-            <button onClick={closeModal} className="btn btn-error">
-              Close
-            </button>
-            {/* Tombol Save di dalam modal */}
-            <button onClick={handleSubmit} className="btn btn-success">
-              Save
-            </button>
+        {/* Modal untuk pratinjau gambar menggunakan DaisyUI */}
+        {isModalOpen && (
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h2 className="text-xl font-bold">Preview</h2>
+              <img
+                src={tempImage}
+                alt="Preview"
+                className="w-full mt-4 rounded-lg"
+              />
+              <div className="modal-action">
+                <button onClick={closeModal} className="btn btn-error">
+                  Close
+                </button>
+                <button onClick={handleSubmit} className="btn btn-success">
+                  Save
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,31 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import jwt_decode from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
-import imageCon from "../Assets/balaikota.png";
-import penugasan from "../Assets/image_Buat Penugasan.svg";
-import peserta from "../Assets/image_Peserta magang.svg";
 import NavSidebar from "./NavSidebar";
 import Footer1 from "./Footer1";
-
+import { axiosJWTadmin } from "../config/axiosJWT";
 
 const Homepage = () => {
-  const [nama, setNama] = useState("");
   const navigate = useNavigate();
-  const [showNav, setShowNav] = useState(false);
   const location = useLocation();
-  const [activeLink, setActiveLink] = useState(location.pathname);
+  
+  const [searchDate, setSearchDate] = useState("");
+  const [totalAttendance, setTotalAttendance] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const handleNavLinkClick = (path) => {
-    setActiveLink(path);
-  };
-
-  useEffect(() => {
-    refreshToken();
-    setActiveLink(location.pathname);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
+  // Deklarasikan fungsi refreshToken sebelum digunakan di useEffect
   const refreshToken = async () => {
     try {
       const response = await axios.get("http://localhost:3000/account/token", {
@@ -33,8 +21,9 @@ const Homepage = () => {
           role: "admin",
         },
       });
-      const decoded = jwt_decode(response.data.token);
-      setNama(decoded.nama);
+      // Misalnya, simpan token baru jika perlu
+      const token = response.data.token;
+      // Lakukan sesuatu dengan token jika perlu
     } catch (error) {
       if (error.response) {
         navigate("/");
@@ -42,35 +31,62 @@ const Homepage = () => {
     }
   };
 
+  const getTotalAttendance = async () => {
+    setLoading(true);
+    const url = searchDate
+      ? `http://localhost:3000/admin/presensi?tanggal=${searchDate}`
+      : "http://localhost:3000/admin/presensi";
+
+    try {
+      const response = await axiosJWTadmin.get(url);
+      setTotalAttendance(response.data.totalSudahPresensi);
+    } catch (error) {
+      console.error("Error fetching total attendance:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refreshToken(); 
+    const today = new Date().toISOString().slice(0, 10);
+    setSearchDate(today);
+
+    getTotalAttendance();
+  }, [searchDate]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        {/* Tailwind CSS spinner */}
+        <div className="w-16 h-16 border-4 border-green-600 border-dashed rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full">
       <NavSidebar />
       <div className="pl-64">
-        <div className="container flex flex-col p-4">
-          <div className="flex-grow">
-            <div className="account-info-container">
-              <div className="info-box">
-                <div className="user-info">
-                  <p className="user-info-1">Selamat Datang,</p>
-                  <p className="user-info-1">{nama}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="image-container">
-              <img className="background-home" src={imageCon} alt="" />
-            </div>
+        <div className="container flex flex-col gap-4 p-4">
+          <div className="flex flex-col">
+            <h2 className="text-4xl font-semibold font-poppins">
+              Dashboard - SISAPPMA
+            </h2>
           </div>
-
-          <div className="action-buttons">
-            <a href="/peserta">
-              <img src={peserta} alt="" />
-              <span>Peserta</span>
-            </a>
-            <a href="/penugasan">
-              <img src={penugasan} alt="" />
-              <span>Penugasan</span>
-            </a>
+          <div className="flex flex-row gap-4 text-center">
+            <div className="flex flex-col px-6 py-4 border border-gray-400 shadow-lg bg-slate-200 rounded-3xl">
+              <div>Jumlah Peserta Absen Hari Ini</div>
+              <p>{totalAttendance}</p>
+            </div>
+            <div className="flex flex-col px-6 py-4 border border-gray-400 shadow-lg bg-slate-200 rounded-3xl">
+              <p>Jumlah Peserta Aktif Magang</p>
+              <p>//</p>
+            </div>
+            <div className="flex flex-col px-6 py-4 border border-gray-400 shadow-lg bg-slate-200 rounded-3xl">
+              <p>Jumlah Alumni Magang</p>
+              <p>//</p>
+            </div>
           </div>
         </div>
       </div>
