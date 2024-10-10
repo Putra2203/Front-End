@@ -17,7 +17,7 @@ const Sertifikat = () => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
-    asal_kota: "",
+    asal_jurusan: "",
     koordinator: "",
     jabatan: "",
     tgl_masuk: "",
@@ -61,7 +61,7 @@ const Sertifikat = () => {
       if (
         !formData.first_name ||
         !formData.last_name ||
-        !formData.asal_kota ||
+        !formData.asal_jurusan ||
         !formData.koordinator ||
         !formData.jabatan ||
         !formData.tgl_masuk ||
@@ -122,11 +122,11 @@ const Sertifikat = () => {
               />
             </div>
             <div className="flex flex-col justify-between gap-1">
-              <label>Asal Kota:</label>
+              <label>Asal Jurusan:</label>
               <input
                 className="input"
                 type="text"
-                name="asal_kota"
+                name="asal_jurusan"
                 onChange={handleInputChange}
               />
             </div>
