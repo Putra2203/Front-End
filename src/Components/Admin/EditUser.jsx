@@ -76,7 +76,7 @@ const EditUser = ({
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box">
+      <div className="modal-box bg-secondary">
         <div className="flex flex-row justify-between">
           <h2 className="text-xl font-semibold font-poppins">Edit User</h2>
           <button
@@ -93,7 +93,7 @@ const EditUser = ({
               type="text"
               placeholder="Masukkan nama"
               value={userData.nama}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, nama: e.target.value })
               }
@@ -106,7 +106,7 @@ const EditUser = ({
               type="text"
               placeholder="Masukkan asal universitas"
               value={userData.asal_univ}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, asal_univ: e.target.value })
               }
@@ -119,7 +119,7 @@ const EditUser = ({
               type="text"
               placeholder="Masukkan asal jurusan"
               value={userData.asal_jurusan}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, asal_jurusan: e.target.value })
               }
@@ -132,7 +132,7 @@ const EditUser = ({
               type="text"
               placeholder="Masukkan nomor telepon"
               value={userData.no_telp}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, no_telp: e.target.value })
               }
@@ -144,7 +144,7 @@ const EditUser = ({
             <input
               type="date"
               value={userData.tanggal_mulai}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, tanggal_mulai: e.target.value })
               }
@@ -156,7 +156,7 @@ const EditUser = ({
             <input
               type="date"
               value={userData.tanggal_selesai}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, tanggal_selesai: e.target.value })
               }
@@ -170,7 +170,7 @@ const EditUser = ({
               type="text"
               placeholder="Masukkan nama dosen"
               value={userData.nama_dosen}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, nama_dosen: e.target.value })
               }
@@ -184,7 +184,7 @@ const EditUser = ({
               type="text"
               placeholder="Masukkan nomor telepon dosen"
               value={userData.no_telp_dosen}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, no_telp_dosen: e.target.value })
               }
@@ -196,7 +196,7 @@ const EditUser = ({
             <label>Status Aktif</label>
             <select
               value={userData.status_aktif}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({
                   ...userData,
@@ -217,7 +217,7 @@ const EditUser = ({
               type="text"
               placeholder="Masukkan username"
               value={userData.username}
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) =>
                 setUserData({ ...userData, username: e.target.value })
               }
@@ -229,7 +229,7 @@ const EditUser = ({
             <input
               type="password"
               placeholder="Masukkan password (biarkan kosong jika tidak ingin mengubah)"
-              className="flex px-2 py-1 border"
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
               onChange={(e) => {
                 setUserData({ ...userData, password: e.target.value });
               }}

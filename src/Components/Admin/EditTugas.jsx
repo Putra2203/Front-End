@@ -75,18 +75,20 @@ const EditTugas = ({
     <>
       {showEditTugasModal && (
         <div className="modal modal-open">
-          <div className="modal-box">
-            <div className="modal-header">
-              <h5>Edit Tugas</h5>
-              <button className="close" onClick={handleCloseModal}>
+          <div className="modal-box bg-secondary">
+            <div className="flex items-center justify-between mb-4">
+              
+              <h5 className="text-xl font-semibold font-poppins">Edit Tugas</h5>
+              <button className="text-2xl text-black -translate-y-2" onClick={handleCloseModal}>
                 &times;
               </button>
             </div>
-            <div className="modal-body">
-              <form onSubmit={handleUpdateTugas}>
-                <div className="form-group">
+            <div className="">
+              <form onSubmit={handleUpdateTugas} className="flex flex-col gap-4">
+                <div className="flex justify-between">
                   <label>Judul</label>
                   <input
+                  className="p-2 border rounded-lg bg-slate-50"
                     type="text"
                     value={tugasData.judul}
                     onChange={(e) =>
@@ -94,9 +96,10 @@ const EditTugas = ({
                     }
                   />
                 </div>
-                <div className="form-group">
-                  <label>Tugas URL</label>
+                <div className="flex justify-between">
+                  <label>Deskripsi</label>
                   <input
+                  className="p-2 border rounded-lg bg-slate-50"
                     type="text"
                     value={tugasData.tugas_url}
                     onChange={(e) =>
@@ -104,9 +107,10 @@ const EditTugas = ({
                     }
                   />
                 </div>
-                <div className="form-group">
+                <div className="flex justify-between">
                   <label>Due Date</label>
                   <input
+                  className="p-2 border rounded-lg bg-slate-50"
                     type="datetime-local"
                     value={tugasData.dueDate}
                     onChange={(e) =>
@@ -114,7 +118,7 @@ const EditTugas = ({
                     }
                   />
                 </div>
-                <div className="modal-footer">
+                <div className="flex justify-between">
                   <button
                     type="button"
                     className="btn btn-secondary"

@@ -10,6 +10,7 @@ import EditTugas from "../Components/Admin/EditTugas";
 import NavSidebar from "./NavSidebar";
 import { HiOutlinePlusSmall } from "react-icons/hi2";
 
+
 export const Penugasan = () => {
   const [showNav, setShowNav] = useState(false);
   const [activeTasks, setActiveTasks] = useState(0);
@@ -247,11 +248,11 @@ export const Penugasan = () => {
   return (
     <div className="flex flex-col w-full">
       <NavSidebar />
-      <div className="pl-64">
+      <div className="h-screen pl-0 lg:pl-64">
         <div className="flex flex-col p-4">
           <div className="body-penugasan">
-            <div className="flex justify-between">
-              <p className="text-4xl font-semibold font-poppins">
+            <div className="flex flex-col gap-2 lg:justify-between lg:flex-row lg:gap-0">
+              <p className="mt-24 text-2xl font-semibold lg:text-4xl font-poppins lg:mt-0">
                 Penugasan Magang - SISAPPMA
               </p>
               <div className="bg-[#183028] px-4 text-white py-4 text-center rounded-lg">
@@ -259,7 +260,7 @@ export const Penugasan = () => {
                 <p>{timeNow}</p>
               </div>
             </div>
-            <section className="flex flex-col gap-2 ">
+            <section className="flex flex-col gap-2 mt-2 lg:mt-0">
               <div className="bg-[#183028] px-4 text-white py-4 text-center rounded-lg hover:bg-slate-400 w-44">
                 <button
                   onClick={handleShowTaskForm}
@@ -287,7 +288,7 @@ export const Penugasan = () => {
                 <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
                   <table className="table w-full text-center">
                     <thead>
-                      <tr>
+                      <tr className="text-black">
                         <th>No</th>
                         <th>Judul</th>
                         <th>Deskripsi</th>
@@ -350,7 +351,7 @@ export const Penugasan = () => {
                 <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
                   <table className="table w-full text-center">
                     <thead>
-                      <tr>
+                      <tr className="text-black">
                         <th>Nama</th>
                         <th>Lampiran Pekerjaan</th>
                         <th>Status Pengerjaan</th>
@@ -436,83 +437,83 @@ export const Penugasan = () => {
             </section>
           </div>
         </div>
-      </div>
-
-      {showTaskForm && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <div className="flex items-center justify-between">
-              <h5 className="text-xl font-semibold font-poppins">
-                Form Penugasan
-              </h5>
-              <button
-                className="px-2 bg-red-500 py-0.5 hover:bg-slate-400 rounded-lg"
-                onClick={handleCloseTaskForm}
-              >
-                &times;
-              </button>
-            </div>
-            <div className="mt-4">
-              <form onSubmit={addTugas} className="flex flex-col gap-4">
-                <div className="flex justify-between">
-                  <label>Judul</label>
-                  <input
-                    type="text"
-                    value={formData.judul}
-                    className="border rounded-lg"
-                    onChange={(e) => {
-                      setFormData({ ...formData, judul: e.target.value });
-                      setJudulError("");
-                    }}
-                  />
-                  {judulError && <p className="text-red-500">{judulError}</p>}
-                </div>
-                <div className="flex justify-between">
-                  <label>Deskripsi</label>
-                  <textarea
-                    value={formData.tugas_url}
-                    className="h-64 border rounded-lg w-60"
-                    onChange={(e) => {
-                      setFormData({ ...formData, tugas_url: e.target.value });
-                      setDeskripsiError("");
-                    }}
-                  />
-                  {deskripsiError && (
-                    <p className="text-red-500">{deskripsiError}</p>
-                  )}
-                </div>
-                <div className="flex justify-between">
-                  <label>Deadline</label>
-                  <input
-                    type="datetime-local"
-                    className="px-4 border rounded-lg"
-                    value={
-                      formData.dueDate ? formData.dueDate.slice(0, 16) : ""
-                    }
-                    onChange={(e) => {
-                      setFormData({ ...formData, dueDate: e.target.value });
-                      setDeadlineError("");
-                    }}
-                  />
-                  {deadlineError && (
-                    <p style={{ color: "red", fontSize: "14px" }}>
-                      {deadlineError}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    type="submit"
-                    className="px-4 py-1 text-white bg-[#183028] rounded-2xl hover:bg-slate-400"
-                  >
-                    Simpan
-                  </button>
-                </div>
-              </form>
+        {showTaskForm && (
+          <div className="modal modal-open">
+            <div className="modal-box bg-secondary">
+              <div className="flex items-center justify-between">
+                <h5 className="text-xl font-semibold font-poppins">
+                  Form Penugasan
+                </h5>
+                <button
+                  className="px-2 bg-red-500 py-0.5 hover:bg-slate-400 rounded-lg"
+                  onClick={handleCloseTaskForm}
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="mt-4">
+                <form onSubmit={addTugas} className="flex flex-col gap-4">
+                  <div className="flex justify-between">
+                    <label>Judul</label>
+                    <input
+                      type="text"
+                      value={formData.judul}
+                      className="text-black border rounded-lg bg-slate-50"
+                      onChange={(e) => {
+                        setFormData({ ...formData, judul: e.target.value });
+                        setJudulError("");
+                      }}
+                    />
+                    {judulError && <p className="text-red-500">{judulError}</p>}
+                  </div>
+                  <div className="flex justify-between">
+                    <label>Deskripsi</label>
+                    <textarea
+                      value={formData.tugas_url}
+                      className="h-64 text-black border rounded-lg bg-slate-50 w-60"
+                      onChange={(e) => {
+                        setFormData({ ...formData, tugas_url: e.target.value });
+                        setDeskripsiError("");
+                      }}
+                    />
+                    {deskripsiError && (
+                      <p className="text-red-500">{deskripsiError}</p>
+                    )}
+                  </div>
+                  <div className="flex justify-between">
+                    <label>Deadline</label>
+                    <input
+                      type="datetime-local"
+                      className="px-4 text-black border rounded-lg bg-slate-50"
+                      value={
+                        formData.dueDate ? formData.dueDate.slice(0, 16) : ""
+                      }
+                      onChange={(e) => {
+                        setFormData({ ...formData, dueDate: e.target.value });
+                        setDeadlineError("");
+                      }}
+                    />
+                    {deadlineError && (
+                      <p style={{ color: "red", fontSize: "14px" }}>
+                        {deadlineError}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-4">
+                    <button
+                      type="submit"
+                      className="px-4 py-1 text-white bg-[#183028] rounded-2xl hover:bg-slate-400"
+                    >
+                      Simpan
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      
     </div>
   );
 };

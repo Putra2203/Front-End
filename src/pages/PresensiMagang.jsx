@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { axiosJWTadmin } from "../config/axiosJWT";
 import ImageOverlay from "../Components/Admin/ImageOverlay";
 import NavSidebar from "./NavSidebar";
-import moment from "moment";
+
 
 export const PresensiMagang = () => {
   const [users, setUsers] = useState([]);
@@ -37,7 +37,7 @@ export const PresensiMagang = () => {
 
   // Handle perubahan tanggal
   const handleDateChange = (e) => {
-    const selectedDate = e.target.value;
+    const selectedDate = e.target.value; // Declare selectedDate here
     setSearchDate(selectedDate); // Mengubah nilai searchDate saat pengguna memilih tanggal
   };
 
@@ -121,8 +121,8 @@ export const PresensiMagang = () => {
     }
   };
 
-  const formatDateTime = (dateTime) => {
-    if (dateTime === null) {
+  const formatDateTime = (searchDate) => {
+    if (searchDate === null) {
       return "-";
     }
 
@@ -135,7 +135,7 @@ export const PresensiMagang = () => {
       hour12: false,
     };
 
-    const date = new Date(dateTime);
+    const date = new Date(searchDate);
     const formattedTime = new Intl.DateTimeFormat("en-US", options).format(
       date
     );
@@ -146,10 +146,10 @@ export const PresensiMagang = () => {
   return (
     <div className="flex flex-col w-full">
       <NavSidebar />
-      <div className="pl-64">
-        <div className="container flex flex-col p-4">
-          <div className="flex justify-between">
-            <p className="text-4xl font-semibold font-poppins">
+      <div className="h-screen pl-0 lg:pl-64">
+        <div className="flex flex-col p-4">
+          <div className="flex flex-col gap-2 lg:justify-between justify-normal lg:flex-row lg:gap-0">
+            <p className="mt-24 text-2xl font-semibold lg:text-4xl font-poppins lg:mt-0">
               Presensi Magang - SISAPPMA
             </p>
             <div className="bg-[#183028] px-4 text-white py-4 text-center rounded-lg">
@@ -174,7 +174,7 @@ export const PresensiMagang = () => {
             </div>
           </div>
 
-          <div className="flex justify-between mt-4">
+          <div className="flex flex-col gap-2 mt-4 lg:justify-between lg:flex-row lg:gap-0">
             <div className="flex gap-4">
               <button
                 onClick={() => getPresensiBelum()}
@@ -208,8 +208,14 @@ export const PresensiMagang = () => {
                   <tr>
                     <th>No</th>
                     <th>Nama</th>
+                    <th>Asal Universitas</th>
+                    <th>Asal Jurusan</th>
+                    <th>Nomor Telepon</th>
+                    <th>Tanggal</th>
                     <th>Check-In</th>
+                    <th>Lokasi Check-In</th>
                     <th>Check-Out</th>
+                    <th>Lokasi Check-Out</th>
                     <th>Image In</th>
                     <th>Image Out</th>
                   </tr>
@@ -220,17 +226,35 @@ export const PresensiMagang = () => {
                       <tr key={user.id}>
                         <td>{index + 1}</td>
                         <td>{user.nama}</td>
+                        <td>{user.asal_univ}</td>
+                        <td>{user.asal_jurusan}</td>
+                        <td>{user.no_telp}</td>
                         {user.presensimagang.map((entry, entryIndex) => (
                           <React.Fragment key={entry.id}>
                             <td>
+                              {entry.tanggal
+                                ? formatDateTime(entry.tanggal)
+                                : "-"}
+                            </td>
+                            <td>
                               {entry.check_in
                                 ? formatDateTime(entry.check_in)
-                                : '-'}
+                                : "-"}
+                            </td>
+                            <td>
+                              {entry.latitude_in && entry.longitude_in
+                                ? `${entry.latitude_in}, ${entry.longitude_in}`
+                                : "Lokasi tidak tersedia"}
                             </td>
                             <td>
                               {entry.check_out
                                 ? formatDateTime(entry.check_out)
-                                : '-'}
+                                : "-"}
+                            </td>
+                            <td>
+                              {entry.latitude_out && entry.longitude_out
+                                ? `${entry.latitude_out}, ${entry.longitude_out}`
+                                : "Lokasi tidak tersedia"}
                             </td>
                             <td>
                               {entry.image_url_in ? (
@@ -243,7 +267,7 @@ export const PresensiMagang = () => {
                                   Absen Masuk
                                 </button>
                               ) : (
-                                '-'
+                                "-"
                               )}
                             </td>
                             <td>
@@ -257,7 +281,7 @@ export const PresensiMagang = () => {
                                   Absen Pulang
                                 </button>
                               ) : (
-                                '-'
+                                "-"
                               )}
                             </td>
                           </React.Fragment>
@@ -268,6 +292,7 @@ export const PresensiMagang = () => {
               </table>
             </div>
           )}
+
           {showImageOverlay && (
             <ImageOverlay
               imageUrl={selectedImage}
@@ -276,6 +301,9 @@ export const PresensiMagang = () => {
           )}
         </div>
       </div>
+        <div className="w-full">
+          
+        </div>
     </div>
   );
 };

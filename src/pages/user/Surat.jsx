@@ -99,7 +99,7 @@ const Surat = () => {
   return (
     <div className="flex flex-col w-full">
       <Navbar />
-      <div className="pl-64">
+      <div className="pl-0 mt-24 lg:pl-64 lg:mt-0">
         <div className="container flex flex-col p-4">
           <div className="flex flex-col gap-2 p-6 rounded-lg bg-slate-200">
             <h1 className="text-xl font-bold">Unduh Surat Diterima Magang</h1>

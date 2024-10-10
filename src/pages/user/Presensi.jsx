@@ -15,12 +15,29 @@ const Presensi = () => {
   const [userLocation, setUserLocation] = useState(null);
   const navigate = useNavigate();
 
-  const allowedLatitude = -6.983066906515344;
-  const allowedLongitude = 110.41367971193375;
-  const allowedRadius = 1500; // radius in meters
-
   const isUnauthorizedError = (error) => {
     return error.response && error.response.status === 401;
+  };
+
+  // Separate function to fetch and decode token
+  const fetchToken = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/account/token", {
+        headers: {
+          role: "peserta_magang",
+        },
+      });
+      const decoded = jwt_decode(response.data.token);
+      return decoded.userId;
+    } catch (error) {
+      if (isUnauthorizedError(error)) {
+        alert("Session expired. Please login again.");
+        navigate("/"); // Redirect to login if unauthorized
+      } else {
+        console.error("Error fetching token:", error);
+      }
+      return null; // Return null in case of error
+    }
   };
 
   useEffect(() => {
@@ -28,11 +45,9 @@ const Presensi = () => {
 
     const startCamera = async () => {
       try {
-        await axios.get("http://localhost:3000/account/token", {
-          headers: {
-            role: "peserta_magang",
-          },
-        });
+        const userId = await fetchToken(); // Get token before starting the camera
+        if (!userId) return;
+
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
         videoRef.current.srcObject = stream;
       } catch (error) {
@@ -53,22 +68,17 @@ const Presensi = () => {
     };
   }, [navigate]);
 
-  // Mengambil data presensi dari backend
+  // Fetch presensi data from backend
   useEffect(() => {
     const fetchDataAndPresensiData = async () => {
       try {
-        const ambilid = await axios.get("http://localhost:3000/account/token", {
-          headers: {
-            role: "peserta_magang",
-          },
-        });
+        const userId = await fetchToken(); // Get token here
+        if (!userId) return;
 
-        const decoded = jwt_decode(ambilid.data.token);
         const response = await axios.get(
-          `http://localhost:3000/user/presensi/${decoded.userId}`
+          `http://localhost:3000/user/presensi/${userId}`
         );
 
-        // Data dari controller sudah diformat, jadi langsung gunakan
         const dataWithKosong = response.data.presensi.map((item) => ({
           ...item,
           nama: item.nama,
@@ -98,7 +108,7 @@ const Presensi = () => {
     fetchDataAndPresensiData();
   }, [navigate]);
 
-  // Mengambil lokasi pengguna
+  // Get user's location
   useEffect(() => {
     const getLocation = () => {
       if (navigator.geolocation) {
@@ -124,39 +134,9 @@ const Presensi = () => {
     getLocation();
   }, []);
 
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const toRad = (value) => (value * Math.PI) / 180;
-    const R = 6371e3; // Earth radius in meters
-    const φ1 = toRad(lat1);
-    const φ2 = toRad(lat2);
-    const Δφ = toRad(lat2 - lat1);
-    const Δλ = toRad(lon2 - lon1);
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // Distance in meters
-  };
-
   const capture = async () => {
     if (!userLocation) {
       showErrorNotification("Gagal mengambil gambar. Lokasi tidak tersedia.");
-      return;
-    }
-
-    const distance = getDistance(
-      userLocation.latitude,
-      userLocation.longitude,
-      allowedLatitude,
-      allowedLongitude
-    );
-
-    if (distance > allowedRadius) {
-      showErrorNotification(
-        `Anda berada di luar radius ${allowedRadius} meter dari lokasi yang diizinkan.`
-      );
       return;
     }
 
@@ -179,18 +159,13 @@ const Presensi = () => {
     setImageSrc(capturedImageFile);
     setCaptureTime(new Date());
     console.log("Captured Image:", capturedImageFile);
-    setShowModal(true); // Menampilkan modal setelah gambar diambil
+    setShowModal(true); // Show modal after image is captured
   };
 
   const uploadImage = async () => {
     try {
-      const ambilid = await axios.get("http://localhost:3000/account/token", {
-        headers: {
-          role: "peserta_magang",
-        },
-      });
-
-      const decoded = jwt_decode(ambilid.data.token);
+      const userId = await fetchToken(); // Get token before uploading
+      if (!userId) return;
 
       if (!imageSrc) {
         throw new Error("No image captured");
@@ -202,7 +177,7 @@ const Presensi = () => {
       formData.append("longitude", userLocation.longitude);
 
       const response = await axios.patch(
-        `http://localhost:3000/user/presensi/${decoded.userId}/up`,
+        `http://localhost:3000/user/presensi/${userId}/up`,
         formData,
         {
           headers: {
@@ -213,7 +188,7 @@ const Presensi = () => {
       );
 
       showSuccessNotification("Berhasil Melakukan Presensi");
-      setShowModal(false); // Menutup modal setelah berhasil mengirim presensi
+      setShowModal(false); // Close modal after successful upload
     } catch (error) {
       console.error("Error object:", error);
 
@@ -238,14 +213,14 @@ const Presensi = () => {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full bg-[#F5F5F5]">
       <Sidebar />
-      <div className="pl-64">
+      <div className="h-screen pl-0 mt-24 lg:pl-64 lg:mt-0 ">
         <div className="container flex flex-col p-4">
-          <h2 className="text-4xl font-semibold font-poppins">
+          <h2 className="text-2xl font-semibold lg:text-4xl font-poppins">
             Lakukan Presensi - SISAPPMA
           </h2>
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center lg:my-16 lg:flex-row">
             <div className="flex p-10 m-10 shadow-lg bg-slate-200 rounded-xl">
               <div className="flex flex-col items-center justify-center gap-4 my-5 h-96">
                 <video
@@ -258,18 +233,6 @@ const Presensi = () => {
                   <p>
                     Lokasi Anda: {userLocation.latitude.toFixed(5)},{" "}
                     {userLocation.longitude.toFixed(5)}
-                  </p>
-                )}
-                {userLocation && (
-                  <p>
-                    Jarak ke lokasi presensi:{" "}
-                    {getDistance(
-                      userLocation.latitude,
-                      userLocation.longitude,
-                      allowedLatitude,
-                      allowedLongitude
-                    ).toFixed(2)}{" "}
-                    meter
                   </p>
                 )}
                 <button onClick={capture} className="flex btn btn-primary">
@@ -301,7 +264,7 @@ const Presensi = () => {
         </div>
       </div>
 
-      {/* Modal menggunakan DaisyUI */}
+      {/* Modal using DaisyUI */}
       {showModal && (
         <div className="modal modal-open">
           <div className="modal-box">
@@ -338,17 +301,6 @@ const Presensi = () => {
               <li>
                 <strong>Lokasi Check-out:</strong>{" "}
                 {presensi[0]?.lokasi_out || "Lokasi tidak tersedia"}
-              </li>
-
-              <li>
-                <strong>Jarak ke lokasi presensi:</strong>{" "}
-                {getDistance(
-                  userLocation?.latitude,
-                  userLocation?.longitude,
-                  allowedLatitude,
-                  allowedLongitude
-                ).toFixed(2)}{" "}
-                meter
               </li>
             </ul>
             <div className="modal-action">

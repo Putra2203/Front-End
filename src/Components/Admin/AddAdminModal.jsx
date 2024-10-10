@@ -71,7 +71,7 @@ const AddAdminModal = ({ showTaskForm, handleCloseTaskForm, getAdmin }) => {
     <>
       {showTaskForm && (
         <div className="modal modal-open">
-          <div className="modal-box">
+          <div className="modal-box bg-secondary">
             <h3 className="text-lg font-bold">Tambah Admin</h3>
             <form onSubmit={saveAdmin}>
               <div className="form-control">
@@ -81,7 +81,7 @@ const AddAdminModal = ({ showTaskForm, handleCloseTaskForm, getAdmin }) => {
                 <input
                   type="text"
                   placeholder="Masukkan nama"
-                  className="input input-bordered"
+                  className="text-black input input-bordered bg-secondary"
                   value={formData.nama}
                   onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
                 />
@@ -97,7 +97,7 @@ const AddAdminModal = ({ showTaskForm, handleCloseTaskForm, getAdmin }) => {
                 <input
                   type="text"
                   placeholder="Masukkan username"
-                  className="input input-bordered"
+                  className="text-black input input-bordered bg-secondary"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 />
@@ -113,7 +113,7 @@ const AddAdminModal = ({ showTaskForm, handleCloseTaskForm, getAdmin }) => {
                 <input
                   type="password"
                   placeholder="Masukkan password"
-                  className="input input-bordered"
+                  className="text-black input input-bordered bg-secondary"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />

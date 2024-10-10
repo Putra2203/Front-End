@@ -110,7 +110,7 @@ const Profil = () => {
   return (
     <div className="flex flex-col w-full">
       <Navbar />
-      <div className="pl-64">
+      <div className="pl-0 mt-24 lg:pl-64 lg:mt-0">
         <div className="container flex flex-col items-center justify-center h-screen p-4">
           <div className="flex flex-col w-full max-w-3xl p-8 bg-white border rounded-lg shadow-2xl">
             <div className="flex items-center gap-6">

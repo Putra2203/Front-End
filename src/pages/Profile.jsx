@@ -112,7 +112,7 @@ export const Profile = () => {
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-100 md:flex-row">
       <NavSidebar />
-      <div className="flex-grow p-6 md:pl-72">
+      <div className="flex-grow p-6 mt-24 md:pl-72 lg:mt-0">
         <div className="p-6 bg-white rounded-lg shadow-md">
           <div className="flex flex-col items-center justify-center gap-4">
             <div className="relative">

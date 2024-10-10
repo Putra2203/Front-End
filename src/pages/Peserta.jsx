@@ -8,7 +8,10 @@ import AddUser from "../Components/Admin/AddUser";
 import NavSidebar from "./NavSidebar";
 import { IoIosSearch } from "react-icons/io";
 import { HiOutlinePlusSmall } from "react-icons/hi2";
-
+import ExportPeserta from "../Components/Admin/ExportPeserta";
+import ExportPesertaAktif from "../Components/Admin/ExportPesertaAktif";
+import ExportPesertaAlumni from "../Components/Admin/ExportPesertaAlumni";
+import ExportPesertaCalon from "../Components/Admin/ExportPesertaCalon";
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
@@ -24,7 +27,6 @@ export const Peserta = () => {
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(""); // State untuk menyimpan bulan yang dipilih
   const [allUsers, setAllUsers] = useState([]); // Untuk menyimpan semua data peserta yang asli
-
 
   useEffect(() => {
     setIsLoading(true);
@@ -58,16 +60,16 @@ export const Peserta = () => {
           endpoint = "peserta-alumni";
           break;
         case "3":
-            endpoint = "peserta-calon";
-            break;
+          endpoint = "peserta-calon";
+          break;
         default:
           endpoint = "peserta";
       }
-  
+
       const response = await axiosJWTadmin.get(
         `http://localhost:3000/admin/${endpoint}`
       );
-      
+
       setAllUsers(response.data.peserta_magang); // Simpan semua data asli
       setUsers(response.data.peserta_magang); // Atur data yang akan ditampilkan (bisa difilter nantinya)
       setActiveCategory(category); // Set kategori aktif
@@ -76,7 +78,6 @@ export const Peserta = () => {
       console.log(error);
     }
   };
-  
 
   const handleCloseTaskForm = () => {
     setShowTaskForm(false); // Menutup modal AddUser
@@ -122,7 +123,7 @@ export const Peserta = () => {
 
   const handleFilterByMonth = (month) => {
     setSelectedMonth(month); // Simpan bulan yang dipilih di state
-  
+
     if (month !== "") {
       const filtered = allUsers.filter((user) => {
         const startDate = new Date(user.tanggal_mulai); // Konversi tanggal mulai ke objek Date
@@ -153,14 +154,13 @@ export const Peserta = () => {
       }
     }
   };
-  
 
   return (
     <div className="flex flex-col w-full">
       <NavSidebar />
-      <div className="pl-64">
+      <div className="h-screen pl-0 lg:pl-64">
         <div className="flex flex-col p-4 ">
-          <p className="text-4xl font-semibold font-poppins">
+          <p className="mt-24 text-2xl font-semibold lg:text-4xl font-poppins lg:mt-0">
             Daftar Peserta Magang - SISAPPMA
           </p>
 
@@ -176,8 +176,8 @@ export const Peserta = () => {
             </i>
           </div>
 
-          <div className="flex items-center justify-between gap-4 mt-4">
-            <div className="flex gap-4">
+          <div className="flex flex-col items-start justify-start gap-4 mt-4 lg:items-center lg:justify-between lg:flex-row">
+            <div className="flex flex-col gap-4 lg:flex-row">
               <button
                 onClick={handleShowTaskForm}
                 className="bg-[#183028] px-4 py-1 text-white mb-4 rounded-3xl hover:bg-slate-400 flex items-center gap-2"
@@ -224,10 +224,17 @@ export const Peserta = () => {
             </p>
           </div>
 
+          <div className="flex flex-col gap-0 lg:gap-4 lg:flex-row">
+            <ExportPeserta />
+            <ExportPesertaAktif />
+            <ExportPesertaAlumni />
+            <ExportPesertaCalon />
+          </div>
+
           <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
             <table className="table w-full text-center">
               <thead>
-                <tr>
+                <tr className="text-black">
                   <th>No</th>
                   <th>Nama</th>
                   <th>Universitas</th>
@@ -303,6 +310,7 @@ export const Peserta = () => {
           </div>
         </div>
       </div>
+      
 
       {showEditUserModal && (
         <EditUser

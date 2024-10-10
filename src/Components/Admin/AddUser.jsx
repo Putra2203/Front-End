@@ -105,7 +105,7 @@ const AddUser = ({ handleClose, refreshData }) => {
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box">
+      <div className="modal-box bg-secondary">
         <form onSubmit={saveUser} className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold font-poppins">Tambah Peserta</h1>
           <div className="flex justify-between mt-4">
@@ -118,7 +118,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, nama: e.target.value });
                 setValidationErrors({ ...validationErrors, nama: "" });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.nama ? "input-error" : ""
               }`}
             />
@@ -136,7 +136,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, asal_univ: e.target.value });
                 setValidationErrors({ ...validationErrors, asal_univ: "" });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.asal_univ ? "input-error" : ""
               }`}
             />
@@ -159,7 +159,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                   asal_jurusan: "",
                 });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.asal_jurusan ? "input-error" : ""
               }`}
             />
@@ -179,7 +179,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, no_telp: e.target.value });
                 setValidationErrors({ ...validationErrors, no_telp: "" });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.no_telp ? "input-error" : ""
               }`}
             />
@@ -197,7 +197,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, nama_dosen: e.target.value });
                 setValidationErrors({ ...validationErrors, nama_dosen: "" });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.nama_dosen ? "input-error" : ""
               }`}
             />
@@ -220,7 +220,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                   no_telp_dosen: "",
                 });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.no_telp_dosen ? "input-error" : ""
               }`}
             />
@@ -240,7 +240,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                   status_aktif: parseInt(e.target.value, 10),
                 }); // Kirim integer
               }}
-              className={`select border-black ${
+              className={`select border-black bg-slate-50 ${
                 validationErrors.status_aktif ? "select-error" : ""
               }`}
             >
@@ -263,7 +263,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, tanggal_mulai: date })
               }
               dateFormat={"yyyy-MM-dd"}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.tanggal_mulai ? "input-error" : ""
               }`}
             />
@@ -281,7 +281,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, tanggal_selesai: date })
               }
               dateFormat={"yyyy-MM-dd"}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.tanggal_selesai ? "input-error" : ""
               }`}
             />
@@ -301,7 +301,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, username: e.target.value });
                 setValidationErrors({ ...validationErrors, username: "" });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.username ? "input-error" : ""
               }`}
             />
@@ -321,7 +321,7 @@ const AddUser = ({ handleClose, refreshData }) => {
                 setFormData({ ...formData, password: e.target.value });
                 setValidationErrors({ ...validationErrors, password: "" });
               }}
-              className={`input border-black ${
+              className={`input border-black bg-slate-50 ${
                 validationErrors.password ? "input-error" : ""
               }`}
             />

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import logo from "../images/logo.png";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -14,6 +14,7 @@ const NavSidebar = () => {
   const [nama, setNama] = useState("");
   const [profil, setProfil] = useState("");
   const navigate = useNavigate(); // useNavigate digunakan untuk navigasi
+  const location = useLocation(); // Menggunakan useLocation untuk melacak URL saat ini
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -51,6 +52,9 @@ const NavSidebar = () => {
     console.log("User logged out successfully");
   };
 
+  // Fungsi untuk mengecek apakah URL saat ini cocok dengan path yang diberikan
+  const isActive = (path) => location.pathname === path;
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -80,7 +84,11 @@ const NavSidebar = () => {
             </div>
             <ul className="flex flex-col gap-5 my-4">
               {/* Daftar halaman */}
-              <li className="px-4 rounded-3xl hover:bg-white hover:text-black">
+              <li
+                className={`px-4 rounded-3xl ${
+                  isActive("/homepage") ? "bg-white text-black" : "hover:bg-white hover:text-black"
+                }`}
+              >
                 <Link
                   to="/homepage"
                   className="flex flex-row items-center gap-2 text-xl "
@@ -89,7 +97,11 @@ const NavSidebar = () => {
                   Home
                 </Link>
               </li>
-              <li className="px-4 rounded-3xl hover:bg-white hover:text-black">
+              <li
+                className={`px-4 rounded-3xl ${
+                  isActive("/admin") ? "bg-white text-black" : "hover:bg-white hover:text-black"
+                }`}
+              >
                 <Link
                   to="/admin"
                   className="flex flex-row items-center gap-2 text-xl "
@@ -98,7 +110,11 @@ const NavSidebar = () => {
                   Admin
                 </Link>
               </li>
-              <li className="px-4 rounded-3xl hover:bg-white hover:text-black">
+              <li
+                className={`px-4 rounded-3xl ${
+                  isActive("/peserta") ? "bg-white text-black" : "hover:bg-white hover:text-black"
+                }`}
+              >
                 <Link
                   to="/peserta"
                   className="flex flex-row items-center gap-2 text-xl "
@@ -107,7 +123,11 @@ const NavSidebar = () => {
                   Peserta
                 </Link>
               </li>
-              <li className="px-4 rounded-3xl hover:bg-white hover:text-black">
+              <li
+                className={`px-4 rounded-3xl ${
+                  isActive("/presensi") ? "bg-white text-black" : "hover:bg-white hover:text-black"
+                }`}
+              >
                 <Link
                   to="/presensi"
                   className="flex flex-row items-center gap-2 text-xl "
@@ -116,7 +136,11 @@ const NavSidebar = () => {
                   Presensi Magang
                 </Link>
               </li>
-              <li className="px-4 rounded-3xl hover:bg-white hover:text-black">
+              <li
+                className={`px-4 rounded-3xl ${
+                  isActive("/penugasan") ? "bg-white text-black" : "hover:bg-white hover:text-black"
+                }`}
+              >
                 <Link
                   to="/penugasan"
                   className="flex flex-row items-center gap-2 text-xl "
@@ -125,7 +149,11 @@ const NavSidebar = () => {
                   Penugasan
                 </Link>
               </li>
-              <li className="px-4 rounded-3xl hover:bg-white hover:text-black">
+              <li
+                className={`px-4 rounded-3xl ${
+                  isActive("/profile") ? "bg-white text-black" : "hover:bg-white hover:text-black"
+                }`}
+              >
                 <Link
                   to="/profile"
                   className="flex flex-row items-center gap-2 text-xl "

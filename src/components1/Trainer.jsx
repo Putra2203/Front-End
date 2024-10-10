@@ -1,7 +1,7 @@
 
 const Trainer = ({ image, name, job, socials }) => {
   return (
-    <div className="p-10 shadow-md bg-secondary rounded-3xl">
+    <div className="p-10 shadow-md bg-slate-200 rounded-3xl">
       <div className="flex flex-col items-center text-center">
         <img src={image} alt={name} className="h-[350px]" />
         <h3 className="mt-4 text-lg font-semibold font-poppins">{name}</h3>

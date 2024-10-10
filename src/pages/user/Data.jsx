@@ -11,44 +11,56 @@ const Data = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  useEffect(() => {
-    const fetchDataAndPresensiData = async () => {
-      try {
-        const ambilid = await axios.get("http://localhost:3000/account/token", {
-          headers: {
-            role: "peserta_magang",
-          },
-        });
-
-        const decoded = jwt_decode(ambilid.data.token);
-        const response = await axios.get(
-          `http://localhost:3000/user/presensi/${decoded.userId}`
-        );
-
-        console.log(response.data.presensi);
-
-        const dataWithKosong = response.data.presensi.map((item) => ({
-          ...item,
-          check_in: item.check_in || "Belum Presensi",
-          check_out: item.check_out || "Belum Presensi",
-          image_url_in: item.image_url_in || null,
-          image_url_out: item.image_url_out || null,
-          lokasi_in: item.lokasi_in || null,
-          lokasi_out: item.lokasi_out || null,
-        }));
-
-        setPresensi(dataWithKosong);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          // Token is invalid or expired
-          alert("Session expired. Please login again.");
-          // Redirect to login or handle session expiry
-        } else {
-          console.error("Error fetching data", error);
-        }
+  // Separate function to get token
+  const fetchToken = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/account/token", {
+        headers: {
+          role: "peserta_magang",
+        },
+      });
+      const decoded = jwt_decode(response.data.token);
+      return decoded.userId;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        alert("Session expired. Please login again.");
+        // Handle session expiry logic, like redirecting to login page
+      } else {
+        console.error("Error fetching token", error);
       }
-    };
+      return null; // Return null if an error occurs
+    }
+  };
 
+  // Fetch presensi data
+  const fetchDataAndPresensiData = async () => {
+    try {
+      const userId = await fetchToken();
+      if (!userId) return; // Exit if token fetch failed
+
+      const response = await axios.get(
+        `http://localhost:3000/user/presensi/${userId}`
+      );
+
+      console.log(response.data.presensi);
+
+      const dataWithKosong = response.data.presensi.map((item) => ({
+        ...item,
+        check_in: item.check_in || "Belum Presensi",
+        check_out: item.check_out || "Belum Presensi",
+        image_url_in: item.image_url_in || null,
+        image_url_out: item.image_url_out || null,
+        lokasi_in: item.lokasi_in || null,
+        lokasi_out: item.lokasi_out || null,
+      }));
+
+      setPresensi(dataWithKosong);
+    } catch (error) {
+      console.error("Error fetching data", error);
+    }
+  };
+
+  useEffect(() => {
     fetchDataAndPresensiData();
   }, []);
 
@@ -84,7 +96,7 @@ const Data = () => {
   return (
     <div className="flex flex-col w-full">
       <Sidebar />
-      <div className="pl-64">
+      <div className="h-screen pl-0 mt-24 lg:pl-64 lg:mt-0">
         <div className="container flex flex-col p-4">
           <h1 className="mb-8 text-3xl font-bold">
             History Presensi - SISAPPMA

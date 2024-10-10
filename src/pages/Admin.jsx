@@ -158,9 +158,9 @@ export const Admin = () => {
       {/* Sidebar */}
       <NavSidebar />
 
-      <div className="pl-64">
+      <div className="h-screen pl-0 lg:pl-64">
         <div className="flex flex-col p-4 ">
-          <p className="text-4xl font-semibold font-poppins">
+          <p className="mt-24 text-2xl font-semibold lg:text-4xl font-poppins lg:mt-0">
             Admin - SISAPPMA
           </p>
           <div className="mt-4">
@@ -195,9 +195,9 @@ export const Admin = () => {
 
             {/* table */}
             <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
-              <table className="table w-full text-center">
+              <table className="table w-full text-center ">
                 <thead>
-                  <tr>
+                  <tr className="text-black">
                     <th>No</th>
                     <th>Nama</th>
                     <th>Username</th>
@@ -232,11 +232,11 @@ export const Admin = () => {
               </table>
             </div>
 
-            <div className="flex justify-center mt-4 join">
+            <div className="flex justify-center mt-4 join ">
               <button
                 onClick={() => paginate(currentPage - 1)}
-                className={`join-item btn ${
-                  currentPage === 1 ? "btn-disabled" : ""
+                className={`join-item bg-slate-200 btn text-black ${
+                  currentPage === 1 ? "btn-disabled bg-slate-400" : ""
                 }`}
               >
                 «
@@ -246,8 +246,8 @@ export const Admin = () => {
                 <button
                   key={number}
                   onClick={() => paginate(number)}
-                  className={`join-item btn ${
-                    number === currentPage ? "btn-active" : ""
+                  className={`join-item btn  ${
+                    number === currentPage ? "btn-active bg-gray-700" : ""
                   }`}
                 >
                   {number}
@@ -283,6 +283,7 @@ export const Admin = () => {
           </div>
         </div>
       </div>
+      <Footer1 />
     </div>
   );
 };

@@ -77,7 +77,7 @@ function Tugas() {
     <div className="flex flex-col w-full">
       {/* Header */}
       <Sidebar />
-      <div className="pl-64">
+      <div className="pl-0 mt-24 lg:pl-64 lg:mt-0">
         <div className="container flex flex-col p-4">
           <h1 className="ml-4 text-2xl font-semibold">Penugasan - SISAPPMA</h1>
           
