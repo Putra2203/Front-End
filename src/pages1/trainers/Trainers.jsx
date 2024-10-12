@@ -9,9 +9,13 @@ const Trainers = () => {
       <p className="text-xl">Memudahkan Peserta Magang dalam Berinteraksi dengan Koordinator</p>
     </div>
       <section className="p-10 mb-12 lg:p-0">
-        <div className="flex flex-col justify-center max-w-screen-xl gap-3 mx-auto lg:flex-row">
+        <div className="flex flex-wrap justify-center max-w-screen-xl gap-4 mx-auto">
           {trainers.map((trainer) => {
-            return <Trainer key={trainer.id} {...trainer} />;
+            return (
+              <div className="w-full sm:w-1/2 lg:w-1/4 p-0" key={trainer.id}>
+                <Trainer {...trainer} />
+              </div>
+            );
           })}
         </div>
       </section>

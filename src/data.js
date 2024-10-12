@@ -213,4 +213,40 @@ export const trainers = [
       },
     ]
   },
+  {
+    id: 4,
+    image: require("./images/trainer4.jpg"),
+    name: "BENI EKA PUTRA, S.Kom",
+    job: "Pranata Komputer Ahli Pertama/Pratama",
+    socials: [
+      {
+        link: "https://www.instagram.com/hanry_sugi/",
+        icon: <BsInstagram />,
+      },
+    ]
+  },
+  {
+    id: 5,
+    image: require("./images/trainer5.jpeg"),
+    name: "MANAL, A.Md",
+    job: "Pengelola Media Center dan Kemitraan Media",
+    socials: [
+      {
+        link: "https://www.instagram.com/hanry_sugi/",
+        icon: <BsInstagram />,
+      },
+    ]
+  },
+  {
+    id: 6,
+    image: require("./images/trainer3.jpg"),
+    name: "ARIF KURNIA RACHMAN, ST",
+    job: "Sandiman Pertama",
+    socials: [
+      {
+        link: "https://www.instagram.com/hanry_sugi/",
+        icon: <BsInstagram />,
+      },
+    ]
+  },
 ];
