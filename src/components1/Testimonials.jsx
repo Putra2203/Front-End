@@ -33,7 +33,7 @@ const Testimonials = () => {
               <img
                 src={avatar}
                 alt={name}
-                className="w-full h-48 rounded-full lg:h-full"
+                className="w-full h-48 rounded-full lg:h-full "
               />
             </div>
             <div className="">

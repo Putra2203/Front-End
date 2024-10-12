@@ -375,7 +375,7 @@ export const Penugasan = () => {
                                     setSelectedItemIndex(index);
                                     setShowImageOverlay(true);
                                   }}
-                                  className="button is-small is-info"
+                                  className="text-blue-500 button is-small is-info"
                                 >
                                   Lihat hasil pekerjaan
                                 </button>

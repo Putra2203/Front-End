@@ -45,19 +45,17 @@ const UserPages = () => {
         username: decoded.username,
       }));
 
-      // Set token untuk digunakan dalam permintaan API selanjutnya
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${response.data.token}`;
 
-      // Memuat data setelah mendapatkan token yang valid
       fetchUserData();
       fetchPresensiData();
       fetchPenugasanData();
       fetchSisaWaktuMagang(decoded.userId);
     } catch (error) {
       console.error("Error refreshing token:", error);
-      navigate("/"); // Arahkan ke login jika token tidak valid
+      navigate("/");
     }
   };
 

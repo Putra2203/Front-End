@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "./Navbar";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import SisaWaktuMagang from "../../Components/User/SisaWaktuMagang";
 
 const Data = () => {
   const [presensi, setPresensi] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showImageModal, setShowImageModal] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const [userId, setUserId] = useState(null);
 
   // Separate function to get token
   const fetchToken = async () => {
@@ -28,7 +29,7 @@ const Data = () => {
       } else {
         console.error("Error fetching token", error);
       }
-      return null; // Return null if an error occurs
+      return null;
     }
   };
 
