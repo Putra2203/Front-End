@@ -10,14 +10,13 @@ import EditTugas from "../Components/Admin/EditTugas";
 import NavSidebar from "./NavSidebar";
 import { HiOutlinePlusSmall } from "react-icons/hi2";
 
-
 export const Penugasan = () => {
   const [showNav, setShowNav] = useState(false);
   const [activeTasks, setActiveTasks] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeNow, setTimeNow] = useState("");
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [tugas, setTugas] = useState([]); // Inisialisasi sebagai array kosong
+  const [tugas, setTugas] = useState([]);
   const [idtugas, setIdTugas] = useState("");
   const navigate = useNavigate();
 
@@ -40,34 +39,48 @@ export const Penugasan = () => {
   const [showEditTugasModal, setShowEditTugasModal] = useState(false);
   const [selectedTugasId, setSelectedTugasId] = useState(null);
 
-  const handleEditTugas = (tugasId) => {
-    setSelectedTugasId(tugasId);
-    setShowEditTugasModal(true);
-  };
-
-  const handleCloseEditTugasModal = () => {
-    getTugas();
-    setSelectedTugasId(null);
-    setShowEditTugasModal(false);
-  };
-
   const [judulError, setJudulError] = useState("");
   const [deskripsiError, setDeskripsiError] = useState("");
   const [deadlineError, setDeadlineError] = useState("");
 
+  const [statustugas, setStatusTugas] = useState([]);
+
   useEffect(() => {
     getTugasById();
     getTugas();
-    fetchCurrentTime();
+    updateCurrentTime();
 
     const timer = setInterval(() => {
       setCurrentTime(new Date());
+      updateCurrentTime();
     }, 1000);
 
     return () => {
       clearInterval(timer);
     };
   }, []);
+
+  const updateCurrentTime = () => {
+    const now = new Date();
+    const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const timeOptions = { hour: "2-digit", minute: "2-digit" };
+
+    const date = now.toLocaleDateString("id-ID", dateOptions);
+    const time = now.toLocaleTimeString("id-ID", timeOptions);
+
+    const dateTimeStringFormatted = `${date} - ${time}`;
+    setTimeNow(dateTimeStringFormatted);
+  };
+
+  useEffect(() => {
+    if (Array.isArray(tugas)) {
+      const activeTaskCount = tugas.filter((tugas) => {
+        const dueDate = new Date(tugas.dueDate);
+        return dueDate > currentTime;
+      }).length;
+      setActiveTasks(activeTaskCount);
+    }
+  }, [currentTime, tugas]);
 
   const exportPenugasan = async (tugasId) => {
     try {
@@ -94,38 +107,6 @@ export const Penugasan = () => {
       }
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (Array.isArray(tugas)) {
-      const activeTaskCount = tugas.filter((tugas) => {
-        const dueDate = new Date(tugas.dueDate);
-        return dueDate > currentTime;
-      }).length;
-      setActiveTasks(activeTaskCount);
-    }
-  }, [currentTime, tugas]);
-
-  const fetchCurrentTime = async () => {
-    try {
-      const response = await fetch(
-        "https://worldtimeapi.org/api/timezone/Asia/Jakarta"
-      );
-      const data = await response.json();
-      const dateTimeString = data.datetime;
-      const dateTime = new Date(dateTimeString);
-
-      const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
-      const timeOptions = { hour: "2-digit", minute: "2-digit" };
-
-      const date = dateTime.toLocaleDateString(undefined, dateOptions);
-      const time = dateTime.toLocaleTimeString(undefined, timeOptions);
-
-      const dateTimeStringFormatted = `${date} - ${time}`;
-      setTimeNow(dateTimeStringFormatted);
-    } catch (error) {
-      console.error("Error fetching current time:", error);
     }
   };
 
@@ -207,8 +188,6 @@ export const Penugasan = () => {
     }
   };
 
-  const [statustugas, setStatusTugas] = useState([]);
-
   const getTugasById = async (taskId, index) => {
     try {
       const response = await axiosJWTadmin.get(
@@ -243,6 +222,17 @@ export const Penugasan = () => {
 
   const handleCloseTaskForm = () => {
     setShowTaskForm(false);
+  };
+
+  const handleEditTugas = (tugasId) => {
+    setSelectedTugasId(tugasId);
+    setShowEditTugasModal(true);
+  };
+
+  const handleCloseEditTugasModal = () => {
+    getTugas();
+    setSelectedTugasId(null);
+    setShowEditTugasModal(false);
   };
 
   return (
@@ -513,7 +503,6 @@ export const Penugasan = () => {
           </div>
         )}
       </div>
-      
     </div>
   );
 };

@@ -4,12 +4,11 @@ import { axiosJWTadmin } from "../config/axiosJWT";
 import ImageOverlay from "../Components/Admin/ImageOverlay";
 import NavSidebar from "./NavSidebar";
 
-
 export const PresensiMagang = () => {
   const [users, setUsers] = useState([]);
   const [totalAttendance, setTotalAttendance] = useState(0);
   const [currentTime, setCurrentTime] = useState("");
-  const [searchDate, setSearchDate] = useState(""); // State untuk date picker
+  const [searchDate, setSearchDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [showImageOverlay, setShowImageOverlay] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
@@ -27,21 +26,33 @@ export const PresensiMagang = () => {
     setShowImageOverlay(false);
   };
 
-  // Set tanggal hari ini saat komponen pertama kali dimuat
-  useEffect(() => {
-    getUsers();
-    fetchCurrentTime();
-    const today = new Date().toISOString().split("T")[0]; // Format ke YYYY-MM-DD
-    setSearchDate(today); // Set tanggal hari ini secara otomatis
-  }, []);
-
-  // Handle perubahan tanggal
-  const handleDateChange = (e) => {
-    const selectedDate = e.target.value; // Declare selectedDate here
-    setSearchDate(selectedDate); // Mengubah nilai searchDate saat pengguna memilih tanggal
+  const getFormattedLocalTime = () => {
+    const now = new Date();
+    const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const timeOptions = { hour: "2-digit", minute: "2-digit", hour12: false };
+    const date = now.toLocaleDateString("id-ID", dateOptions);
+    const time = now.toLocaleTimeString("id-ID", timeOptions);
+    return `${date} - ${time}`;
   };
 
-  // Fetch ulang data users ketika searchDate berubah
+  useEffect(() => {
+    getUsers();
+    const today = new Date().toISOString().split("T")[0];
+    setSearchDate(today);
+    setCurrentTime(getFormattedLocalTime());
+
+    const intervalId = setInterval(() => {
+      setCurrentTime(getFormattedLocalTime());
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setSearchDate(selectedDate);
+  };
+
   useEffect(() => {
     if (searchDate) {
       getUsers();
@@ -69,28 +80,6 @@ export const PresensiMagang = () => {
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(downloadUrl);
-  };
-
-  const fetchCurrentTime = async () => {
-    try {
-      const response = await fetch(
-        "https://worldtimeapi.org/api/timezone/Asia/Jakarta"
-      );
-      const data = await response.json();
-      const dateTimeString = data.datetime;
-      const dateTime = new Date(dateTimeString);
-
-      const dateOptions = { year: "numeric", month: "2-digit", day: "2-digit" };
-      const timeOptions = { hour: "2-digit", minute: "2-digit" };
-
-      const date = dateTime.toLocaleDateString(undefined, dateOptions);
-      const time = dateTime.toLocaleTimeString(undefined, timeOptions);
-
-      const dateTimeStringFormatted = `${date} - ${time}`;
-      setCurrentTime(dateTimeStringFormatted);
-    } catch (error) {
-      console.error("Error fetching current time:", error);
-    }
   };
 
   const getUsers = async () => {
@@ -121,26 +110,24 @@ export const PresensiMagang = () => {
     }
   };
 
-  const formatDateTime = (searchDate) => {
-    if (searchDate === null) {
+  const formatDateTime = (date) => {
+    if (date === null) {
       return "-";
     }
 
     const jakartaTimeZone = "Asia/Jakarta";
     const options = {
       timeZone: jakartaTimeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: false,
     };
 
-    const date = new Date(searchDate);
-    const formattedTime = new Intl.DateTimeFormat("en-US", options).format(
-      date
-    );
-
-    return formattedTime;
+    return new Intl.DateTimeFormat("id-ID", options).format(new Date(date));
   };
 
   return (
@@ -164,12 +151,11 @@ export const PresensiMagang = () => {
               <p>{totalAttendance}</p>
             </div>
             <div className="mt-4">
-              {/* Date picker yang otomatis terisi dengan tanggal hari ini */}
               <input
                 className="px-4 border bg-slate-200 rounded-3xl"
                 type="date"
-                value={searchDate} // Menggunakan nilai searchDate
-                onChange={handleDateChange} // Ubah tanggal secara manual jika diperlukan
+                value={searchDate}
+                onChange={handleDateChange}
               />
             </div>
           </div>
@@ -229,28 +215,16 @@ export const PresensiMagang = () => {
                         <td>{user.asal_univ}</td>
                         <td>{user.asal_jurusan}</td>
                         <td>{user.no_telp}</td>
-                        {user.presensimagang.map((entry, entryIndex) => (
+                        {user.presensimagang.map((entry) => (
                           <React.Fragment key={entry.id}>
-                            <td>
-                              {entry.tanggal
-                                ? formatDateTime(entry.tanggal)
-                                : "-"}
-                            </td>
-                            <td>
-                              {entry.check_in
-                                ? formatDateTime(entry.check_in)
-                                : "-"}
-                            </td>
+                            <td>{formatDateTime(entry.tanggal)}</td>
+                            <td>{formatDateTime(entry.check_in)}</td>
                             <td>
                               {entry.latitude_in && entry.longitude_in
                                 ? `${entry.latitude_in}, ${entry.longitude_in}`
                                 : "Lokasi tidak tersedia"}
                             </td>
-                            <td>
-                              {entry.check_out
-                                ? formatDateTime(entry.check_out)
-                                : "-"}
-                            </td>
+                            <td>{formatDateTime(entry.check_out)}</td>
                             <td>
                               {entry.latitude_out && entry.longitude_out
                                 ? `${entry.latitude_out}, ${entry.longitude_out}`
@@ -301,9 +275,7 @@ export const PresensiMagang = () => {
           )}
         </div>
       </div>
-        <div className="w-full">
-          
-        </div>
+      <div className="w-full"></div>
     </div>
   );
 };

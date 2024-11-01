@@ -12,6 +12,11 @@ import ExportPeserta from "../Components/Admin/ExportPeserta";
 import ExportPesertaAktif from "../Components/Admin/ExportPesertaAktif";
 import ExportPesertaAlumni from "../Components/Admin/ExportPesertaAlumni";
 import ExportPesertaCalon from "../Components/Admin/ExportPesertaCalon";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+const localizer = momentLocalizer(moment);
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
@@ -25,8 +30,11 @@ export const Peserta = () => {
   const [editingUserId, setEditingUserId] = useState(null);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [shouldRefresh, setShouldRefresh] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(""); // State untuk menyimpan bulan yang dipilih
-  const [allUsers, setAllUsers] = useState([]); // Untuk menyimpan semua data peserta yang asli
+  const [selectedMonth, setSelectedMonth] = useState(""); 
+  const [allUsers, setAllUsers] = useState([]); 
+  const [showRekapAbsenModal, setShowRekapAbsenModal] = useState(false);
+  const [presensi, setPresensi] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -70,9 +78,9 @@ export const Peserta = () => {
         `http://localhost:3000/admin/${endpoint}`
       );
 
-      setAllUsers(response.data.peserta_magang); // Simpan semua data asli
-      setUsers(response.data.peserta_magang); // Atur data yang akan ditampilkan (bisa difilter nantinya)
-      setActiveCategory(category); // Set kategori aktif
+      setAllUsers(response.data.peserta_magang); 
+      setUsers(response.data.peserta_magang); 
+      setActiveCategory(category); 
     } catch (error) {
       navigate("/");
       console.log(error);
@@ -80,7 +88,7 @@ export const Peserta = () => {
   };
 
   const handleCloseTaskForm = () => {
-    setShowTaskForm(false); // Menutup modal AddUser
+    setShowTaskForm(false); 
     setFormData({
       nama: "",
       username: "",
@@ -93,7 +101,7 @@ export const Peserta = () => {
     });
   };
 
-  const handleShowTaskForm = () => setShowTaskForm(true); // Membuka modal AddUser
+  const handleShowTaskForm = () => setShowTaskForm(true); 
 
   const handleOpenEditUserModal = (userId) => {
     setEditingUserId(userId);
@@ -103,6 +111,45 @@ export const Peserta = () => {
   const handleCloseEditUserModal = () => {
     setShowEditUserModal(false);
     getUsers(activeCategory);
+  };
+
+  const fetchPresensiData = async (userId) => {
+    try {
+      const response = await axiosJWTadmin.get(
+        `http://localhost:3000/user/presensi/${userId}`
+      );
+      const dataWithDefaults = response.data.presensi.map((item) => ({
+        ...item,
+        check_in: item.check_in || "Belum Presensi",
+        check_out: item.check_out || "Belum Presensi",
+        tanggal: new Date(item.tanggal),
+      }));
+      setPresensi(dataWithDefaults);
+    } catch (error) {
+      console.error("Error fetching attendance data:", error);
+    }
+  };
+
+  const handleShowRekapAbsen = (userId) => {
+    fetchPresensiData(userId);
+    setShowRekapAbsenModal(true);
+  };
+
+  const closeRekapAbsenModal = () => {
+    setShowRekapAbsenModal(false);
+    setSelectedEvent(null);
+  };
+
+  const events = presensi.map((item) => ({
+    title: `Check-in: ${item.check_in}, Check-out: ${item.check_out}`,
+    start: item.tanggal,
+    end: item.tanggal,
+    allDay: true,
+    data: item,
+  }));
+
+  const handleEventSelect = (event) => {
+    setSelectedEvent(event.data);
   };
 
   const filteredUsers = users.filter((user) =>
@@ -122,20 +169,20 @@ export const Peserta = () => {
   };
 
   const handleFilterByMonth = (month) => {
-    setSelectedMonth(month); // Simpan bulan yang dipilih di state
+    setSelectedMonth(month); 
 
     if (month !== "") {
       const filtered = allUsers.filter((user) => {
-        const startDate = new Date(user.tanggal_mulai); // Konversi tanggal mulai ke objek Date
-        const endDate = new Date(user.tanggal_selesai); // Konversi tanggal selesai ke objek Date
+        const startDate = new Date(user.tanggal_mulai); 
+        const endDate = new Date(user.tanggal_selesai); 
         return (
           startDate.getMonth() + 1 === parseInt(month) ||
           endDate.getMonth() + 1 === parseInt(month)
         );
       });
-      setUsers(filtered); // Tampilkan data yang sudah difilter
+      setUsers(filtered); 
     } else {
-      setUsers(allUsers); // Reset ke data asli jika tidak ada bulan yang dipilih
+      setUsers(allUsers); 
     }
   };
 
@@ -153,6 +200,13 @@ export const Peserta = () => {
         console.log(error);
       }
     }
+  };
+
+  const calculateRemainingDays = (endDate) => {
+    const today = new Date();
+    const end = new Date(endDate);
+    const timeDiff = end - today;
+    return timeDiff > 0 ? Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) : 0;
   };
 
   return (
@@ -199,7 +253,7 @@ export const Peserta = () => {
               <div className="dropdown">
                 <select
                   value={selectedMonth}
-                  onChange={(e) => handleFilterByMonth(e.target.value)} // Panggil fungsi filter ketika bulan dipilih
+                  onChange={(e) => handleFilterByMonth(e.target.value)} 
                   className="bg-[#183028] px-4 py-1 text-white mb-4 rounded-3xl hover:bg-slate-400"
                 >
                   <option value="">Periode / Bulan</option>
@@ -232,25 +286,27 @@ export const Peserta = () => {
           </div>
 
           <div className="p-10 overflow-x-auto bg-slate-200 rounded-2xl">
-            <table className="table w-full text-center">
+            <table className="table text-center table-zebra w-wfull">
               <thead>
                 <tr className="text-black">
                   <th>No</th>
                   <th>Nama</th>
                   <th>Universitas</th>
                   <th>Jurusan</th>
-                  <th>No telp</th>
+                  <th>No Telp</th>
                   <th>Tanggal Mulai</th>
                   <th>Tanggal Selesai</th>
-                  <th>Nama Dosen</th>
-                  <th>No Dosen</th>
+                  <th>Nama Pembimbing</th>
+                  <th>No Pembimbing</th>
+                  <th>Penempatan</th>
+                  <th>Sisa Hari</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan="8">Loading...</td>
+                    <td colSpan="12">Loading...</td>
                   </tr>
                 ) : (
                   displayedUsers.map((user, index) => (
@@ -264,6 +320,8 @@ export const Peserta = () => {
                       <td>{user.tanggal_selesai}</td>
                       <td>{user.nama_dosen}</td>
                       <td>{user.no_telp_dosen}</td>
+                      <td>{user.penempatan}</td>
+                      <td>{calculateRemainingDays(user.tanggal_selesai)}</td>
                       <td>
                         <div className="flex gap-2">
                           <button
@@ -272,6 +330,13 @@ export const Peserta = () => {
                             onClick={() => handleOpenEditUserModal(user.id)}
                           >
                             Edit
+                          </button>
+                          <button
+                            className="bg-[#183028] text-white rounded-3xl hover:bg-slate-400"
+                            style={{ minWidth: "60px" }}
+                            onClick={() => handleShowRekapAbsen(user.id)}
+                          >
+                            Rekap Absen
                           </button>
                           <button
                             className="text-white bg-red-500 rounded-3xl hover:bg-slate-400"
@@ -288,7 +353,6 @@ export const Peserta = () => {
               </tbody>
             </table>
           </div>
-          {/* Pagination using DaisyUI */}
           <div className="flex justify-center mt-4 join">
             <button
               className="join-item btn"
@@ -310,7 +374,6 @@ export const Peserta = () => {
           </div>
         </div>
       </div>
-      
 
       {showEditUserModal && (
         <EditUser
@@ -326,6 +389,52 @@ export const Peserta = () => {
           handleClose={handleCloseTaskForm}
           refreshData={() => getUsers(activeCategory)}
         />
+      )}
+
+      {showRekapAbsenModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-lg p-4 bg-white rounded-lg shadow-lg">
+            <button onClick={closeRekapAbsenModal} className="float-right text-red-500">Close</button>
+            <Calendar
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 500 }}
+              onSelectEvent={handleEventSelect}
+            />
+          </div>
+        </div>
+      )}
+
+      {selectedEvent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-xl font-bold">{selectedEvent.nama}</h2>
+            <p>
+              <strong>Tanggal:</strong> {moment(selectedEvent.tanggal).format("DD-MM-YYYY")}
+            </p>
+            <p><strong>Check-in:</strong> {selectedEvent.check_in}</p>
+            <p><strong>Lokasi Check-in:</strong> {selectedEvent.lokasi_in || "Belum Presensi"}</p>
+            {selectedEvent.image_url_in ? (
+              <div className="my-2">
+                <strong>Image In:</strong>
+                <img src={selectedEvent.image_url_in} alt="Presensi In" className="object-cover w-32 h-32 mx-auto mt-2 rounded-lg"/>
+              </div>
+            ) : <p>Image In: Belum Presensi</p>}
+            <p><strong>Check-out:</strong> {selectedEvent.check_out}</p>
+            <p><strong>Lokasi Check-out:</strong> {selectedEvent.lokasi_out || "Belum Presensi"}</p>
+            {selectedEvent.image_url_out ? (
+              <div className="my-2">
+                <strong>Image Out:</strong>
+                <img src={selectedEvent.image_url_out} alt="Presensi Out" className="object-cover w-32 h-32 mx-auto mt-2 rounded-lg"/>
+              </div>
+            ) : <p>Image Out: Belum Presensi</p>}
+            <div className="mt-4 modal-action">
+              <button className="w-full btn btn-error" onClick={() => setSelectedEvent(null)}>Close</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

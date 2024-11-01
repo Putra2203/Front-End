@@ -13,7 +13,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between max-w-screen-sm mx-auto lg:max-w-screen-xl">
         {/* Logo */}
         <Link to="/" onClick={() => setNav(false)}>
-          <img src={Logo} alt="Nav Logo" className="w-36" />
+          <img src={Logo} alt="Nav Logo" className="w-48" />
         </Link>
 
         {/* Links for desktop and mobile */}

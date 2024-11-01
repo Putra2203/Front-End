@@ -8,6 +8,15 @@ const EditUser = ({
   showEditUserModal,
   updateUserData,
 }) => {
+  const PENEMPATAN_OPTIONS = [
+    "Bidang 1",
+    "Bidang 2",
+    "Bidang 3",
+    "Bidang 4",
+    "Bidang 5",
+    "Kesekretariatan",
+  ];
+
   const [userData, setUserData] = useState({
     nama: "",
     asal_univ: "",
@@ -20,40 +29,97 @@ const EditUser = ({
     nama_dosen: "",
     no_telp_dosen: "",
     status_aktif: "",
+    penempatan: "",
+    specialPenempatan: "",
   });
 
+  const isStandardPenempatan = (value) => {
+    return PENEMPATAN_OPTIONS.includes(value);
+  };
+
   useEffect(() => {
-    if (userId) {
-      axiosJWTadmin
-        .get(`http://localhost:3000/admin/peserta/${userId}`)
-        .then((response) => {
-          const { peserta_magang } = response.data;
-          setUserData({
-            ...peserta_magang,
-            tanggal_mulai: peserta_magang.tanggal_mulai.split("T")[0], // Menangani format tanggal
-            tanggal_selesai: peserta_magang.tanggal_selesai.split("T")[0],
-          });
-        })
-        .catch((error) => {
-          console.error(error);
+    const fetchUserData = async () => {
+      if (!userId) return;
+
+      try {
+        const response = await axiosJWTadmin.get(
+          `http://localhost:3000/admin/peserta/${userId}`
+        );
+
+        const { peserta_magang } = response.data;
+
+        // Cek apakah penempatan adalah nilai standar atau khusus
+        const isSpecial = !isStandardPenempatan(peserta_magang.penempatan);
+
+        setUserData({
+          ...peserta_magang,
+          tanggal_mulai: peserta_magang.tanggal_mulai.split("T")[0],
+          tanggal_selesai: peserta_magang.tanggal_selesai.split("T")[0],
+
+          penempatan: isSpecial ? "special" : peserta_magang.penempatan,
+          specialPenempatan: isSpecial ? peserta_magang.penempatan : "",
         });
-    }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toast.error("Gagal mengambil data peserta");
+      }
+    };
+
+    fetchUserData();
   }, [userId]);
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {
+      // Validasi untuk penempatan khusus
+      if (
+        userData.penempatan === "special" &&
+        !userData.specialPenempatan.trim()
+      ) {
+        toast.error("Penempatan khusus harus diisi");
+        return;
+      }
+
+      // Siapkan data yang akan dikirim
+      const updatedData = {
+        ...userData,
+        // Jika penempatan special, gunakan nilai specialPenempatan
+        penempatan:
+          userData.penempatan === "special"
+            ? userData.specialPenempatan.trim()
+            : userData.penempatan,
+      };
+
+      delete updatedData.specialPenempatan;
+      if (!updatedData.password) {
+        delete updatedData.password;
+      }
+
+      console.log("Data yang akan dikirim:", updatedData);
+
       await axiosJWTadmin.patch(
         `http://localhost:3000/admin/peserta/${userId}/edit`,
-        userData
+        updatedData
       );
-      updateUserData(userData);
+
+      updateUserData(updatedData);
       handleCloseModal();
-      showSuccessNotification("User updated successfully.");
+      toast.success("Data peserta berhasil diperbarui");
     } catch (error) {
-      showErrorNotification("Failed to update user.");
-      console.error(error);
+      console.error("Error updating user:", error);
+      const errorMessage =
+        error.response?.data?.message || "Gagal memperbarui data peserta";
+      toast.error(errorMessage);
     }
+  };
+
+  const handlePenempatanChange = (e) => {
+    const value = e.target.value;
+    setUserData((prev) => ({
+      ...prev,
+      penempatan: value,
+      specialPenempatan: value === "special" ? prev.specialPenempatan : "",
+    }));
   };
 
   const showSuccessNotification = (message) => {
@@ -163,9 +229,8 @@ const EditUser = ({
             />
           </div>
 
-          {/* Tambahan Nama Dosen */}
           <div className="flex flex-row justify-between">
-            <label>Nama Dosen</label>
+            <label>Nama Pembimbing</label>
             <input
               type="text"
               placeholder="Masukkan nama dosen"
@@ -177,9 +242,8 @@ const EditUser = ({
             />
           </div>
 
-          {/* Tambahan Nomor Telepon Dosen */}
           <div className="flex flex-row justify-between">
-            <label>Nomor Telepon Dosen</label>
+            <label>Nomor Telepon Pembimbing</label>
             <input
               type="text"
               placeholder="Masukkan nomor telepon dosen"
@@ -211,6 +275,43 @@ const EditUser = ({
             </select>
           </div>
 
+          {/* Dropdown Penempatan */}
+          <div className="flex flex-row justify-between">
+            <label>Penempatan</label>
+            <select
+              value={userData.penempatan}
+              onChange={handlePenempatanChange}
+              className="flex px-2 py-1 border rounded-lg bg-slate-50"
+            >
+              <option value="">--Pilih Penempatan--</option>
+              {PENEMPATAN_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+              <option value="special">Alternatif</option>
+            </select>
+          </div>
+
+          {/* Input Penempatan Khusus */}
+          {userData.penempatan === "special" && (
+            <div className="flex flex-row justify-between mt-2">
+              <label>Penempatan Khusus</label>
+              <input
+                type="text"
+                placeholder="Masukkan nilai khusus"
+                value={userData.specialPenempatan}
+                onChange={(e) =>
+                  setUserData({
+                    ...userData,
+                    specialPenempatan: e.target.value,
+                  })
+                }
+                className="flex px-2 py-1 border rounded-lg bg-slate-50"
+              />
+            </div>
+          )}
+
           <div className="flex flex-row justify-between">
             <label>Username</label>
             <input
@@ -237,7 +338,10 @@ const EditUser = ({
           </div>
 
           <div className="mt-4">
-            <button type="submit" className="px-4 py-1 bg-[#183028] text-white rounded-3xl hover:bg-slate-400">
+            <button
+              type="submit"
+              className="px-4 py-1 bg-[#183028] text-white rounded-3xl hover:bg-slate-400"
+            >
               Update
             </button>
           </div>
